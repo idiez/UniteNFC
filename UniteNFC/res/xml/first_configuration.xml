@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <PreferenceCategory 
+        android:title="User Account"
+        android:key="user_account"
+        >
+    
+<!--   <CheckBoxPreference
+    android:key="saveuser"
+    android:title="Remmember me"
+    android:summary="Save user session" 
+    android:defaultValue="true"/>
+ -->
+     <EditTextPreference
+         android:key="username"
+         android:title="User name"
+         android:summary="Name shown to other users"
+         android:dialogTitle="Name" 
+         />
+		
+     <es.quantum.unitenfc.CustomPrefDialog
+            android:key="comp_edittext_pref"
+            android:summary="Set a profile picture"
+            android:title="Profile picture"/>
+     
+     
+      </PreferenceCategory>
+        <PreferenceCategory 
+        android:title="Map Settings"
+        android:key="map_settings"
+        > 
+     
+     <ListPreference
+   android:key="radius"
+   android:title="Radius"
+   android:summary="Select NFC Points show radius"
+   android:dialogTitle="Radius"
+	android:entries="@array/distances"
+	android:entryValues="@array/radius"
+	android:defaultValue="100"
+	 />
+     
+	 <CheckBoxPreference
+    android:key="track"
+    android:title="Track position"
+    android:summary="Center map at new positions" 
+    android:defaultValue="false"/>
+     
+      </PreferenceCategory>
+     
+</PreferenceScreen>
+
