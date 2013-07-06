@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/usercard"
+        android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <ImageView
+        android:layout_marginTop="50dp"
+        android:id="@+id/profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/dummy" >
+</ImageView>
+    
+<TextView 
+    android:text=""
+android:id="@+id/username"
+android:layout_marginTop="10dp"
+android:gravity="center"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:textSize="30sp" 
+	>
+</TextView>
+
+
+<TextView 
+    android:text=""
+    android:layout_marginTop="5dp"
+		android:id="@+id/useraccount"
+		android:gravity="center"
+        		android:layout_width="match_parent"
+        		android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:textSize="12sp" 
+	>
+</TextView>
+
+
+<include
+    android:layout_marginTop="10dp"
+        layout="@layout/nfc_dispatch" 
+    android:id="@+id/lastcheck"  
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    
+    />
+</LinearLayout>
