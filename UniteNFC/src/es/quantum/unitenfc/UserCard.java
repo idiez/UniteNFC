@@ -1,40 +1,7 @@
 package es.quantum.unitenfc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import com.google.gson.Gson;
-
-import es.quantum.unitenfc.BluetoothConn.OnSrvRcv;
-import es.quantum.unitenfc.Objects.Friend;
-import es.quantum.unitenfc.Objects.NFCPoint;
-import es.quantum.unitenfc.Objects.UserInfo;
-import es.quantum.unitenfc.backup.CustomBackup;
-import es.quantum.unitenfc.backup.GMailSender;
-
-import topoos.Exception.TopoosException;
-import topoos.Objects.Checkin;
-import topoos.Objects.POI;
-import topoos.Objects.Position;
-import topoos.Objects.User;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,10 +11,9 @@ import android.graphics.BitmapFactory;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcEvent;
-import android.nfc.Tag;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
 import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
+import android.nfc.NfcEvent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -63,6 +29,33 @@ import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import es.quantum.unitenfc.BluetoothConn.OnSrvRcv;
+import es.quantum.unitenfc.Objects.NFCPoint;
+import es.quantum.unitenfc.Objects.UserInfo;
+import es.quantum.unitenfc.backup.CustomBackup;
+import es.quantum.unitenfc.backup.GMailSender;
+import topoos.Exception.TopoosException;
+import topoos.Objects.User;
 
 public class UserCard extends Activity implements CreateNdefMessageCallback, OnNdefPushCompleteCallback, OnSrvRcv{
 	
@@ -116,7 +109,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			Parcelable[] rawMsgs = i.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage msg = (NdefMessage) rawMsgs[0];
             NdefRecord cardRecord = msg.getRecords()[0];
-            String[] rcv_data = new String(cardRecord.getPayload()).split("ñ");
+            String[] rcv_data = new String(cardRecord.getPayload()).split(" ");
             String user_data = rcv_data[0];
             String mac = rcv_data[1];
 			//save friend data
@@ -160,7 +153,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			    	        String responseString = out.toString();
 			    	        
 			    	        String[] param = responseString.split("\n");
-			    	        String myuser = prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "")+"ñ";
+			    	        String myuser = prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "")+"ï¿½";
 			    	        String content = param[0]+"\n"+param[1]+"\n"+param[2]+"\n"+param[3]+"\n"+myuser.concat(param[4])+"\nend";
 			    	        
 			                GMailSender sender = new GMailSender("unitenfc@gmail.com", "unitenfctopoos");
@@ -358,7 +351,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 					if(iid.compareTo(TopoosInterface.extract(element, 0))==0){
 						element = iid+";"+result.getUser_name()+";"+result.getPic_uri();
 					}
-					friendso = friendso+element+"ñ";
+					friendso = friendso+element+"ï¿½";
 				}
 				Editor editor = prefs.edit();
 				editor.putString("friends", friendso);
@@ -399,11 +392,11 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 	private NdefMessage createMessage(){
 		//NdefRecord appRecord = NdefRecord.createApplicationRecord("es.quantum.unitenfc");
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		byte[] payload = (prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "dummy_4")+"ñ"+blue_mac).getBytes();
+		byte[] payload = (prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "dummy_4")+"ï¿½"+blue_mac).getBytes();
 		byte[] mimeBytes = MIME_TYPE.getBytes(Charset.forName("US-ASCII"));
 		NdefRecord cardRecord = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, mimeBytes, new byte[0], payload);
 		//MANDAR URI Y NOMBRE APARTE DE ID
-		//MANDAR TAMBIÉN MAC BLUETOOTH	
+		//MANDAR TAMBIï¿½N MAC BLUETOOTH	
 		return new NdefMessage(new NdefRecord[] { cardRecord});
 	}
 
@@ -486,7 +479,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
     	}
 		if(!duplicated){
 			Editor editor = pref.edit();
-			editor.putString("friends", (friend_data+"ñ").concat(friendlist));
+			editor.putString("friends", (friend_data+"ï¿½").concat(friendlist));
 			editor.commit();
 		}
 		return !duplicated;

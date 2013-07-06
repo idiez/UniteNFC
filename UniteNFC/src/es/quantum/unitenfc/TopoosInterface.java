@@ -1,31 +1,32 @@
 package es.quantum.unitenfc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import topoos.AccessTokenOAuth;
-import topoos.LoginActivity;
-import topoos.Exception.TopoosException;
-import topoos.Objects.*;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import topoos.AccessTokenOAuth;
+import topoos.Exception.TopoosException;
+import topoos.LoginActivity;
+import topoos.Objects.Location;
+import topoos.Objects.POI;
+import topoos.Objects.User;
 
 
 public class TopoosInterface {
@@ -213,7 +214,7 @@ public class TopoosInterface {
     		return new ArrayList<String>(); 
     	}
     	else{
-        	String [] array = s.split("ñ");
+        	String [] array = s.split("Ã±");
         	return Arrays.asList(array);
     	}
 

@@ -1,9 +1,5 @@
 package es.quantum.unitenfc;
 
-import java.io.IOException;
-import java.util.Date;
-
-import topoos.Exception.TopoosException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,12 +7,13 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.Date;
 
 public class RegisterPOIFragment extends DialogFragment {
 	
@@ -72,7 +69,7 @@ public class RegisterPOIFragment extends DialogFragment {
            	    		Editor editor = prefs.edit();
            	    		Date d = new Date();
            	    		@SuppressWarnings("deprecation")
-           				String title = name+";"+poiType+";"+d.toLocaleString().substring(0, 16)+"ñ";
+           				String title = name+";"+poiType+";"+d.toLocaleString().substring(0, 16)+"Ã±";
            	    		editor.putString("regpoints", title.concat(s));
            	    		editor.commit();
                 		   

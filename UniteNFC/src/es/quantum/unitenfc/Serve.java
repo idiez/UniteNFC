@@ -1,25 +1,9 @@
 package es.quantum.unitenfc;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import topoos.Exception.TopoosException;
-import topoos.Objects.Checkin;
-import topoos.Objects.POI;
-import topoos.Objects.Position;
-import topoos.Objects.User;
-
-import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
@@ -30,10 +14,18 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
-import android.widget.Toast;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import topoos.Exception.TopoosException;
+import topoos.Objects.POI;
+import topoos.Objects.Position;
+import topoos.Objects.User;
 
 public class Serve extends Activity {
 
@@ -140,7 +132,7 @@ public class Serve extends Activity {
 					    		String name = poi.getName().substring(16);
 					    		Date d = new Date();
 					    		@SuppressWarnings("deprecation")
-								String title = name+";"+poi.getCategories().get(0).getId()+";"+d.toLocaleString().substring(0, 16)+"ñ";
+								String title = name+";"+poi.getCategories().get(0).getId()+";"+d.toLocaleString().substring(0, 16)+"Ã±";
 					    		editor.putString("checkpoints", title.concat(s));
 					    		editor.commit();
 					    		break;

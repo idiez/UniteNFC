@@ -1,15 +1,6 @@
 package es.quantum.unitenfc;
 
 
-import java.io.IOException;
-import java.util.List;
-
-import topoos.AccessTokenOAuth;
-import topoos.LoginActivity;
-import topoos.Exception.TopoosException;
-import topoos.Objects.POI;
-import topoos.Objects.User;
-import topoos.Objects.UserIdPosition;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -38,8 +29,17 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
+import java.util.List;
+
 import es.quantum.unitenfc.RegisterPOIFragment.OnReg;
 import es.quantum.unitenfc.backup.CustomBackup;
+import topoos.AccessTokenOAuth;
+import topoos.Exception.TopoosException;
+import topoos.LoginActivity;
+import topoos.Objects.POI;
+import topoos.Objects.User;
+import topoos.Objects.UserIdPosition;
 
 public class MainActivity extends Activity implements OnReg{
 
@@ -294,7 +294,7 @@ public class MainActivity extends Activity implements OnReg{
 							if(!duplicated){		
 								User usr = topoos.Users.Operations.Get(getApplicationContext(), friend);
 								Editor editor = pref.edit();
-								String title = usr.getName()+";"+friend+"ñ";
+								String title = usr.getName()+";"+friend+"ï¿½";
 					    		editor.putString("checkpoints", title.concat(friendlist));
 					    		editor.commit();
 								String MAC = str.substring(36);
@@ -465,7 +465,7 @@ public class MainActivity extends Activity implements OnReg{
 		public void onLocationChanged(Location arg0) {
 			//showToast("NEW!");
 			map.setPos(new LatLng(arg0.getLatitude(),arg0.getLongitude()));
-			//discriminar medidas aquí!
+			//discriminar medidas aquï¿½!
 			if(maptablistener.isActive()){
 				
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

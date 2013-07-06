@@ -1,13 +1,14 @@
 package es.quantum.unitenfc.backup;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -17,24 +18,21 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import com.google.gson.Gson;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import es.quantum.unitenfc.TopoosInterface;
 import es.quantum.unitenfc.Objects.Friend;
 import es.quantum.unitenfc.Objects.NFCPoint;
 import es.quantum.unitenfc.Objects.UserInfo;
-
+import es.quantum.unitenfc.TopoosInterface;
 import topoos.AccessTokenOAuth;
 import topoos.Exception.TopoosException;
 import topoos.Objects.User;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.graphics.Bitmap;
-import android.os.Environment;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class CustomBackup {
 	
@@ -185,17 +183,17 @@ public class CustomBackup {
     			editor.putString("imageuri", session.getPic_uri());
     			String visited = "";
     			for(NFCPoint element:session.getVisited()){
-    				visited = visited+element.toString()+"ñ";
+    				visited = visited+element.toString()+"Ã±";
     			}
     			editor.putString("checkpoints", visited);
     			String reg = "";
     			for(NFCPoint element:session.getRegistered()){
-    				reg = reg+element.toString()+"ñ";
+    				reg = reg+element.toString()+"Ã±";
     			}
     			editor.putString("regpoints", reg);
     			String friends = "";
     			for(Friend element:session.getFriends()){
-    				friends = friends+element.toString()+"ñ";
+    				friends = friends+element.toString()+"Ã±";
     			}
     			editor.putString("friends", friends);
     			editor.commit();

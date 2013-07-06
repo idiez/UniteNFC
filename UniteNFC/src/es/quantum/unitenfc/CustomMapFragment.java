@@ -1,53 +1,31 @@
 package es.quantum.unitenfc;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import topoos.Exception.TopoosException;
-import topoos.Objects.POI;
-
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.GroundOverlay;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.ItemizedOverlay;
-import com.google.android.maps.OverlayItem;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.DialogInterface.OnCancelListener;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
+import topoos.Exception.TopoosException;
+import topoos.Objects.POI;
 
 public class CustomMapFragment extends MapFragment implements OnInfoWindowClickListener{
 	
@@ -172,8 +150,8 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 				camPos = new CameraPosition.Builder()
 		        .target(pos)   //Centramos el mapa en Madrid
 		        .zoom(18)         //Establecemos el zoom en 19
-		        .bearing(0)      //Establecemos la orientación con el noreste arriba
-		        .tilt(0)         //Bajamos el punto de vista de la cámara 70 grados
+		        .bearing(0)      //Establecemos la orientaciï¿½n con el noreste arriba
+		        .tilt(0)         //Bajamos el punto de vista de la cï¿½mara 70 grados
 		        .build();
 				
 			
@@ -182,8 +160,8 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 				camPos = new CameraPosition.Builder()
 		        .target(cam.target)   //Centramos el mapa en Madrid
 		        .zoom(cam.zoom)         //Establecemos el zoom en 19
-		        .bearing(cam.bearing)      //Establecemos la orientación con el noreste arriba
-		        .tilt(cam.tilt)         //Bajamos el punto de vista de la cámara 70 grados
+		        .bearing(cam.bearing)      //Establecemos la orientaciï¿½n con el noreste arriba
+		        .tilt(cam.tilt)         //Bajamos el punto de vista de la cï¿½mara 70 grados
 		        .build();
 			}
 
