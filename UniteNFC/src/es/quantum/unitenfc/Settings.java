@@ -40,7 +40,7 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
         mCompoundEditTextPref = (CustomPrefDialog) findPreference("comp_edittext_pref");
         mCompoundEditTextPref.setOnPreferenceChangeListener(this);
         mCompoundEditTextPref.setPath("Some value");
-  	  	mCompoundEditTextPref.setCompoundButtonText("Gallery");
+  	  	mCompoundEditTextPref.setCompoundButtonText(getString(R.string.gallery));
 
   	  	mCompoundEditTextPref.setCompoundButtonListener(new View.OnClickListener() {			
       @Override
@@ -51,13 +51,12 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
 	    	  mCompoundEditTextPref.getDialog().cancel();
 	      }
 	    });
-  }
+    }
  
-  @Override
-  public boolean onPreferenceChange(Preference preference, Object newValue) {
-    Log.i("DEB","DEB");
-    return true;
-  }
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        return true;
+    }
 
     @Override
     public void onStop(){
@@ -93,28 +92,23 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
     							try {
     								usr = topoos.Users.Operations.Get(getApplicationContext(), "me");
     							} catch (IOException e1) {
-    								// TODO Auto-generated catch block
     								e1.printStackTrace();
     							} catch (TopoosException e1) {
-    								// TODO Auto-generated catch block
     								e1.printStackTrace();
     							}
     							String unique = TopoosInterface.UploadPIC(getApplicationContext(), (usr != null)?usr.getName():"test",filePath);
-    							Log.i("PIC", "OK");
     			    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     			    			Editor editor = prefs.edit();
     			    			editor.putString("imageuri", unique);
     			    			editor.commit();
     			    			TopoosInterface.setProfilePicture(getApplicationContext());
     						} catch (IOException e) {
-    							Log.i("PIC", "1");
     							e.printStackTrace();
     						} catch (TopoosException e) {
-    							Log.i("PIC", "2");
     							e.printStackTrace();
     						}
     					}
-    	        		
+
     	        	});
     	        	t.start();
     	        }

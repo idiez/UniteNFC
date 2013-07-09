@@ -40,7 +40,6 @@ public class TopoosInterface {
 	
 	public static final int SEARCH_RADIUS_METERS = 1000;
 
-
 	/**
      * Prepare a valid AccessTokenOAuth
 	 * @throws TopoosException 
@@ -133,8 +132,6 @@ public class TopoosInterface {
     
     
     public static String UploadPIC(Context ctx, String name, String route) throws IOException, TopoosException{
-    	
-    	Log.i("PIC", "step1");
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         if(route != null) BitmapFactory.decodeFile(route,options);
@@ -158,9 +155,7 @@ public class TopoosInterface {
             inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
         }
 
-        
         options.inSampleSize = inSampleSize;
-
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
             	
@@ -171,7 +166,6 @@ public class TopoosInterface {
     	byte[] byteArray = stream.toByteArray();
     	topoos.Objects.Image i = topoos.Images.Operations.ImageUploadPosition(ctx, byteArray, name, 0);
     	return i.getFilename_unique();
-    	
     }
     
     public static String UploadPIC(Context ctx, String name) throws IOException, TopoosException{
@@ -242,12 +236,11 @@ public class TopoosInterface {
 				String friends = prefs.getString("friends", "");
 				List <String> f = itemize(friends);
 				if(f != null && !f.isEmpty())
-					message = "Just become friend with "+(TopoosInterface.extract(f.get(0), 0))+".";
+					message = context.getString(R.string.share_friend)+(TopoosInterface.extract(f.get(0), 0))+".";
 				else
-					message = "Join and share your NFC experience with UniteNFC.";
+					message = context.getString(R.string.share_unite);
 				break;	
 			default:
-				
 				message = "";
 				break;
 		}
@@ -277,11 +270,9 @@ public class TopoosInterface {
 		out = new FileOutputStream(file);
 	       bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
 	} catch (FileNotFoundException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
 	catch (NullPointerException e) {
-		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
 

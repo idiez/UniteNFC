@@ -34,7 +34,7 @@ public class RegisterPOIFragment extends DialogFragment {
         
         builder.setView(inflater.inflate(R.layout.registerpoi, null));
         builder
-        		.setTitle("New NFC Point. Register?")
+        		.setTitle(getString(R.string.new_nfc))
         		.setSingleChoiceItems(R.array.poiType, 0,
 		                new DialogInterface.OnClickListener() {
 		            
@@ -58,40 +58,36 @@ public class RegisterPOIFragment extends DialogFragment {
 					}
 		        })
 		        
-        		.setPositiveButton("Register", new DialogInterface.OnClickListener() {
+        		.setPositiveButton(getString(R.string.new_nfc_ok), new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                 	               	   
                 	   name = ((EditText) getDialog().findViewById(R.id.name)).getText().toString().trim();
                 	   description = ((EditText) getDialog().findViewById(R.id.description)).getText().toString().trim();
                 	   if(!(name.isEmpty()||description.isEmpty())){
                 		   SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-           	    		String s = prefs.getString("regpoints", "");
-           	    		Editor editor = prefs.edit();
-           	    		Date d = new Date();
-           	    		@SuppressWarnings("deprecation")
-           				String title = name+";"+poiType+";"+d.toLocaleString().substring(0, 16)+"ñ";
-           	    		editor.putString("regpoints", title.concat(s));
-           	    		editor.commit();
+           	    		    String s = prefs.getString("regpoints", "");
+           	    		    Editor editor = prefs.edit();
+           	    		    Date d = new Date();
+           	    		    @SuppressWarnings("deprecation")
+           				    String title = name+";"+poiType+";"+d.toLocaleString().substring(0, 16)+"ñ";
+           	    		    editor.putString("regpoints", title.concat(s));
+           	    		    editor.commit();
                 		   
-                		   RegisterPOIWorker wrk = new RegisterPOIWorker();
-                		   Thread thread = new Thread(wrk);
+                	        RegisterPOIWorker wrk = new RegisterPOIWorker();
+                		    Thread thread = new Thread(wrk);
            					thread.start();
            					
-           				mListener.onReg();
+           				    mListener.onReg();
                 	   }
-                	   else Toast.makeText(getActivity().getApplicationContext(), "Fill all the data.", Toast.LENGTH_SHORT).show();;
-                		   
-           			
+                	   else
+                           Toast.makeText(getActivity().getApplicationContext(), getString(R.string.new_nfc_fill), Toast.LENGTH_SHORT).show();;
                    }
                })
-               .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+               .setNegativeButton(getString(R.string.new_nfc_no), new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                        // User cancelled the dialog
                    }
-               })
-              
-               ;
-        
+               });
         // Create the AlertDialog object and return it
         return builder.create();
     }
@@ -114,14 +110,10 @@ public class RegisterPOIFragment extends DialogFragment {
     }
     
 	private class RegisterPOIWorker implements Runnable {
-		
-    		
-    	
+
 		public void run(){
 			try {
 				TopoosInterface.RegisterNFCPOI(getActivity().getApplicationContext(), id+name, description, poiType, loc);
-	    		
-			
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

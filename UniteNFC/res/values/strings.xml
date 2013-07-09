@@ -24,11 +24,33 @@
     <string name="last_visited">Last NFC Points visited:</string>
     <string name="last_registered">Last NFC Points registered:</string>
     <string name="nfc_error">Please, enable NFC in your settings</string>
+    <string name="default_visited">No NFC Point visited/registered yet</string>
     <!-- Social tab -->
     <string name="bttn_add_friend">Add Friend</string>
+    <string name="add_friend_ms">Tap and add friends</string>
+    <string name="beam">Beam your User Card to add a friend</string>
+    <string name="add_already">You are already friends!</string>
     <string name="contacts">Contacts:</string>
     <!-- Gallery button -->
     <string name="gallery">Gallery</string>
     <!-- About -->
     <string name="about">UniteNFC v1.0\n\nQuick instructions:\nUniteNFC allows you to register NFC tags in a geo location based cloud. The physical tag id will be its main identificator in such a way only one registration can be made for each tag (to keep a bind between tags and registered NFC Points).\nThe registered NFC Points will be shown in the map around the user location. The discoverable range can be modify in "Settings". To scan a tag you just need to tap the mobile over the tag with NFC enabled (only text\plain MIME type supported by the moment). The last ten scanned and registered NFC Points will be shown in the tab "NFC POINTS" ordered from most recent.\nTo register a NFC Point you just need to click on the "SCAN" button and tap on the desired tag (provided the tag is not already registered). Then fill in the data and press "Register". The NFC Point will be automatically shown both on the "MAP" and on the last ten registered NFC Points.\nLast tab will show your friends, for which you can check its name, profile picture (both selectable in "Settings") and last scanned tag. To do so you just need to press on the desired element of the list.\nAdding friends is fast and cool. Press "ADD FRIEND" and your own contact info will be shown along with a message informing you to beam (NFC Android Beam) the screen to add a friend. If you do so (the other device does not need to have the application running) an interchange of contact info will be made, being recorded on your friend list.\nTo close UniteNFC user session press menu button and then exit. Next time you launch the application you will required to input your login and password again (you can change user if you want so).\nNote:Sometimes on application start the map will not be centered, specially when the location is given by the network provided. In that case press the "CENTER" button (right corner) to center it manually.</string>
+    <!-- Hints -->
+    <string name="hint_name">Name</string>
+    <string name="hint_description">Description</string>
+    <!-- Toasts -->
+    <string name="not_found">Not found</string>
+    <!-- Dialogs -->
+    <string name="new_nfc">New NFC Point. Register?</string>
+    <string name="new_nfc_fill">Fill all the data</string>
+    <string name="new_nfc_ok">Register</string>
+    <string name="new_nfc_no">Cancel</string>
+    <string name="reg_nfc">Tap tag to register</string>
+    <string name="reg_nfc_wait">Waiting...</string>
+    <string name="loading">Loading...</string>
+    <!-- Sharing -->
+    <string name="share_1">Just scanned a NFC Point </string>
+    <string name="share_2">with UniteNFC.</string>
+    <string name="share_friend">Just become friend with </string>
+    <string name="share_unite">Join and share your NFC experience with UniteNFC.</string>
 </resources>

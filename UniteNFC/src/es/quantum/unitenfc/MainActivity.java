@@ -478,8 +478,7 @@ public class MainActivity extends Activity implements OnReg{
 			     if(foo) map.centerMapAndRefresh(true);
 			     current_pos = arg0;
 			     
-			     
-			     
+
 			     RegisterPositionWorker worker = new RegisterPositionWorker(arg0);
 			     Thread thread = new Thread(worker);
 			     thread.start();

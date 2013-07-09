@@ -122,24 +122,9 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 		main_marker = this.getMap().addMarker(new MarkerOptions()
 		.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker))
         .position(pos)
-        .title("I'm here!"))
+        .title(getString(R.string.stick_man)))
         ;
 		main_marker.showInfoWindow();
-		
-		
-
-		/* SOLUCION PARA PROFUNDIDAD DE MARKERS IMPLEMENTANDO EVENTOS DE GESTOS
-		if(groundOverlay != null) groundOverlay.remove();
-		groundOverlay = getMap().addGroundOverlay(new GroundOverlayOptions()
-	     .image(BitmapDescriptorFactory.fromResource(R.drawable.marker))
-	     .position(pos, 100/getMap().getMaxZoomLevel())
-	     .transparency(0));
-		groundOverlay.setVisible(true);
-		groundOverlay.setZIndex(999);
-	
-		groundOverlay.setBearing(getMap().getCameraPosition().bearing);
-		*/
-		
 	}
 		
 	public void centerMapAndRefresh(boolean center) {
@@ -216,7 +201,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 	        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 	        
 	        builder
-	        		.setTitle("Choose visible NFC Points.")
+	        		.setTitle(getString(R.string.nfc_action))
 	        		.setMultiChoiceItems(R.array.poiType, new boolean[]{poi_vis[0],poi_vis[1],poi_vis[2],poi_vis[3]},
 			                new DialogInterface.OnMultiChoiceClickListener() {
 			            
@@ -280,17 +265,14 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 				List<POI> poi;
 				try {
 					poi = topoos.POI.Operations.GetWhere(ctx, new Integer[]{POICategories.NFC} ,null, null, null, null, name);
-					if(poi.isEmpty()) return "Not found";
+					if(poi.isEmpty()) return getString(R.string.not_found);
 					else return poi.get(0).getAddress();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (TopoosException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				return "Not found";
-				
+				return getString(R.string.not_found);
 			}
 			@Override
 			protected void onPostExecute(String result) {
@@ -298,7 +280,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 			}
       		
       	};
-      	if(!name.equals("I'm here!"))	toast.execute();
+      	if(!name.equals(getString(R.string.stick_man)))	toast.execute();
 	}
 	
 

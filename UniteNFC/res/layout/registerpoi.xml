@@ -14,7 +14,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="Name" />
+        android:hint="@string/hint_name" />
     <EditText
         android:id="@+id/description"
         android:inputType="textMultiLine"
@@ -25,5 +25,5 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
-        android:hint="Description"/>
+        android:hint="@string/hint_description"/>
 </LinearLayout>

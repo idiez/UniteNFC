@@ -15,28 +15,28 @@
  -->
      <EditTextPreference
          android:key="username"
-         android:title="User name"
-         android:summary="Name shown to other users"
-         android:dialogTitle="Name" 
+         android:title="Nombre de usuario"
+         android:summary="Nombre mostrado al resto de usuarios"
+         android:dialogTitle="Nombre"
          />
 		
      <es.quantum.unitenfc.CustomPrefDialog
             android:key="comp_edittext_pref"
-            android:summary="Set a profile picture"
-            android:title="Profile picture"/>
+            android:summary="Selecciona foto de perfil"
+            android:title="Foto de perfil"/>
      
      
       </PreferenceCategory>
         <PreferenceCategory 
-        android:title="Map Settings"
+        android:title="Configuración de mapa"
         android:key="map_settings"
         > 
      
      <ListPreference
    android:key="radius"
-   android:title="Radius"
-   android:summary="Select NFC Points show radius"
-   android:dialogTitle="Radius"
+   android:title="Radio"
+   android:summary="Selecciona radio de muestra de Puntos NFC"
+   android:dialogTitle="Radio"
 	android:entries="@array/distances"
 	android:entryValues="@array/radius"
 	android:defaultValue="100"
@@ -44,8 +44,8 @@
      
 	 <CheckBoxPreference
     android:key="track"
-    android:title="Track position"
-    android:summary="Center map at new positions" 
+    android:title="Seguir posiciones"
+    android:summary="Centra el mapa en las nuevas posiciones"
     android:defaultValue="false"/>
      
       </PreferenceCategory>

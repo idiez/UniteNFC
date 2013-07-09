@@ -12,10 +12,10 @@
               android:layout_weight="10" />
 	
 	<Button
-	    	    		android:id="@+id/add_friend"
-	    	    		android:visibility="visible"
-	    	    		android:layout_margin="3dp"
-	    		android:text= "Add Friend"
+	    	    android:id="@+id/add_friend"
+	    	    android:visibility="visible"
+	    	    android:layout_margin="3dp"
+	    		android:text= "@string/bttn_add_friend"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
 				android:layout_weight="1"

@@ -316,12 +316,10 @@ public class Serve extends Activity {
         menuItem = menu.findItem(R.id.menu_share);
         if(menuItem != null)
             mShareActionProvider = (ShareActionProvider)menuItem.getActionProvider();
-        mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent("Just scanned tag "+message+" with UniteNFC."));
+        mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(getString(R.string.share_1)+message+" "+getString(R.string.share_2)));
         return true;
 
     }
-
-
 
     public String parseNFCRecords(NdefRecord ndefr){
         short tnf = ndefr.getTnf();

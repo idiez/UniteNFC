@@ -70,9 +70,9 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
     	header1.setClickable(false);
         header2.setClickable(false);
         list1.addHeaderView(header1);
-        ((TextView)header1).setText("Last NFC Points visited:");
+        ((TextView)header1).setText(getString(R.string.last_visited));
         list2.addHeaderView(header2);
-        ((TextView)header2).setText("Last NFC Points registered:");
+        ((TextView)header2).setText(getString(R.string.last_registered));
         list1.setOnItemClickListener(this);
         list2.setOnItemClickListener(this);
         
@@ -81,7 +81,6 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
     	mAdapter = NfcAdapter.getDefaultAdapter(this.getActivity().getApplicationContext());
     	
     	V.findViewById(R.id.bttn_scan).setOnClickListener(this);
-    	  	
         return V;
     }
     
@@ -89,8 +88,6 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 	public void onResume() {
 		super.onResume();
 		if(progressDialog != null) progressDialog.dismiss();
-    	/*ProgressBar mProgress = (ProgressBar) getView().findViewById(R.id.progressbar);
-        mProgress.setVisibility(View.INVISIBLE);*/
     }
     
 	@Override
@@ -105,28 +102,20 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 	public void onClick(View v) {
 		if (mAdapter != null && mAdapter.isEnabled()) {
 		    // adapter exists and is enabled.
-			
 			PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(), 0,
 		            new Intent(getActivity().getApplicationContext(), getActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 			
 			IntentFilter [] intentfilter = new IntentFilter[] {new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
 			String [][] techlist = new String[][] { new String[] { NfcF.class.getName() } };
 			mAdapter.enableForegroundDispatch(getActivity(), pendingIntent, intentfilter, null);
-						
-			
-			
 	        mHandler.removeCallbacks(mMuestraMensaje);
 	        mHandler.postDelayed(mMuestraMensaje, 5000);
 			
-	        progressDialog = ProgressDialog.show((Context)this.getActivity(), "Tap tag to register.",
-                    "Waiting...",false,false);
-	        
-	        /*ProgressBar mProgress = (ProgressBar) getView().findViewById(R.id.progressbar);
-	        mProgress.setVisibility(View.VISIBLE);*/
-	        
+	        progressDialog = ProgressDialog.show((Context)this.getActivity(), getString(R.string.reg_nfc),
+                    getString(R.string.reg_nfc_wait),false,false);
 		}
 		else {
-			Toast.makeText(this.getActivity(), "Please, enable NFC in your settings.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this.getActivity(), getString(R.string.nfc_error), Toast.LENGTH_SHORT).show();
 		}
 		
 	}
@@ -145,7 +134,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
     	List<RowItem> rows = new ArrayList<RowItem>();
     	if(listcheck.isEmpty()){
             Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.dummy);
-    		rows.add(new RowItem(bmp, "No NFC Point visited/registered yet"));
+    		rows.add(new RowItem(bmp, getString(R.string.default_visited)));
     	}
     	else {
     		for(String element:listcheck){
@@ -180,11 +169,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity().getApplicationContext());
     	String s1 = prefs.getString("checkpoints", "");
     	String s2 = prefs.getString("regpoints", "");
-    	
 
-        
-
-		
         List<RowItem> r1 = parseString(s1);
         List<RowItem> r2 = parseString(s2);
         if(r1.size()>10) r1 = r1.subList(0, 10);
@@ -196,8 +181,6 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
                 R.layout.list, r2);
         list1.setAdapter(adapter1);
         list2.setAdapter(adapter2);
-        
-
 	}
 
 	@Override
@@ -209,13 +192,12 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
        	final String[] t = (v.getText().toString()).split("\n");
        	
       	AsyncTask<Void, Void, String> toast = new AsyncTask<Void, Void, String>(){
-
 			@Override
 			protected String doInBackground(Void... params) {
 				List<POI> poi;
 				try {
 					poi = topoos.POI.Operations.GetWhere(ctx, new Integer[]{POICategories.NFC} ,null, null, null, null, t[0]);
-					if(poi.isEmpty()) return "Not found";
+					if(poi.isEmpty()) return getString(R.string.not_found);
 					else return poi.get(0).getAddress();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -224,17 +206,15 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				return "Not found";
-				
+				return getString(R.string.not_found);
 			}
+
 			@Override
 			protected void onPostExecute(String result) {
 				Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
 			}
-      		
       	};
       	toast.execute();
-      	
 	}
 	
 }

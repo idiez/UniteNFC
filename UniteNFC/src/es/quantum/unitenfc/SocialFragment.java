@@ -56,14 +56,6 @@ public class SocialFragment extends Fragment implements OnClickListener{
 	List<RowItem> rowItems;
 	private List<String> names;
 	private ProgressDialog progressDialog;
-	Runnable mMuestraMensaje = new Runnable() {
-        public void run() {
-           Toast.makeText(getActivity(), "Lanzado temporizador", Toast.LENGTH_LONG).show();
-           progressDialog.dismiss();
-	       //mAdapter.disableForegroundDispatch(getActivity());
-        }
-	};
-	private Handler mHandler = new Handler();
 	private NfcAdapter mAdapter;
 	
 	
@@ -93,13 +85,12 @@ public class SocialFragment extends Fragment implements OnClickListener{
     
     
       
-public List<RowItem> parseString(String s){
-		
+    public List<RowItem> parseString(String s){
     	List<String> listcheck = TopoosInterface.itemize(s);
     	List<RowItem> rows = new ArrayList<RowItem>();
     	if(listcheck.isEmpty()){
             Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.dummy);
-    		rows.add(new RowItem(bmp, "Tap and add friends"));
+    		rows.add(new RowItem(bmp, getString(R.string.add_friend_ms)));
     	}
     	else {
     		for(String element:listcheck){
@@ -117,56 +108,44 @@ public List<RowItem> parseString(String s){
     	}
     	Collections.sort(rows);
 		return rows;
-		
 	}
 
-public void refreshLists(){
-	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity().getApplicationContext());
-	String s1 = prefs.getString("friends", "");
-	List<RowItem> r1 = parseString(s1);
+    public void refreshLists(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity().getApplicationContext());
+        String s1 = prefs.getString("friends", "");
+        List<RowItem> r1 = parseString(s1);
 
-    CustomListViewAdapter adapter = new CustomListViewAdapter(getActivity().getApplicationContext(),
-            R.layout.list, r1);
-    list.setAdapter(adapter);
+        CustomListViewAdapter adapter = new CustomListViewAdapter(getActivity().getApplicationContext(),
+                R.layout.list, r1);
+        list.setAdapter(adapter);
+        list.setOnItemClickListener(new OnItemClickListener(){
 
-    list.setOnItemClickListener(new OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+                if(arg2 == 0) return;
+                Context ctx = getActivity().getApplicationContext();
+                String text = (String) ((TextView) arg1.findViewById(R.id.text1)).getText();
+                if(text.compareTo(getString(R.string.add_friend_ms)) != 0)
+                startActivity(new Intent(ctx, UserCard.class).setType("NOBEAM").putExtra("NAME", text));
+            }
+        });
+    }
 
-        @Override
-        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-        	if(arg2 == 0) return;
-        	Context ctx = getActivity().getApplicationContext();
-			String text = (String) ((TextView) arg1.findViewById(R.id.text1)).getText();
-			if(text.compareTo("Tap and add friends") != 0)
-			startActivity(new Intent(ctx, UserCard.class).setType("NOBEAM").putExtra("NAME", text));
+    @Override
+    public void onClick(View arg0) {
+	
+        if (mAdapter != null && mAdapter.isEnabled()) {
+            // adapter exists and is enabled.
+            startActivityForResult(new Intent(getActivity().getApplicationContext(), UserCard.class).setType("BEAM"),1);
+        }
+        else {
+            Toast.makeText(this.getActivity(), getString(R.string.nfc_error), Toast.LENGTH_SHORT).show();
         }
     }
-    		
-    		);
-}
 
-@Override
-public void onClick(View arg0) {
-	
-	if (mAdapter != null && mAdapter.isEnabled()) {
-	    // adapter exists and is enabled.
-		startActivityForResult(new Intent(getActivity().getApplicationContext(), UserCard.class).setType("BEAM"),1);
-		
-		
-
-	}
-	else {
-		Toast.makeText(this.getActivity(), "Please, enable NFC in your settings.", Toast.LENGTH_SHORT).show();
-	}
-
-	
-	
-}
-
-
-	
-@Override
-public void onActivityResult(int requestCode, int resultCode, Intent ReturnedIntent) {
-	refreshLists();
-}
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent ReturnedIntent) {
+        refreshLists();
+    }
     
 }
