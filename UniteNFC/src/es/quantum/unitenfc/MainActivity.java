@@ -62,7 +62,6 @@ public class MainActivity extends Activity implements OnReg{
 	private Handler mHandler = new Handler();
 	Runnable mUpdateMap = new Runnable() {
         public void run() {
-           Log.i("UPDATE", "working");
            map.setPOIList(poi_list);
            if(maptablistener.isActive()){
         	   try{
@@ -138,9 +137,9 @@ public class MainActivity extends Activity implements OnReg{
 	    
 	    maptablistener = new CustomTabListener(map);
 	    scantablistener = new CustomTabListener(scan);
-	    Tab map_tab = actionBar.newTab().setText("MAP").setTabListener(maptablistener);
-	    Tab scan_tab = actionBar.newTab().setText("NFC POINTS").setTabListener(scantablistener);
-	    Tab social_tab = actionBar.newTab().setText("SOCIAL").setTabListener(new CustomTabListener(social));
+	    Tab map_tab = actionBar.newTab().setText(getString(R.string.map_tab)).setTabListener(maptablistener);
+	    Tab scan_tab = actionBar.newTab().setText(getString(R.string.nfc_points_tab)).setTabListener(scantablistener);
+	    Tab social_tab = actionBar.newTab().setText(getString(R.string.social_tab)).setTabListener(new CustomTabListener(social));
 	    actionBar.addTab(map_tab);
 	    actionBar.addTab(scan_tab);
 	    actionBar.addTab(social_tab);
@@ -163,7 +162,7 @@ public class MainActivity extends Activity implements OnReg{
 
 		int state = getState();
 		if(state == 1){
-			mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent("Exploring NFC Points with UniteNFC."));
+			mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(getString(R.string.share_explore)));
 		}
 		else{
 			mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent((Context)this, state));
@@ -339,7 +338,7 @@ public class MainActivity extends Activity implements OnReg{
 			    //do something with tagFromIntent
 		    }
 		    else{
-		    	showToast("NFC Point already registered.");
+		    	showToast(getString(R.string.nfc_duplicated));
 		    }
         }
 	}
@@ -360,7 +359,7 @@ public class MainActivity extends Activity implements OnReg{
 
 							//showToast("Valid!");
 							progressDialog = ProgressDialog.show((Context)this, "",
-						            "Loading user data...",false,false);
+						            getString(R.string.welcome),false,false);
 							Thread b = new Thread(new Runnable(){
 
 								@Override
@@ -393,7 +392,7 @@ public class MainActivity extends Activity implements OnReg{
 					case LoginActivity.RESULT_TOPOOSERROR:
 						if (!AccessTokenOAuth.GetAccessToken(getApplicationContext())
 								.isValid()) {
-							showToast("Not valid!");
+							showToast(getString(R.string.invalid));
 						}
 						break;
 					case LoginActivity.RESULT_FIRST_USER:
@@ -497,19 +496,16 @@ public class MainActivity extends Activity implements OnReg{
 
 		@Override
 		public void onProviderDisabled(String arg0) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void onProviderEnabled(String arg0) {
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -526,10 +522,8 @@ public class MainActivity extends Activity implements OnReg{
 				//friends = topoos.Users.Operations.NearPositionGet(getApplicationContext(), current_pos.getLatitude(), current_pos.getLongitude(), 8000000, groupID, 1000, null);
 				if(u!=null)Log.i("ID", u.getId());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (TopoosException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -575,13 +569,10 @@ public class MainActivity extends Activity implements OnReg{
 						mHandler.removeCallbacks(mUpdateMap);
 					    mHandler.postDelayed(mUpdateMap, 0);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (TopoosException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (NullPointerException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			}

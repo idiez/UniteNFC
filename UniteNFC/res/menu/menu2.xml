@@ -14,7 +14,7 @@
           	android:title="@string/action_about"
           	android:showAsAction="never"/>
 		<item 	android:id="@+id/exit"
-          	android:title="Exit"
+          	android:title="@string/action_exit"
           	android:showAsAction="never"/>
 	
 

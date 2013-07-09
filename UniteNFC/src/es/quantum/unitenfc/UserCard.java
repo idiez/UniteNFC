@@ -131,10 +131,8 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 						try {
 							response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+filename+CustomBackup.FILE_TYPE));
 						} catch (ClientProtocolException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						} catch (IOException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 			    	    StatusLine statusLine = response.getStatusLine();
@@ -144,7 +142,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 								response.getEntity().writeTo(out);
 								out.close();
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 			    	        

@@ -7,7 +7,7 @@
 	    
 	<item 	android:id="@+id/POI"
           	android:icon="@drawable/scan_tab"
-          	android:title="@string/nfc_points_tab"
+          	android:title="@string/nfc_action"
           	android:showAsAction="always"/>
 	
     <item 	android:id="@+id/map_type"
