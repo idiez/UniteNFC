@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App name-->
+    <string name="app_name">UniteNFC</string>
+    <!-- Tabs -->
+    <string name="map_tab">MAPA</string>
+    <string name="nfc_points_tab">PUNTOS NFC</string>
+    <string name="social_tab">SOCIAL</string>
+    <!-- Action bar -->
+    <string name="nfc_action">Seleciona puntos NFC visibles</string>
+    <string name="map_action">Cambiar tipo de mapa</string>
+    <string name="centre_action">Centrar mapa</string>
+    <!-- Menu -->
+    <string name="action_share">Compartir</string>
+    <string name="action_settings">Configuración</string>
+    <string name="action_about">Acerca de</string>
+    <string name="action_exit">Cerrar sesión</string>
+    <!-- Login message -->
+    <string name="welcome">Cargando información de usuario</string>
+    <!-- Map tab -->
+    <string name="stick_man">Estoy aquí!</string>
+    <!-- Scan tab -->
+    <string name="bttn_scan">Escanear</string>
+    <string name="last_visited">Últimos Puntos NFC visitados:</string>
+    <string name="last_registered">Últimos Puntos NFC registrados:</string>
+    <string name="nfc_error">Activa NFC en las preferencias de móvil, por favor</string>
+    <!-- Social tab -->
+    <string name="bttn_add_friend">Añadir amigo</string>
+    <string name="contacts">Contactos:</string>
+    <!-- Gallery button -->
+    <string name="gallery">Galria</string>
+    <!-- About -->
+    <string name="about">UniteNFC v1.0\n\nInstrucciones rápidas:\Unite NFC te permite registrar etiquetas NFC de manera geolocalizada en la nube. El principal identificador es el ID de la etiqueta física, de tal forma que un único registro es posible por cada etiqueta (manteniendo siempre el emparejamiento entre Puntos NFC registrados y etiquetas).\nLos Puntos NFC registrados son mostrados en un mapa alrededor de la localización del usuario. El rango de descubrimiento puede ser modificado en "Ajustes". Para escanear una etiqueta sólo hay que acercar el móvil (casi hasta tocar) a la etiqueta con NFC activado (sólo soporta el tipo de dato MIME text/plain hasta el momento). Los últimos diez Puntos NFC escaneados y registrados son mostrados en la pestaña "PUNTOS NFC" ordenados por fecha desde el más reciente.\nPara registrar un Punto NFC hay que seleccionar el botón "Escanear" y leer la etiqueta NFC a registrar (si no ha sido registrado antes). A continuación se rellenan los datos y se pulsa "Registrar". Los Puntos NFC son mostrados automáticamente en el mapa y en los diez útlimos Puntos NFC registrados.\nEn la última pestaña se muestran tus amigos, para los que puedes ver su nombre, foto de perfil (ambos configurables en "Ajustes") y los últimos Puntos NFC visitados con tan sólo seleccionar el elemento deseado de la lista.\nAñadir amigos es rápido y molón. Pulsa "Añadir Amigo" y tu información de usuario se mostrará junto a un mensaje informandote de hacer BEAM (NFC Android Beam) junto con tu amigo para añadir dicho amigo. Si lo haces (que un usuario tenga la aplicación en primer plano es suficiente) los datos de contacto serán intercambiados, almacenando los datos en ambos dispositivos.\nPara cerrar la sesión de usuario pulsa el botón de menú y "Cerrar sesión". La próxima vez que se ejecute la aplicación habrá que introducir login y contraseña de nuevo (se pueden usar distintos usuarios en el mismo dispositivo).\nNota: En ocasiones el mapa no estará centrado al iniciar la aplicación, especialmente si la localización es obtenida mediante el proveedor de la red. En ese caso pulsa el botón "Centrar mapa" (esquina derecha) para centrarlo manualmente.</string>
+</resources>

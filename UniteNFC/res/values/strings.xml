@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- App name-->
     <string name="app_name">UniteNFC</string>
+    <!-- Tabs -->
+    <string name="map_tab">MAP</string>
+    <string name="nfc_points_tab">NFC POINTS</string>
+    <string name="social_tab">SOCIAL</string>
+    <!-- Action bar -->
+    <string name="nfc_action">Choose visible NFC Points</string>
+    <string name="map_action">Switch map type</string>
+    <string name="centre_action">Centre map</string>
+    <!-- Menu -->
+    <string name="action_share">Share</string>
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
-    <string name="action_share">Share</string>
-    <string name="action_save">Save</string>
-    <string name="bttn_scan">SCAN</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="log_act">Login Activity</string>
-    <string name="POI">Choose visible NFC Points</string>
-    <string name="center">Centre map</string>
-    <string name="map_type">Switch map type</string>
-    <string name="title_activity_about">About</string>
-    <string name="about">UniteNFC v1.0\n\nQuick instructions:\nUniteNFC allows you to register NFC tags in a geo location based cloud. The physical tag id will be its main identificator in such a way only one registration can be made for each tag (to keep a bind between tags and registered NFC Points).\nThe registered NFC Points will be shown in the map around the user location. The discoverable range can be modify in "Settings". To scan a tag you just need to tap the mobile over the tag with NFC enabled (only text\plain MIME type supported by the moment). The last ten scanned and registered NFC Points will be shown in the tab "NFC POINTS" ordered from most recent.\nTo register a NFC Point you just need to click on the "SCAN" button and tap on the desired tag (provided the tag is not already registered). The fill in the data and press "Register". The NFC Point will be automatically shown both on the "MAP" and on the last ten registered NFC Points.\nLast tab will show your friends, for which you can check its name, profile picture (both selectable in "Settings") and last scanned tag. To do so you just need to press on the desired element of the list.\nAdding friends is fast and cool. Press "ADD FRIEND" and your own contact info will be shown along with a message informing you to beam (NFC Android Beam) the screen to add a friend. If you do so (the other device does not need to have the application running) an interchange of contact info will be made, being recorded on your friend list.\nTo close UniteNFC user session press menu button and then exit. Next time you launch the application you will required to input your login and password again (you can change user if you want so).\nNote:Sometimes on application start the map will not be centered, specially when the location is given by the network provided. In that case press the "CENTER" button (right corner) to center it manually.</string>
-
+    <string name="action_exit">Log out</string>
+    <!-- Login message -->
+    <string name="welcome">Loading user data</string>
+    <!-- Map tab -->
+    <string name="stick_man">I\'m here!</string>
+    <!-- Scan tab -->
+    <string name="bttn_scan">Scan</string>
+    <string name="last_visited">Last NFC Points visited:</string>
+    <string name="last_registered">Last NFC Points registered:</string>
+    <string name="nfc_error">Please, enable NFC in your settings</string>
+    <!-- Social tab -->
+    <string name="bttn_add_friend">Add Friend</string>
+    <string name="contacts">Contacts:</string>
+    <!-- Gallery button -->
+    <string name="gallery">Gallery</string>
+    <!-- About -->
+    <string name="about">UniteNFC v1.0\n\nQuick instructions:\nUniteNFC allows you to register NFC tags in a geo location based cloud. The physical tag id will be its main identificator in such a way only one registration can be made for each tag (to keep a bind between tags and registered NFC Points).\nThe registered NFC Points will be shown in the map around the user location. The discoverable range can be modify in "Settings". To scan a tag you just need to tap the mobile over the tag with NFC enabled (only text\plain MIME type supported by the moment). The last ten scanned and registered NFC Points will be shown in the tab "NFC POINTS" ordered from most recent.\nTo register a NFC Point you just need to click on the "SCAN" button and tap on the desired tag (provided the tag is not already registered). Then fill in the data and press "Register". The NFC Point will be automatically shown both on the "MAP" and on the last ten registered NFC Points.\nLast tab will show your friends, for which you can check its name, profile picture (both selectable in "Settings") and last scanned tag. To do so you just need to press on the desired element of the list.\nAdding friends is fast and cool. Press "ADD FRIEND" and your own contact info will be shown along with a message informing you to beam (NFC Android Beam) the screen to add a friend. If you do so (the other device does not need to have the application running) an interchange of contact info will be made, being recorded on your friend list.\nTo close UniteNFC user session press menu button and then exit. Next time you launch the application you will required to input your login and password again (you can change user if you want so).\nNote:Sometimes on application start the map will not be centered, specially when the location is given by the network provided. In that case press the "CENTER" button (right corner) to center it manually.</string>
 </resources>
