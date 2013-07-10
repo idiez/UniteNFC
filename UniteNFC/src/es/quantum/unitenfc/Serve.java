@@ -163,6 +163,7 @@ public class Serve extends Activity {
                 for (int i = 0; i < rawMsgs.length; i++) {
                     msgs[i] = (NdefMessage) rawMsgs[i];
                 }
+                message = parseNFCRecords(msgs[0].getRecords()[0]);
             } else {
                 // Unknown tag type
                 byte[] empty = new byte[0];
@@ -170,6 +171,7 @@ public class Serve extends Activity {
                 Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 byte[] payload = dumpTagData(tag).getBytes();
                 NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
+                message = parseNFCRecords(record);
                 NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
                 msgs = new NdefMessage[] { msg };
             }
@@ -241,7 +243,6 @@ public class Serve extends Activity {
                 sb.append(type);
             }
         }
-
         return sb.toString();
     }
 
@@ -302,7 +303,6 @@ public class Serve extends Activity {
             content.addView(record.getView(this, inflater, content, i), 1 + i);
             content.addView(inflater.inflate(R.layout.tag_divider, content, false), 2 + i);
         }
-
     }
 
     @Override
@@ -316,7 +316,7 @@ public class Serve extends Activity {
         menuItem = menu.findItem(R.id.menu_share);
         if(menuItem != null)
             mShareActionProvider = (ShareActionProvider)menuItem.getActionProvider();
-        mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(getString(R.string.share_1)+message+" "+getString(R.string.share_2)));
+        mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(getString(R.string.share_1)+" "+message+" "+getString(R.string.share_2)));
         return true;
 
     }

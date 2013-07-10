@@ -51,7 +51,7 @@
     <string name="reg_nfc_wait">Waiting...</string>
     <string name="loading">Loading...</string>
     <!-- Sharing -->
-    <string name="share_1">Just scanned a NFC Point </string>
+    <string name="share_1">Just scanned a NFC Point</string>
     <string name="share_2">with UniteNFC.</string>
     <string name="share_friend">Just become friend with </string>
     <string name="share_unite">Join and share your NFC experience with UniteNFC.</string>

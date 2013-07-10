@@ -29,6 +29,6 @@
             android:padding="6dp"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:autoLink="email|web"
-            android:text="HI" />
+                />
     </LinearLayout>
 </ScrollView>
