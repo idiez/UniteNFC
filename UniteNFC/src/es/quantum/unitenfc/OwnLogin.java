@@ -19,6 +19,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,11 +64,14 @@ public class OwnLogin extends Activity implements View.OnClickListener {
 
             HttpClient httpclient = new DefaultHttpClient();
             HttpResponse response = null;
+            HttpContext ctx = new BasicHttpContext();
             try {
-                response = httpclient.execute(new HttpGet(connection_url));
-                Header[] allHeaders = response.getAllHeaders();
+
+                response = httpclient.execute(new HttpGet(connection_url),ctx);
+                Header[] allHeaders = response.getHeaders("Location");
+
                 for(Header element:allHeaders){
-                    HeaderElement[] allElements =allHeaders[0].getElements();
+                    HeaderElement[] allElements =element.getElements();
                     for(HeaderElement helement:allElements){
                         NameValuePair[] nv = helement.getParameters();
                         for(NameValuePair nvelem: nv){

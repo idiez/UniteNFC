@@ -54,7 +54,7 @@ public class TopoosInterface {
     	
     	if (token == null || !token.isValid() || !foo)
     	{
-    		Intent intent = new Intent(ctx, LoginActivity.class);
+    		Intent intent = new Intent(ctx, OwnLogin.class);
 			intent.putExtra(LoginActivity.CLIENT_ID, CLIENT_ID);
 			act.startActivityForResult(intent, 1);
 			//	token = new AccessTokenOAuth(TOPOOS_USER_APP_TOKEN);
