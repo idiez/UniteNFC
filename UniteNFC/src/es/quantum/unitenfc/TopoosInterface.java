@@ -35,7 +35,7 @@ public class TopoosInterface {
 	//Must get your tokens from topoos developer panel https://developers.topoos.com
 	private static final String TOPOOS_ADMIN_APP_TOKEN = "44ef11c4-c7bc-47a1-8b9b-fad6bcc71024";
 	private static final String TOPOOS_USER_APP_TOKEN = "771697e2-c59d-468e-b937-ac9d3632d67b";
-	private static final String CLIENT_ID = "2886137d-5535-444b-82c9-9826d8025deb";
+	public static final String CLIENT_ID = "2886137d-5535-444b-82c9-9826d8025deb";
 	//private static final int REQUESTCODE_LOGIN = 1;
 	
 	public static final int SEARCH_RADIUS_METERS = 1000;

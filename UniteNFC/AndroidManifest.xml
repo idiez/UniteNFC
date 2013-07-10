@@ -107,6 +107,7 @@
             android:name="es.quantum.unitenfc.About"
             android:label="@string/action_about" >
         </activity>
+        <activity android:name=".OwnLogin"/>
     </application>
 
 </manifest>
