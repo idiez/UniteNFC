@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.webkit.WebView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -51,10 +52,9 @@ public class TopoosInterface {
     	AccessTokenOAuth token = topoos.AccessTokenOAuth.GetAccessToken(ctx);
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
     	boolean foo = prefs.getBoolean("saveuser", true);
-    	
     	if (token == null || !token.isValid() || !foo)
     	{
-    		Intent intent = new Intent(ctx, OwnLogin.class);
+    		Intent intent = new Intent(ctx, LoginActivity.class);
 			intent.putExtra(LoginActivity.CLIENT_ID, CLIENT_ID);
 			act.startActivityForResult(intent, 1);
 			//	token = new AccessTokenOAuth(TOPOOS_USER_APP_TOKEN);
