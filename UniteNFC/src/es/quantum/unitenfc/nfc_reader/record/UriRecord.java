@@ -86,6 +86,7 @@ public class UriRecord implements ParsedNdefRecord {
             .put((byte) 0x21, "urn:epc:raw:")
             .put((byte) 0x22, "urn:epc:")
             .put((byte) 0x23, "urn:nfc:")
+//            .put((byte) 0x24, "sms:")
             .build();
 
     private final Uri mUri;

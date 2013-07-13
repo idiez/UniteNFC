@@ -75,8 +75,11 @@
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="urn:nfc:"/>
+                <data android:scheme="sms"/>
+                <data android:scheme="tel"/>
             </intent-filter>
+
+
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED"/>
             </intent-filter>
