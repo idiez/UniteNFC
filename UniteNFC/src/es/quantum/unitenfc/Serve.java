@@ -325,7 +325,7 @@ public class Serve extends Activity {
         short tnf = ndefr.getTnf();
         byte[] type = ndefr.getType();
         String result = "";
-        for (int b = 1; b<ndefr.toByteArray().length; b++) { // skip SOH  
+        for (int b = 1; b<ndefr.toByteArray().length; b++) { // skip SOH
             result += (char) ndefr.toByteArray()[b];
         }
         return result.substring(6);

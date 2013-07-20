@@ -34,7 +34,7 @@
 
    
  		<meta-data 		android:name="com.google.android.maps.v2.API_KEY"
-               			android:value="AIzaSyCd0jW11jVraJ7RGdViXtNXtWfS9VEuOfo"/> 
+               			android:value="AIzaSyDeQEkxanYNHVfxEgMGk947cN9wU1sUGL0"/>
 
      	<!-- RELEASE API KEY
         <meta-data
@@ -71,12 +71,22 @@
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="text/plain"/>
+                <data android:mimeType="text/x-vCard"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:scheme="sms"/>
                 <data android:scheme="tel"/>
+                <data android:scheme="geo"/>
+                <data android:scheme="mailto"/>
+                <data android:scheme="wifi"/>
+                <data android:scheme=""/>
+                <data android:scheme="http"/>
+                <data android:scheme="https"/>
+                <data android:scheme="urn:nfc:ext:android.com:pkg"/>
+                <data android:scheme="file"/>
+
             </intent-filter>
 
 
@@ -110,7 +120,6 @@
             android:name="es.quantum.unitenfc.About"
             android:label="@string/action_about" >
         </activity>
-        <activity android:name=".OwnLogin"/>
     </application>
 
 </manifest>

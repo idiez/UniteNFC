@@ -27,6 +27,8 @@ import android.view.MenuItem;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
+
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -101,6 +103,25 @@ public class MainActivity extends Activity implements OnReg{
 	      }
 		
 		*/
+
+        /*
+        com.facebook.Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
+        com.facebook.Settings.addLoggingBehavior(LoggingBehavior.REQUESTS);
+        Request request = Request.newGraphPathRequest(null, "/4", new Request.Callback() {
+            @Override
+            public void onCompleted(Response response) {
+                if(response.getError() != null) {
+                    Log.i("MainActivity", String.format("Error making request: %s", response.getError()));
+                } else {
+                    GraphUser user = response.getGraphObjectAs(GraphUser.class);
+                    Log.i("MainActivity", String.format("Name: %s", user.getName()));
+                }
+            }
+        });
+        request.executeAsync();
+*/
+
+
 		TopoosInterface.initializeTopoosSession(this);	//initiate topoos session
 		
 		
@@ -371,7 +392,6 @@ public class MainActivity extends Activity implements OnReg{
 									TopoosInterface.setProfilePicture(getApplicationContext());
 									progressDialog.dismiss();
 								}
-				        		
 				        	});
 				        	b.start();
 							Thread t = new Thread(new FetchUser());
@@ -383,6 +403,10 @@ public class MainActivity extends Activity implements OnReg{
 			    			Editor editor = prefs.edit();
 			    			editor.putBoolean("saveuser", true);
 			    			editor.commit();
+
+
+
+
 						}
 						
 						break;
