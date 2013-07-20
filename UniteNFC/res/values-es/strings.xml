@@ -56,4 +56,8 @@
     <string name="share_friend">Acabo de añadir como amigo a </string>
     <string name="share_unite">Únete y comparte tu experiencia NFC con UniteNFC.</string>
     <string name="share_explore">Explorando Puntos NFC con UniteNFC.</string>
+
+
+    <string name="fb_app_id">480588798692205</string>
+
 </resources>

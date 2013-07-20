@@ -4,7 +4,10 @@ package es.quantum.unitenfc;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +31,15 @@ import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 
+import com.facebook.LoggingBehavior;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
 
+
+import com.facebook.widget.UserSettingsFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
@@ -104,35 +115,53 @@ public class MainActivity extends Activity implements OnReg{
 		
 		*/
 
-        /*
-        com.facebook.Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
-        com.facebook.Settings.addLoggingBehavior(LoggingBehavior.REQUESTS);
-        Request request = Request.newGraphPathRequest(null, "/4", new Request.Callback() {
-            @Override
-            public void onCompleted(Response response) {
-                if(response.getError() != null) {
-                    Log.i("MainActivity", String.format("Error making request: %s", response.getError()));
-                } else {
-                    GraphUser user = response.getGraphObjectAs(GraphUser.class);
-                    Log.i("MainActivity", String.format("Name: %s", user.getName()));
-                }
-            }
-        });
-        request.executeAsync();
-*/
+
+
 
 
 		TopoosInterface.initializeTopoosSession(this);	//initiate topoos session
-		
-		
+
+
+
 	
 		/*	REGISTER CATEEGORIES FOR THE FIRST TIME
 		RegisterCategoryWorker worker = new RegisterCategoryWorker();
 		Thread thread = new Thread(worker);
-		thread.start();*/		
-		
+		thread.start();*/
 
-		
+
+        /*
+        FacebookDialog fb = new FacebookDialog();
+
+        DialogFragment df = new DialogFragment();
+
+        Intent intent = new Intent(MainActivity.this, FacebookDialog.class);
+        startActivityForResult(intent, 5);
+*/
+        // start Facebook Login
+        Session.openActiveSession(this, true, new Session.StatusCallback() {
+
+            // callback when session changes state
+            @Override
+            public void call(Session session, SessionState state, Exception exception) {
+                if (session.isOpened()) {
+                    // make request to the /me API
+                    Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+
+                        // callback after Graph API response with user object
+                        @Override
+                        public void onCompleted(GraphUser user, Response response) {
+                            if (user != null) {
+                               showToast("Hello " + user.getName() + "!");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+
+
 		map =  new CustomMapFragment();	//create map
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 	    float lat = prefs.getFloat("lastlat", 0);
