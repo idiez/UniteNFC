@@ -24,6 +24,11 @@
             android:key="comp_edittext_pref"
             android:summary="Set a profile picture"
             android:title="Profile picture"/>
+
+        <Preference android:key="fb_connect"
+                    android:title="Facebook"
+                    android:summary="Connect or disconnect with Facebook"
+                />
      
      
       </PreferenceCategory>

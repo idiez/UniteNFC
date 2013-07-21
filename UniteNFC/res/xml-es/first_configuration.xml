@@ -24,8 +24,12 @@
             android:key="comp_edittext_pref"
             android:summary="Selecciona foto de perfil"
             android:title="Foto de perfil"/>
-     
-     
+
+<Preference android:key="fb_connect"
+            android:title="Facebook"
+            android:summary="Conectar o desconectar con Facebook"
+            />
+
       </PreferenceCategory>
         <PreferenceCategory 
         android:title="Configuración de mapa"

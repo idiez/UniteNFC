@@ -13,6 +13,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -24,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +40,7 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
 
@@ -43,6 +48,7 @@ import com.facebook.widget.UserSettingsFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.List;
 
 import es.quantum.unitenfc.RegisterPOIFragment.OnReg;
@@ -94,34 +100,51 @@ public class MainActivity extends Activity implements OnReg{
            }
         }
 	};
-	
-	
-	@Override
+
+    private FacebookDialog fb_dialog;
+    private UiLifecycleHelper uiHelper;
+    private Session.StatusCallback callback = new Session.StatusCallback() {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+            onSessionStateChange(session, state, exception);
+        }
+    };
+
+    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+        if(fb_dialog.isAdded())fb_dialog.dismiss();
+        if (state.isOpened()) {
+            Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+                // callback after Graph API response with user object
+                @Override
+                public void onCompleted(GraphUser user, Response response) {
+
+                    if (user != null) {
+
+                        showToast("Hello " + user.getName() + "!");
+                    }
+                }
+            });
+            Log.i("TAG", "Logged in...");
+        } else if (state.isClosed()) {
+            Log.i("TAG", "Logged out...");
+        }
+    }
+
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 
 		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		/*
-	     int code = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
-	     if(code == ConnectionResult.SUCCESS){	      
-	    	  // Start timer and launch main activity
-
-	      }
-	      else{
-	    	  GooglePlayServicesUtil.getErrorDialog(code, this, 1);
-	      }
-		
-		*/
-
-
-
 
 
 		TopoosInterface.initializeTopoosSession(this);	//initiate topoos session
 
-
+        fb_dialog = new FacebookDialog();
+        uiHelper = new UiLifecycleHelper(this, callback);
+        uiHelper.onCreate(savedInstanceState);
 
 	
 		/*	REGISTER CATEEGORIES FOR THE FIRST TIME
@@ -130,37 +153,10 @@ public class MainActivity extends Activity implements OnReg{
 		thread.start();*/
 
 
-        /*
-        FacebookDialog fb = new FacebookDialog();
-
-        DialogFragment df = new DialogFragment();
-
-        Intent intent = new Intent(MainActivity.this, FacebookDialog.class);
-        startActivityForResult(intent, 5);
-*/
-        // start Facebook Login
-        Session.openActiveSession(this, true, new Session.StatusCallback() {
-
-            // callback when session changes state
-            @Override
-            public void call(Session session, SessionState state, Exception exception) {
-                if (session.isOpened()) {
-                    // make request to the /me API
-                    Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
-
-                        // callback after Graph API response with user object
-                        @Override
-                        public void onCompleted(GraphUser user, Response response) {
-                            if (user != null) {
-                               showToast("Hello " + user.getName() + "!");
-                            }
-                        }
-                    });
-                }
-            }
-        });
 
 
+        Session session = Session.getActiveSession();
+        if(!(session.getState() == SessionState.CREATED_TOKEN_LOADED || session.isOpened())) fb_dialog.show(getFragmentManager(), "fb log");
 
 		map =  new CustomMapFragment();	//create map
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -265,8 +261,27 @@ public class MainActivity extends Activity implements OnReg{
 		}
 	}
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        uiHelper.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        uiHelper.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        uiHelper.onSaveInstanceState(outState);
+    }
+
 	protected void onDestroy() {
 		super.onDestroy();
+        uiHelper.onDestroy();
     	if (mLocationManager != null && mCustomLocationListener != null) {
     		mLocationManager.removeUpdates(mCustomLocationListener);
     		mLocationManager = null;
@@ -397,7 +412,7 @@ public class MainActivity extends Activity implements OnReg{
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        uiHelper.onActivityResult(requestCode, resultCode, data);
 		switch(requestCode) {
 			case 1:
 				switch (resultCode) {

@@ -51,6 +51,15 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
 	    	  mCompoundEditTextPref.getDialog().cancel();
 	      }
 	    });
+
+        Preference p = findPreference("fb_connect");
+        p.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new FacebookDialog().show(getFragmentManager(), "fb log");
+                return false;
+            }
+        });
     }
  
     @Override
