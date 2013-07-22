@@ -265,18 +265,37 @@ public class TopoosInterface {
 		File dir = new File(path,"/unitenfc");
 		dir.mkdir();
 		File file = new File(dir,"profile.png");
-       FileOutputStream out;
-	try {
-		out = new FileOutputStream(file);
-	       bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	}
-	catch (NullPointerException e) {
-		e.printStackTrace();
+        FileOutputStream out;
+        try {
+            out = new FileOutputStream(file);
+               bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (NullPointerException e) {
+            e.printStackTrace();
+        }
 	}
 
-	}
-	
-	
+    public static boolean isFriendDuplicated(String id, Context ctx){
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        String friendlist = pref.getString("friends", "");
+        List<String> list = TopoosInterface.itemize(friendlist);
+        for(String element:list){
+            String[] s = element.split(";");
+            if(s[0].compareTo(id) == 0){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public static void saveFriend(String friend_data, Context ctx) {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+        String friendlist = pref.getString("friends", "");
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("friends", friend_data+"ñ"+friendlist);
+        editor.commit();
+    }
 }

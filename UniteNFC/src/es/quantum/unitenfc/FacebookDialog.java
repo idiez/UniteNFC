@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.facebook.widget.LoginButton;
+
+import java.util.Arrays;
+
 /**
  * Created by root on 7/20/13.
  */
@@ -27,8 +31,6 @@ public class FacebookDialog extends DialogFragment {
 
             }
         });
-
-
         return builder.create();
     }
 

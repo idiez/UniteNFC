@@ -49,6 +49,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.quantum.unitenfc.Objects.Friend;
 import es.quantum.unitenfc.Objects.NFCPoint;
 import es.quantum.unitenfc.Objects.UserInfo;
 import es.quantum.unitenfc.backup.CustomBackup;
@@ -146,15 +147,27 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 							}
 			    	        
 			    	        String responseString = out.toString();
-			    	        
+
+                            Gson gson = new Gson();
+                            UserInfo session = gson.fromJson(responseString.substring(0, responseString.length()-2), UserInfo.class);
+                            List<Friend> friends = session.getFriends();
+                            Friend me = new Friend();
+                            me.setFriend_id(prefs.getString("session", ""));
+                            me.setFriend_name(prefs.getString("username", ""));
+                            me.setFriend_pic_uri(prefs.getString("imageuri", ""));
+                            friends.add(me);
+                            session.setFriends(friends);
+
+                            String json = gson.toJson(session);
+/*
 			    	        String[] param = responseString.split("\n");
 			    	        String myuser = prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "")+"�";
 			    	        String content = param[0]+"\n"+param[1]+"\n"+param[2]+"\n"+param[3]+"\n"+myuser.concat(param[4])+"\nend";
-			    	        
+			    	     */
 			                GMailSender sender = new GMailSender("unitenfc@gmail.com", "unitenfctopoos");
 			                try {
 								sender.sendMail(filename,   
-								        content,   
+								        json,
 								        "unitenfc",   
 								        "izan_005d@sendtodropbox.com");
 							} catch (Exception e) {
@@ -176,8 +189,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 								e.printStackTrace();
 							}
 			    	    }
-			    	        
-			    	   
 			                String i1 = topoos.Images.Operations.GetImageURIThumb(TopoosInterface.extract(element[0], 2),topoos.Images.Operations.SIZE_SMALL);
 							Bitmap bmp1 = TopoosInterface.LoadImageFromWebOperations(i1);
 							String path1 = Environment.getExternalStorageDirectory().toString()+"/unitenfc/";
@@ -327,7 +338,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 					if(iid.compareTo(TopoosInterface.extract(element, 0))==0){
 						element = iid+";"+result.getUser_name()+";"+result.getPic_uri();
 					}
-					friendso = friendso+element+"�";
+					friendso = friendso+element+"ñ";
 				}
 				Editor editor = prefs.edit();
 				editor.putString("friends", friendso);
@@ -368,7 +379,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 	private NdefMessage createMessage(){
 		//NdefRecord appRecord = NdefRecord.createApplicationRecord("es.quantum.unitenfc");
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		byte[] payload = (prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "dummy_4")+"�"+blue_mac).getBytes();
+		byte[] payload = (prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "dummy_4")+" "+blue_mac).getBytes();
 		byte[] mimeBytes = MIME_TYPE.getBytes(Charset.forName("US-ASCII"));
 		NdefRecord cardRecord = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, mimeBytes, new byte[0], payload);
 		//MANDAR URI Y NOMBRE APARTE DE ID
@@ -427,30 +438,21 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		Log.i("BTSRV", "SECOND");
 	}
 
+    //MOVE TO TOPOOS INTERFACE
 	public boolean addFriend(String friend_data){
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context)this);
-		String friendlist = pref.getString("friends", "");
-		List<String> list = TopoosInterface.itemize(friendlist);
-		String[] data = friend_data.split(";");
-		String friend = data[1];		
-		boolean duplicated = false;
-		for(String element:list){
-			String[] s = element.split(";"); 
-			if(s[1].compareTo(friend) == 0){
-				Toast.makeText((Context)this, getString(R.string.add_already), Toast.LENGTH_LONG).show();
-				showFriend(s[1]);
-				duplicated = true;
-				break;
-			}
-    	}
+        String[] data = friend_data.split(";");
+        String friend = data[1];
+        boolean duplicated = TopoosInterface.isFriendDuplicated(friend, (Context)this);
 		if(!duplicated){
-			Editor editor = pref.edit();
-			editor.putString("friends", (friend_data+"�").concat(friendlist));
-			editor.commit();
+            TopoosInterface.saveFriend(friend_data, (Context)this);
 		}
+        else {
+            Toast.makeText((Context)this, getString(R.string.add_already), Toast.LENGTH_LONG).show();
+            showFriend(friend);
+        }
 		return !duplicated;
-		
 	}
+
 	
 	public void showFriend(String names){
 		

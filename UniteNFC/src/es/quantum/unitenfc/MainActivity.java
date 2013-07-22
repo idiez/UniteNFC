@@ -113,15 +113,22 @@ public class MainActivity extends Activity implements OnReg{
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if(fb_dialog.isAdded())fb_dialog.dismiss();
         if (state.isOpened()) {
+            final Session s = session;
             Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
                 // callback after Graph API response with user object
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
-
-                    if (user != null) {
-
-                        showToast("Hello " + user.getName() + "!");
-                    }
+                if (user != null) {
+                    final GraphUser usr = user;
+                    showToast("Hello " + user.getName() + "!");
+                    Request.executeMyFriendsRequestAsync(s, new Request.GraphUserListCallback() {
+                        @Override
+                        public void onCompleted(List<GraphUser> users, Response response) {
+                            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                            FacebookLogic.linkUser(usr.getId(), prefs.getString("session",""), users, MainActivity.this);
+                        }
+                    });
+                }
                 }
             });
             Log.i("TAG", "Logged in...");
