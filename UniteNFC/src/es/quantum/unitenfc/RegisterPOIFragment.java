@@ -15,9 +15,11 @@ import android.widget.Toast;
 
 import java.util.Date;
 
+import es.quantum.unitenfc.Objects.NFCPoint;
+
 public class RegisterPOIFragment extends DialogFragment {
 	
-	private String id;
+	private String idd;
 	private int poiType;
 	private topoos.Objects.Location loc;
 	private String name;
@@ -76,8 +78,11 @@ public class RegisterPOIFragment extends DialogFragment {
                 	        RegisterPOIWorker wrk = new RegisterPOIWorker();
                 		    Thread thread = new Thread(wrk);
            					thread.start();
-           					
-           				    mListener.onReg();
+                            NFCPoint nfcp = new NFCPoint();
+                            nfcp.setName(name);
+                            nfcp.setPosId(Integer.toString(poiType));
+                            String mes = FacebookLogic.createFacebookFeed(FacebookLogic.REGISTER, idd, nfcp, "");
+           				    mListener.onReg(mes);
                 	   }
                 	   else
                            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.new_nfc_fill), Toast.LENGTH_SHORT).show();;
@@ -104,7 +109,7 @@ public class RegisterPOIFragment extends DialogFragment {
     
     
     public void setArguments(String id, topoos.Objects.Location loc){
-    	this.id=id;
+    	this.idd=id;
     	this.loc= loc;
     	poiType = POICategories.USER;
     }
@@ -113,7 +118,8 @@ public class RegisterPOIFragment extends DialogFragment {
 
 		public void run(){
 			try {
-				TopoosInterface.RegisterNFCPOI(getActivity().getApplicationContext(), id+name, description, poiType, loc);
+				TopoosInterface.RegisterNFCPOI(getActivity().getApplicationContext(), idd+name, description, poiType, loc);
+               
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -121,7 +127,7 @@ public class RegisterPOIFragment extends DialogFragment {
 	}
     
     public interface OnReg {
-        public void onReg();
+        public void onReg(String mes);
     }
 	
 }

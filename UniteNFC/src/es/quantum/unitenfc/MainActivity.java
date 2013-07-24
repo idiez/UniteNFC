@@ -120,6 +120,7 @@ public class MainActivity extends Activity implements OnReg{
                 public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
                     final GraphUser usr = user;
+                    // FacebookLogic.publishStory(MainActivity.this);
                     showToast("Hello " + user.getName() + "!");
                     Request.executeMyFriendsRequestAsync(s, new Request.GraphUserListCallback() {
                         @Override
@@ -682,7 +683,8 @@ public class MainActivity extends Activity implements OnReg{
 
 
 	@Override
-	public void onReg() {
+	public void onReg(String mes) {
+        FacebookLogic.publishStory(MainActivity.this, mes);
 		scan.refreshLists();
 	}
 
