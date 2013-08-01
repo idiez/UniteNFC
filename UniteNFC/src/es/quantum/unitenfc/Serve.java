@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import es.quantum.unitenfc.Objects.NFCPoint;
 import es.quantum.unitenfc.nfc_reader.NdefMessageParser;
 import es.quantum.unitenfc.nfc_reader.record.ParsedNdefRecord;
 import topoos.Exception.TopoosException;
@@ -39,12 +40,13 @@ public class Serve extends Activity {
     String message;
     private LinearLayout mTagContent;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
+    OnReg a;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.splash);
-
+        a = (OnReg) getParent();
         setContentView(R.layout.tag_viewer);
         mTagContent = (LinearLayout) findViewById(R.id.linear);
         resolveIntent(getIntent());
@@ -163,6 +165,10 @@ public class Serve extends Activity {
                 for (int i = 0; i < rawMsgs.length; i++) {
                     msgs[i] = (NdefMessage) rawMsgs[i];
                 }
+                Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                CheckNFCPoint checkNFCPoint = new CheckNFCPoint();
+                checkNFCPoint.execute(TopoosInterface.bytesToHexString(tagFromIntent.getId()));
+
                 message = parseNFCRecords(msgs[0].getRecords()[0]);
             } else {
                 // Unknown tag type
@@ -353,6 +359,14 @@ public class Serve extends Activity {
                         String title = name+";"+poi.getCategories().get(0).getId()+";"+d.toLocaleString().substring(0, 16)+"ñ";
                         editor.putString("checkpoints", title.concat(s));
                         editor.commit();
+
+                        NFCPoint nfcp = new NFCPoint();
+                        nfcp.setName(name);
+                        nfcp.setPosId(Integer.toString(poi.getCategories().get(0).getId()));
+                        String mes = FacebookLogic.createFacebookFeed(FacebookLogic.REGISTER, tagid, nfcp, "");
+                        //a.onReg(mes);
+
+
                         break;
                     }
                 }
@@ -366,5 +380,7 @@ public class Serve extends Activity {
             return true;
         }
     }
+
+
 
 }

@@ -71,7 +71,7 @@ public class FacebookLogic {
                     HttpClient httpclient = new DefaultHttpClient();
                     HttpResponse response = null;
                     try {
-                        response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+"fb"+CustomBackup.FILE_TYPE));
+                        response = httpclient.execute(new HttpGet("https://dl.dropboxusercontent.com/u/20933121/"+"fb"+".txt"));
                     } catch (ClientProtocolException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -118,7 +118,7 @@ public class FacebookLogic {
                     HttpClient httpclient = new DefaultHttpClient();
                     HttpResponse response = null;
                     try {
-                        response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+id+CustomBackup.FILE_TYPE));
+                        response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+id));
                     } catch (ClientProtocolException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -135,7 +135,7 @@ public class FacebookLogic {
                         }
                         String responseString = out.toString();
                         Gson gson = new Gson();
-                        UserInfo session = gson.fromJson(responseString.substring(0, responseString.length()-2), UserInfo.class);
+                        UserInfo session = gson.fromJson(responseString, UserInfo.class);
                         String user_data = id+";"+session.getUser_name()+";"+session.getPic_uri();
                         TopoosInterface.saveFriend(user_data,context);
                         count++;

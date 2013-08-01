@@ -60,9 +60,7 @@ import topoos.Objects.User;
 public class UserCard extends Activity implements CreateNdefMessageCallback, OnNdefPushCompleteCallback {
 	
 	public final String MIME_TYPE = "application/es.quantum.unitenfc";
-	public static final String BACKUP_URI = "https://dl.dropboxusercontent.com/u/20933121/"; 
-	public static final String FILE_TYPE = ".txt"; 
-	
+
 	ProgressDialog progressDialog;
 	ShareActionProvider mShareActionProvider;
 	ImageView pic;
@@ -130,7 +128,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 						HttpClient httpclient = new DefaultHttpClient();
 			    	    HttpResponse response = null;
 						try {
-							response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+filename+CustomBackup.FILE_TYPE));
+							response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+filename));
 						} catch (ClientProtocolException e) {
 							e.printStackTrace();
 						} catch (IOException e) {
@@ -149,7 +147,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			    	        String responseString = out.toString();
 
                             Gson gson = new Gson();
-                            UserInfo session = gson.fromJson(responseString.substring(0, responseString.length()-2), UserInfo.class);
+                            UserInfo session = gson.fromJson(responseString, UserInfo.class);
                             List<Friend> friends = session.getFriends();
                             Friend me = new Friend();
                             me.setFriend_id(prefs.getString("session", ""));
@@ -273,7 +271,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 				e1.printStackTrace();
 			}
 			try {
-				response = httpclient.execute(new HttpGet(BACKUP_URI+iid+FILE_TYPE));
+				response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+iid));
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -290,7 +288,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 				}
 	    	    String responseString = out.toString();
 	    	    Gson gson = new Gson();
-	    	    UserInfo session = gson.fromJson(responseString.substring(0, responseString.length()-2), UserInfo.class);
+	    	    UserInfo session = gson.fromJson(responseString, UserInfo.class);
 		    	return session;
     	    } else{
 	    	    //Closes the connection.

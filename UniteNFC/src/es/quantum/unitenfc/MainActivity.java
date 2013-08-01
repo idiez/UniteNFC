@@ -51,7 +51,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.List;
 
-import es.quantum.unitenfc.RegisterPOIFragment.OnReg;
+import es.quantum.unitenfc.OnReg;
 import es.quantum.unitenfc.backup.CustomBackup;
 import topoos.AccessTokenOAuth;
 import topoos.Exception.TopoosException;
@@ -224,7 +224,9 @@ public class MainActivity extends Activity implements OnReg{
         
 		return true;
 	}
-	
+
+
+
 	@Override
 	public void onAttachFragment(Fragment fragment){
 
@@ -286,6 +288,23 @@ public class MainActivity extends Activity implements OnReg{
         super.onSaveInstanceState(outState);
         uiHelper.onSaveInstanceState(outState);
     }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        Thread b = new Thread(new Runnable(){
+
+            @Override
+            public void run() {
+                CustomBackup c = new CustomBackup();
+                c.requestbackup(getApplicationContext());
+            }
+
+        });
+        b.start();
+    }
+
+
 
 	protected void onDestroy() {
 		super.onDestroy();
@@ -685,7 +704,7 @@ public class MainActivity extends Activity implements OnReg{
 	@Override
 	public void onReg(String mes) {
         FacebookLogic.publishStory(MainActivity.this, mes);
-		scan.refreshLists();
+	//	scan.refreshLists();
 	}
 
 

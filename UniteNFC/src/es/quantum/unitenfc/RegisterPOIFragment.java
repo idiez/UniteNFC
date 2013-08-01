@@ -126,8 +126,6 @@ public class RegisterPOIFragment extends DialogFragment {
 		}
 	}
     
-    public interface OnReg {
-        public void onReg(String mes);
-    }
+
 	
 }

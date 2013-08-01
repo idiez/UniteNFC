@@ -36,8 +36,7 @@ import topoos.Objects.User;
 
 public class CustomBackup {
 	
-	public static final String BACKUP_URI = "https://dl.dropboxusercontent.com/u/20933121/"; 
-	public static final String FILE_TYPE = ".txt"; 
+	public static final String BACKUP_URI = "http://unitenfc.herokuapp.com/objects/users/";
 	
 	public boolean requestbackup(Context ctx){
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -152,7 +151,8 @@ public class CustomBackup {
 			HttpClient httpclient = new DefaultHttpClient();
     	    HttpResponse response = null;
 			try {
-				response = httpclient.execute(new HttpGet(BACKUP_URI+filename+FILE_TYPE));
+                response = httpclient.execute(new HttpGet(BACKUP_URI+filename));
+				//response = httpclient.execute(new HttpGet(BACKUP_URI+filename+FILE_TYPE));
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -172,8 +172,11 @@ public class CustomBackup {
 				}
     	        
     	        String responseString = out.toString();
+
     	        Gson gson = new Gson();
-    	        UserInfo session = gson.fromJson(responseString.substring(0, responseString.length()-2), UserInfo.class);
+    	        UserInfo session = gson.fromJson(responseString, UserInfo.class);
+
+//    	        UserInfo session = gson.fromJson(responseString.substring(0, responseString.length()-2), UserInfo.class);
     	        
     	        //String[] param = responseString.split("\n");
     	        
