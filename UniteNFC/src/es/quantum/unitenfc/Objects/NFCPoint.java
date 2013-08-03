@@ -5,6 +5,7 @@ public class NFCPoint {
 	private String name;
 	private String posId;	//NFCPoint type
 	private String date;
+    private String wall;
 	
 	
 	public String getName() {
@@ -29,5 +30,12 @@ public class NFCPoint {
 	public String toString(){
 		return name+";"+posId+";"+date;
 	}
-	
+
+    public String getWall() {
+        return wall;
+    }
+
+    public void setWall(String wall) {
+        this.wall = wall;
+    }
 }

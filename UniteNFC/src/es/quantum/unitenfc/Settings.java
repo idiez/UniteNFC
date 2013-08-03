@@ -1,8 +1,12 @@
 package es.quantum.unitenfc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import topoos.Exception.TopoosException;
 import topoos.Objects.User;
@@ -25,10 +29,30 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Settings extends PreferenceActivity implements OnPreferenceChangeListener{
 	
 	private CustomPrefDialog mCompoundEditTextPref;
-	
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
+
     @SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +84,64 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
                 return false;
             }
         });
+
+        listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                if(key.compareTo("username")==0){
+                    Thread t = new Thread(new Runnable(){
+                        @Override
+                        public void run() {
+                            try {
+                                SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                String new_user_name = prefss.getString("username","");
+                                HttpParams myParams = new BasicHttpParams();
+                                HttpConnectionParams.setConnectionTimeout(myParams, 10000);
+                                HttpConnectionParams.setSoTimeout(myParams, 10000);
+                                HttpClient httpclient = new DefaultHttpClient(myParams);
+                                HttpResponse response = null;
+                                String post_url = "http://unitenfc.herokuapp.com/objects/users/name/"+prefss.getString("session","")+"/";
+                                HttpPost socket = new HttpPost(post_url);
+                                //socket.setHeader( "Content-Type", "application/xml" );
+                                JSONObject json = new JSONObject();
+                                try {
+                                    json.put("username", new_user_name);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                String deb = json.toString();
+                                socket.setEntity(new StringEntity(json.toString()));
+
+                                Log.i("REQUEST",socket.getRequestLine().toString());
+                                try {
+                                    response = httpclient.execute(socket);
+                                } catch (ClientProtocolException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                StatusLine statusLine = response.getStatusLine();
+                                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                    try {
+                                        response.getEntity().writeTo(out);
+                                        out.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    String responseString = out.toString();
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    t.start();
+                }
+            }
+        };
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.registerOnSharedPreferenceChangeListener(listener);
+
     }
  
     @Override
@@ -73,8 +155,7 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
     }
     
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, 
-    	       Intent imageReturnedIntent) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
     	    super.onActivityResult(requestCode, resultCode, imageReturnedIntent); 
 
     	    switch(requestCode) { 
@@ -111,7 +192,39 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
     			    			editor.putString("imageuri", unique);
     			    			editor.commit();
     			    			TopoosInterface.setProfilePicture(getApplicationContext());
-    						} catch (IOException e) {
+
+                                HttpClient httpclient = new DefaultHttpClient();
+                                HttpResponse response = null;
+                                String post_url = "https://unitenfc.herokuapp.com/objects/users/picuri/"+prefs.getString("session","")+"/";
+                                HttpPost socket = new HttpPost(post_url);
+                                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
+                                nameValuePairs.add(new BasicNameValuePair("pic_uri", unique));
+                                socket.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                                try {
+                                    response = httpclient.execute(socket);
+                                } catch (ClientProtocolException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                                StatusLine statusLine = response.getStatusLine();
+                                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                    try {
+                                        response.getEntity().writeTo(out);
+                                        out.close();
+                                    } catch (IOException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    }
+
+                                    String responseString = out.toString();
+                                }
+
+
+                                } catch (IOException e) {
     							e.printStackTrace();
     						} catch (TopoosException e) {
     							e.printStackTrace();
