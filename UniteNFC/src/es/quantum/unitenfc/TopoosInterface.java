@@ -11,6 +11,18 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.WebView;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -297,5 +309,54 @@ public class TopoosInterface {
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("friends", friend_data+"ñ"+friendlist);
         editor.commit();
+        String[] s = friend_data.split(";");
+        final String to_contact = s[0];
+        final String from_contact = pref.getString("session","");
+        Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpResponse response = null;
+                    String post_url = "http://unitenfc.herokuapp.com/objects/users/friend/";
+                    HttpPost socket = new HttpPost(post_url);
+                    socket.setHeader( "Content-Type", "application/xml" );
+                    socket.setHeader( "Accept", "*/*" );
+                    JSONObject json = new JSONObject();
+                    try {
+                        json.put("from_contact", from_contact);
+                        json.put("to_contact", to_contact);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                    socket.setEntity(entity);
+                    try {
+                        response = httpclient.execute(socket);
+                    } catch (ClientProtocolException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    StatusLine statusLine = response.getStatusLine();
+                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        try {
+                            response.getEntity().writeTo(out);
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        String responseString = out.toString();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        t.start();
+
+
+
     }
 }

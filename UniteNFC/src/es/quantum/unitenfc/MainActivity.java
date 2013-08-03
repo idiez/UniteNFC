@@ -292,16 +292,6 @@ public class MainActivity extends Activity implements OnReg{
     @Override
     public void onStop(){
         super.onStop();
-        Thread b = new Thread(new Runnable(){
-
-            @Override
-            public void run() {
-                CustomBackup c = new CustomBackup();
-                c.requestbackup(getApplicationContext());
-            }
-
-        });
-        b.start();
     }
 
 
@@ -313,16 +303,6 @@ public class MainActivity extends Activity implements OnReg{
     		mLocationManager.removeUpdates(mCustomLocationListener);
     		mLocationManager = null;
     	}
-		Thread b = new Thread(new Runnable(){
-
-			@Override
-			public void run() {
-				CustomBackup c = new CustomBackup();
-				c.requestbackup(getApplicationContext());
-			}
-    		
-    	});
-    	b.start();
 		
 	}
 	
@@ -496,7 +476,6 @@ public class MainActivity extends Activity implements OnReg{
 							@Override
 							public void run() {
 								CustomBackup c = new CustomBackup();
-								c.requestbackup(ctx);
 								c.requestrestore(ctx);
 								TopoosInterface.setProfilePicture(getApplicationContext());
 							}

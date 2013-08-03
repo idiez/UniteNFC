@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +21,19 @@ import android.widget.LinearLayout;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -354,20 +368,74 @@ public class Serve extends Activity {
                         String s = prefs.getString("checkpoints", "");
                         SharedPreferences.Editor editor = prefs.edit();
                         String name = poi.getName().substring(16);
+                        String wall = poi.getName().substring(0,15);
                         Date d = new Date();
+                        String date = d.toLocaleString().substring(0, 16);
                         @SuppressWarnings("deprecation")
-                        String title = name+";"+poi.getCategories().get(0).getId()+";"+d.toLocaleString().substring(0, 16)+"ñ";
+                        String title = name+";"+poi.getCategories().get(0).getId()+";"+date+"ñ";
                         editor.putString("checkpoints", title.concat(s));
                         editor.commit();
 
                         NFCPoint nfcp = new NFCPoint();
                         nfcp.setName(name);
                         nfcp.setPosId(Integer.toString(poi.getCategories().get(0).getId()));
+                        nfcp.setDate(date);
+                        nfcp.setWall(wall);
+                        final NFCPoint np = nfcp;
                         String mes = FacebookLogic.createFacebookFeed(FacebookLogic.REGISTER, tagid, nfcp, "");
                         //a.onReg(mes);
+                        Thread t = new Thread(new Runnable(){
+                            @Override
+                            public void run() {
+                            try {
+                                SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                String new_user_name = prefss.getString("username","");
+                                HttpClient httpclient = new DefaultHttpClient();
+                                HttpResponse response = null;
+                                String post_url = "http://unitenfc.herokuapp.com/objects/nfcp/"+prefss.getString("session","")+"/False/";
+                                HttpPost socket = new HttpPost(post_url);
+                                socket.setHeader( "Content-Type", "application/xml" );
+                                socket.setHeader( "Accept", "*/*" );
+                                JSONObject json = new JSONObject();
+                                try {
+                                    json.put("name", np.getName());
+                                    json.put("posId", np.getPosId());
+                                    json.put("date", np.getDate());
+                                    json.put("wall", np.getWall());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                String deb = json.toString();
+                                StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
 
+                                socket.setEntity(entity);
 
-                        break;
+                                Log.i("REQUEST", socket.getRequestLine().toString());
+                                try {
+                                    response = httpclient.execute(socket);
+                                } catch (ClientProtocolException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                StatusLine statusLine = response.getStatusLine();
+                                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                    try {
+                                        response.getEntity().writeTo(out);
+                                        out.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    String responseString = out.toString();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    t.start();
+                    break;
                     }
                 }
             } catch (IOException e) {

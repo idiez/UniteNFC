@@ -2,9 +2,11 @@ package es.quantum.unitenfc;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -28,7 +30,10 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,40 +73,44 @@ public class FacebookLogic {
             Thread t = new Thread(new Runnable(){
                 @Override
                 public void run() {
-                    HttpClient httpclient = new DefaultHttpClient();
-                    HttpResponse response = null;
                     try {
-                        response = httpclient.execute(new HttpGet("https://dl.dropboxusercontent.com/u/20933121/"+"fb"+".txt"));
-                    } catch (ClientProtocolException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    StatusLine statusLine = response.getStatusLine();
-                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        String post_url = "http://unitenfc.herokuapp.com/objects/users/fblink/";
+                        HttpPost socket = new HttpPost(post_url);
+                        HttpClient httpclient = new DefaultHttpClient();
+                        HttpResponse response = null;
+                        socket.setHeader( "Content-Type", "application/xml" );
+                        socket.setHeader( "Accept", "*/*" );
+                        JSONObject json = new JSONObject();
                         try {
-                            response.getEntity().writeTo(out);
-                            out.close();
+                            json.put("fb_id", fb_idd);
+                            json.put("user_id", usr_idd);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                        socket.setEntity(entity);
+                        try {
+                            response = httpclient.execute(socket);
+                        } catch (ClientProtocolException e) {
+                            e.printStackTrace();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        String responseString = out.toString();
-                        BiMap<String,String> links = toBiMap(responseString.substring(0,responseString.length()-3));
-                        if(links.containsKey(fb_idd)){
-                            links.remove(fb_idd);
+                        StatusLine statusLine = response.getStatusLine();
+                        if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            try {
+                                response.getEntity().writeTo(out);
+                                out.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            String responseString = out.toString();
+                            BiMap<String,String> links = toBiMap(responseString);
+                            searchFriends(links, fb_friends, ctx);
                         }
-                        links.put(fb_idd,usr_idd);
-                        GMailSender sender = new GMailSender("unitenfc@gmail.com", "unitenfctopoos");
-                        try {
-                            sender.sendMail("fb",
-                                    links.toString(),
-                                    "unitenfc",
-                                    "izan_005d@sendtodropbox.com");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        searchFriends(links, fb_friends, ctx);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             });

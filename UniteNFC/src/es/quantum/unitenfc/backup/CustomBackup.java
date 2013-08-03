@@ -16,7 +16,12 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,88 +42,89 @@ import topoos.Objects.User;
 public class CustomBackup {
 	
 	public static final String BACKUP_URI = "http://unitenfc.herokuapp.com/objects/users/";
-	
+
 	public boolean requestbackup(Context ctx){
+        final Context ctxx = ctx;
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-		AccessTokenOAuth token = topoos.AccessTokenOAuth.GetAccessToken(ctx);    	
+		AccessTokenOAuth token = topoos.AccessTokenOAuth.GetAccessToken(ctx);
     	if (token == null || !token.isValid()) return false;
 		User usr = null;
 		try {
 			usr = topoos.Users.Operations.Get(ctx, "me");
 			String filename = usr.getId();
 			Editor editor = prefs.edit();
-			editor.putString("session", usr.getId());				//saves last user session
+            final String session = usr.getId();
+			editor.putString("session", session);				//saves last user session
 			editor.commit();
-			//new user object
-			UserInfo session = new UserInfo();
 			//user name
-			String username = prefs.getString("username", "");
-			if(username.compareTo("")==0) username = usr.getName();
-			session.setUser_name(username);
+			final String username = usr.getName();
 			//user image
-			String imageuri = prefs.getString("imageuri", "dummy_4");
-			session.setPic_uri(imageuri);
-			//user checked NFCPoints
-			String checkpoints = prefs.getString("checkpoints", "");
-			List<String> nfcpc = TopoosInterface.itemize(checkpoints);
-			List<NFCPoint> nfcp = new ArrayList<NFCPoint>();
-			for(String element:nfcpc){
-				NFCPoint elem = new NFCPoint();
-				elem.setName(TopoosInterface.extract(element, 0));
-				elem.setPosId(TopoosInterface.extract(element, 1));
-				elem.setDate(TopoosInterface.extract(element, 2));
-				nfcp.add(elem);
-			}
-			session.setVisited(nfcp);
-			//user registered NFCPoints
-			String regpoints = prefs.getString("regpoints", "");
-			List<String> nfcpr = TopoosInterface.itemize(regpoints);
-			nfcp = new ArrayList<NFCPoint>();
-			for(String element:nfcpr){
-				NFCPoint elem = new NFCPoint();
-				elem.setName(TopoosInterface.extract(element, 0));
-				elem.setPosId(TopoosInterface.extract(element, 1));
-				elem.setDate(TopoosInterface.extract(element, 2));
-				nfcp.add(elem);
-			}
-			session.setRegistered(nfcp);
-			//user friends
-			String friends = prefs.getString("friends", "");
-			List<String> friendl = TopoosInterface.itemize(friends);
-			List<Friend> ufriend = new ArrayList<Friend>();
-			for(String element:friendl){
-				Friend elem = new Friend();
-				elem.setFriend_id(TopoosInterface.extract(element, 0));
-				elem.setFriend_name(TopoosInterface.extract(element, 1));
-				elem.setFriend_pic_uri(TopoosInterface.extract(element, 2));
-				ufriend.add(elem);
-			}
-			session.setFriends(ufriend);
-			//complete content
-			String content = username+"\n"+imageuri+"\n"+checkpoints+"\n"+regpoints+"\n"+friends+"\nend";
-			Gson gson = new Gson();
-			String json = gson.toJson(session);
-            GMailSender sender = new GMailSender("unitenfc@gmail.com", "unitenfctopoos");
-            sender.sendMail(filename,   
-                    json,   
-                    "unitenfc",   
-                    "izan_005d@sendtodropbox.com");   
-			
-		} catch (IOException e) {
+			final String imageuri = prefs.getString("imageuri", "dummy_4");
+            Thread t = new Thread(new Runnable(){
+                @Override
+                public void run() {
+                try {
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpResponse response = null;
+                    String post_url = "http://unitenfc.herokuapp.com/objects/users/new/";
+                    HttpPost socket = new HttpPost(post_url);
+                    socket.setHeader( "Content-Type", "application/xml" );
+                    socket.setHeader( "Accept", "*/*" );
+                    JSONObject json = new JSONObject();
+                    try {
+                        json.put("user_id", session);
+                        json.put("user_name", username);
+                        json.put("user_pic_uri", imageuri);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    String deb = json.toString();
+                    StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+
+                    socket.setEntity(entity);
+
+                    Log.i("REQUEST",socket.getRequestLine().toString());
+                    try {
+                        response = httpclient.execute(socket);
+                    } catch (ClientProtocolException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    StatusLine statusLine = response.getStatusLine();
+                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        try {
+                            response.getEntity().writeTo(out);
+                            out.close();
+                            requestrestore(ctxx);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        String responseString = out.toString();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                }
+            });
+            t.start();
+
+
+
+
+        } catch (IOException e) {
 			e.printStackTrace();
 			return false;
 		} catch (TopoosException e) {
 			e.printStackTrace();
 			return false;
-		} catch (Exception e) {
-            Log.i("SendMail", e.getMessage(), e); 
-    		return false;
 		}
-		
+
 		return true;
-		
+
 	}
-	
+
 	public boolean requestrestore(Context ctx){
 		
 		AccessTokenOAuth token = topoos.AccessTokenOAuth.GetAccessToken(ctx);    	
@@ -130,7 +136,13 @@ public class CustomBackup {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 			String filename = usr.getId();
 			Editor editor = prefs.edit();
-			editor.putString("session", usr.getId());
+			editor.putString("session", usr.getId())
+                    .putString("username","")
+                    .remove("imageuri")
+                    .putString("checkpoints","")
+                    .putString("regpoints","")
+                    .putString("friends","");
+
 			editor.commit();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -237,14 +249,19 @@ public class CustomBackup {
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-				} catch (NullPointerException e) {
+				    } catch (NullPointerException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				    }
 				}
-				}
-
-    	        
-    	        //..more logic
+            }else if(statusLine.getStatusCode() == HttpStatus.SC_NOT_FOUND){
+    	        Log.i("LLEGO","AQUI");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        requestbackup(ctxx);
+                    }
+                }).start();
     	    } else{
     	        //Closes the connection.
     	        try {

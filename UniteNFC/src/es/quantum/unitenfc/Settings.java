@@ -197,48 +197,48 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
                                 Thread t = new Thread(new Runnable(){
                                     @Override
                                     public void run() {
+                                    try {
+                                        SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                        String new_user_name = prefss.getString("username","");
+                                        HttpClient httpclient = new DefaultHttpClient();
+                                        HttpResponse response = null;
+                                        String post_url = "http://unitenfc.herokuapp.com/objects/users/picuri/"+prefss.getString("session","")+"/";
+                                        HttpPost socket = new HttpPost(post_url);
+                                        socket.setHeader( "Content-Type", "application/xml" );
+                                        socket.setHeader( "Accept", "*/*" );
+                                        JSONObject json = new JSONObject();
                                         try {
-                                            SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                            String new_user_name = prefss.getString("username","");
-                                            HttpClient httpclient = new DefaultHttpClient();
-                                            HttpResponse response = null;
-                                            String post_url = "http://unitenfc.herokuapp.com/objects/users/picuri/"+prefss.getString("session","")+"/";
-                                            HttpPost socket = new HttpPost(post_url);
-                                            socket.setHeader( "Content-Type", "application/xml" );
-                                            socket.setHeader( "Accept", "*/*" );
-                                            JSONObject json = new JSONObject();
-                                            try {
-                                                json.put("pic_uri", unique);
-                                            } catch (JSONException e) {
-                                                e.printStackTrace();
-                                            }
-                                            String deb = json.toString();
-                                            StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                                            json.put("pic_uri", unique);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        String deb = json.toString();
+                                        StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
 
-                                            socket.setEntity(entity);
+                                        socket.setEntity(entity);
 
-                                            Log.i("REQUEST",socket.getRequestLine().toString());
+                                        Log.i("REQUEST",socket.getRequestLine().toString());
+                                        try {
+                                            response = httpclient.execute(socket);
+                                        } catch (ClientProtocolException e) {
+                                            e.printStackTrace();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        StatusLine statusLine = response.getStatusLine();
+                                        if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                            ByteArrayOutputStream out = new ByteArrayOutputStream();
                                             try {
-                                                response = httpclient.execute(socket);
-                                            } catch (ClientProtocolException e) {
-                                                e.printStackTrace();
+                                                response.getEntity().writeTo(out);
+                                                out.close();
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
-                                            StatusLine statusLine = response.getStatusLine();
-                                            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                                                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                                                try {
-                                                    response.getEntity().writeTo(out);
-                                                    out.close();
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
-                                                }
-                                                String responseString = out.toString();
-                                            }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
+                                            String responseString = out.toString();
                                         }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                     }
                                 });
                                 t.start();
