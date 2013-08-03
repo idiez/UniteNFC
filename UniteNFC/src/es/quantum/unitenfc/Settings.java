@@ -45,6 +45,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -94,22 +95,22 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
                             try {
                                 SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                                 String new_user_name = prefss.getString("username","");
-                                HttpParams myParams = new BasicHttpParams();
-                                HttpConnectionParams.setConnectionTimeout(myParams, 10000);
-                                HttpConnectionParams.setSoTimeout(myParams, 10000);
-                                HttpClient httpclient = new DefaultHttpClient(myParams);
+                                HttpClient httpclient = new DefaultHttpClient();
                                 HttpResponse response = null;
                                 String post_url = "http://unitenfc.herokuapp.com/objects/users/name/"+prefss.getString("session","")+"/";
                                 HttpPost socket = new HttpPost(post_url);
-                                //socket.setHeader( "Content-Type", "application/xml" );
+                                socket.setHeader( "Content-Type", "application/xml" );
+                                socket.setHeader( "Accept", "*/*" );
                                 JSONObject json = new JSONObject();
                                 try {
-                                    json.put("username", new_user_name);
+                                    json.put("user_name", new_user_name);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 String deb = json.toString();
-                                socket.setEntity(new StringEntity(json.toString()));
+                                StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+
+                                socket.setEntity(entity);
 
                                 Log.i("REQUEST",socket.getRequestLine().toString());
                                 try {
@@ -130,7 +131,7 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
                                     }
                                     String responseString = out.toString();
                                 }
-                            } catch (UnsupportedEncodingException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -186,42 +187,61 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
     							} catch (TopoosException e1) {
     								e1.printStackTrace();
     							}
-    							String unique = TopoosInterface.UploadPIC(getApplicationContext(), (usr != null)?usr.getName():"test",filePath);
+    							final String unique = TopoosInterface.UploadPIC(getApplicationContext(), (usr != null)?usr.getName():"test",filePath);
     			    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     			    			Editor editor = prefs.edit();
     			    			editor.putString("imageuri", unique);
     			    			editor.commit();
     			    			TopoosInterface.setProfilePicture(getApplicationContext());
 
-                                HttpClient httpclient = new DefaultHttpClient();
-                                HttpResponse response = null;
-                                String post_url = "https://unitenfc.herokuapp.com/objects/users/picuri/"+prefs.getString("session","")+"/";
-                                HttpPost socket = new HttpPost(post_url);
-                                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
-                                nameValuePairs.add(new BasicNameValuePair("pic_uri", unique));
-                                socket.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                                try {
-                                    response = httpclient.execute(socket);
-                                } catch (ClientProtocolException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                } catch (IOException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                                StatusLine statusLine = response.getStatusLine();
-                                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                                    try {
-                                        response.getEntity().writeTo(out);
-                                        out.close();
-                                    } catch (IOException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
+                                Thread t = new Thread(new Runnable(){
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                            String new_user_name = prefss.getString("username","");
+                                            HttpClient httpclient = new DefaultHttpClient();
+                                            HttpResponse response = null;
+                                            String post_url = "http://unitenfc.herokuapp.com/objects/users/picuri/"+prefss.getString("session","")+"/";
+                                            HttpPost socket = new HttpPost(post_url);
+                                            socket.setHeader( "Content-Type", "application/xml" );
+                                            socket.setHeader( "Accept", "*/*" );
+                                            JSONObject json = new JSONObject();
+                                            try {
+                                                json.put("pic_uri", unique);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            String deb = json.toString();
+                                            StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
 
-                                    String responseString = out.toString();
-                                }
+                                            socket.setEntity(entity);
+
+                                            Log.i("REQUEST",socket.getRequestLine().toString());
+                                            try {
+                                                response = httpclient.execute(socket);
+                                            } catch (ClientProtocolException e) {
+                                                e.printStackTrace();
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+                                            StatusLine statusLine = response.getStatusLine();
+                                            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                                try {
+                                                    response.getEntity().writeTo(out);
+                                                    out.close();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                String responseString = out.toString();
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+                                t.start();
 
 
                                 } catch (IOException e) {
