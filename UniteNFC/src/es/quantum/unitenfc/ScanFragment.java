@@ -212,6 +212,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 			@Override
 			protected void onPostExecute(String result) {
 				Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ctx, WallActivity.class));
 			}
       	};
       	toast.execute();

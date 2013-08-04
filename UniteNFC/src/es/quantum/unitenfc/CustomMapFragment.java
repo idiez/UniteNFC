@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -277,6 +278,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 			@Override
 			protected void onPostExecute(String result) {
 				Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ctx, WallActivity.class));
 			}
       		
       	};
