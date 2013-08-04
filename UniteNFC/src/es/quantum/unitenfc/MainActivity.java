@@ -479,36 +479,8 @@ public class MainActivity extends Activity implements OnReg{
 								c.requestrestore(ctx);
 								TopoosInterface.setProfilePicture(getApplicationContext());
 							}
-			        	});
+			            });
 			        	b.start();
-						
-						
-						//Create new group for user friends
-						//topoos.Users.Operations.GroupSet(MainActivity.this, userid, );
-						
-						
-						Thread r = new Thread(new Runnable(){
-
-							@Override
-							public void run() {
-						    	Integer[] categories = new Integer[1];
-								categories[0] = POICategories.USER_DATA;
-								try {
-									User usr = topoos.Users.Operations.Get(getApplicationContext(), "me");
-									POI newPoi = topoos.POI.Operations.Add(getApplicationContext(),usr.getId(),-58.077876, 41.484375, categories, (double)0, (double)0, (double)0, "", null, null, null, null, null, null, null);
-								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (TopoosException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-							
-						});
-						r.start();
-						
-						
 						break;
 					default:
 						break;

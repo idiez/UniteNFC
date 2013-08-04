@@ -368,7 +368,7 @@ public class Serve extends Activity {
                         String s = prefs.getString("checkpoints", "");
                         SharedPreferences.Editor editor = prefs.edit();
                         String name = poi.getName().substring(16);
-                        String wall = poi.getName().substring(0,15);
+                        String wall = poi.getName().substring(0,16);
                         Date d = new Date();
                         String date = d.toLocaleString().substring(0, 16);
                         @SuppressWarnings("deprecation")

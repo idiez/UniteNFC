@@ -1,9 +1,11 @@
 package es.quantum.unitenfc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.quantum.unitenfc.Objects.Wall;
 import topoos.Exception.TopoosException;
 import topoos.Objects.Checkin;
 import topoos.Objects.POI;
@@ -31,6 +33,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 public class ScanFragment extends Fragment implements OnClickListener, OnItemClickListener {
 	
@@ -189,32 +201,67 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
        	final View argview = arg1;
        	TextView v = (TextView)arg1.findViewById(R.id.text1);
        	final Context ctx = getActivity().getApplicationContext();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        final String user = prefs.getString("session","");
        	final String[] t = (v.getText().toString()).split("\n");
-       	
-      	AsyncTask<Void, Void, String> toast = new AsyncTask<Void, Void, String>(){
-			@Override
-			protected String doInBackground(Void... params) {
-				List<POI> poi;
-				try {
-					poi = topoos.POI.Operations.GetWhere(ctx, new Integer[]{POICategories.NFC} ,null, null, null, null, t[0]);
-					if(poi.isEmpty()) return getString(R.string.not_found);
-					else return poi.get(0).getAddress();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (TopoosException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return getString(R.string.not_found);
-			}
 
-			@Override
-			protected void onPostExecute(String result) {
-				Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ctx, WallActivity.class));
-			}
-      	};
+        AsyncTask<Void, Void, String> toast = new AsyncTask<Void, Void, String>(){
+
+            @Override
+            protected String doInBackground(Void... params) {
+                List<POI> poi;
+                try {
+                    String address = "";
+                    poi = topoos.POI.Operations.GetWhere(ctx, new Integer[]{POICategories.NFC} ,null, null, null, null, t[0]);
+                    if(poi.isEmpty()){
+                        return getString(R.string.not_found);
+                    }
+                    else {
+                        address = poi.get(0).getAddress();
+                    }
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpResponse response = null;
+                    try {
+                        String wall_id = poi.get(0).getName().substring(0,16);
+                        response = httpclient.execute(new HttpGet("http://unitenfc.herokuapp.com/objects/wall/"+wall_id+"/"+user+"/"));
+                    } catch (ClientProtocolException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    StatusLine statusLine = response.getStatusLine();
+                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        try {
+                            response.getEntity().writeTo(out);
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        String responseString = out.toString();
+                        Gson gson = new Gson();
+                        Wall w = gson.fromJson(responseString, Wall.class);
+                        w.setLast_seen_when(poi.get(0).getLastUpdate().toString());
+                        w.setLast_seen_where(address);
+                        return gson.toJson(w);
+                    }
+                    else {
+                        return getString(R.string.not_found);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (TopoosException e) {
+                    e.printStackTrace();
+                }
+                return getString(R.string.not_found);
+            }
+            @Override
+            protected void onPostExecute(String result) {
+                //Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
+            }
+
+        };
       	toast.execute();
 	}
 	

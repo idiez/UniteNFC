@@ -84,7 +84,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="00/00/2013"
-                        android:id="@+id/last_seen_view"
+                        android:id="@+id/last_seen_when"
                         android:layout_gravity="center_horizontal"
                         android:layout_alignParentTop="true"
                         android:layout_toRightOf="@+id/textView3"
@@ -95,7 +95,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="DIRECCIÓN"
-                        android:id="@+id/textView4"
+                        android:id="@+id/last_seen_where"
                         android:layout_gravity="center_horizontal"
                         android:layout_below="@+id/textView3"
                         android:layout_alignParentLeft="true"
@@ -200,7 +200,8 @@
     <ListView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/listView"
-            android:layout_gravity="center"/>
+            android:id="@+id/entries"
+            android:layout_gravity="center"
+            android:headerDividersEnabled="true"/>
 
 </LinearLayout>
