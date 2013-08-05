@@ -1,5 +1,7 @@
 package es.quantum.unitenfc.Objects;
 
+import java.util.List;
+
 /**
  * Created by root on 8/4/13.
  */
@@ -13,7 +15,7 @@ public class Wall {
     private String uri_tag_content;
     private int my_rating;
     private int mean_rating;
-    private Entry[] entry_list;
+    private List<Entry> entry_list;
 
 
     public String getType() {
@@ -80,11 +82,11 @@ public class Wall {
         this.mean_rating = mean_rating;
     }
 
-    public Entry[] getEntry_list() {
+    public List<Entry> getEntry_list() {
         return entry_list;
     }
 
-    public void setEntry_list(Entry[] entry_list) {
+    public void setEntry_list(List<Entry> entry_list) {
         this.entry_list = entry_list;
     }
 

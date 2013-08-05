@@ -110,7 +110,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/backg"
                 android:paddingTop="5dp"
-                android:paddingLeft="10dp"
+                android:paddingLeft="9dp"
                 android:paddingRight="10dp"
                 android:paddingBottom="10dp">
 
@@ -198,10 +198,10 @@
             android:textStyle="bold|italic"/>
 
     <ListView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/entries"
-            android:layout_gravity="center"
+            android:layout_gravity="top"
             android:headerDividersEnabled="true"/>
 
 </LinearLayout>

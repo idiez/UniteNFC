@@ -7,8 +7,8 @@ public class Entry {
 
     private String author_name;
     private String author_pic_uri;
-    private String date;
     private String time_stamp;
+    private String message;
 
     public String getTime_stamp() {
         return time_stamp;
@@ -16,14 +16,6 @@ public class Entry {
 
     public void setTime_stamp(String time_stamp) {
         this.time_stamp = time_stamp;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public String getAuthor_pic_uri() {
@@ -40,5 +32,13 @@ public class Entry {
 
     public void setAuthor_name(String author_name) {
         this.author_name = author_name;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

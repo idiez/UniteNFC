@@ -283,16 +283,29 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 				try {
                     String address = "";
 					poi = topoos.POI.Operations.GetWhere(ctx, new Integer[]{POICategories.NFC} ,null, null, null, null, name);
+                    POI nfcpoi = null;
 					if(poi.isEmpty()){
                         return getString(R.string.not_found);
                     }
    					else {
-                        address = poi.get(0).getAddress();
+                        String namo;
+                        for(POI p:poi){
+                            namo= p.getName().substring(16);
+                            if(namo.compareTo(name)==0){
+                                nfcpoi = p;
+                                break;
+                            }
+                        }
+                        if(nfcpoi == null){
+                            return getString(R.string.not_found);
+                        }
+                        address = nfcpoi.getAddress();
                     }
                     HttpClient httpclient = new DefaultHttpClient();
                     HttpResponse response = null;
                     try {
-                        response = httpclient.execute(new HttpGet("http://unitenfc.herokuapp.com/objects/wall/"+poi.get(0).getName().substring(0,16)+"/"+user+"/"));
+                        String wall_id = nfcpoi.getName().substring(0,16);
+                        response = httpclient.execute(new HttpGet("http://unitenfc.herokuapp.com/objects/wall/"+wall_id+"/"+user+"/"));
                     } catch (ClientProtocolException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -312,7 +325,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
                         Wall w = gson.fromJson(responseString, Wall.class);
                         w.setLast_seen_when(poi.get(0).getLastUpdate().toString());
                         w.setLast_seen_where(address);
-                        return gson.toJson(w);
+                        return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
                     }
                     else {
                         return getString(R.string.not_found);

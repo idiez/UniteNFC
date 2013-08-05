@@ -159,7 +159,7 @@ public class RegisterPOIFragment extends DialogFragment {
            				    mListener.onReg(mes);
                 	   }
                 	   else
-                           Toast.makeText(getActivity().getApplicationContext(), getString(R.string.new_nfc_fill), Toast.LENGTH_SHORT).show();;
+                           Toast.makeText(getActivity().getApplicationContext(), getString(R.string.new_nfc_fill), Toast.LENGTH_SHORT).show();
                    }
                })
                .setNegativeButton(getString(R.string.new_nfc_no), new DialogInterface.OnClickListener() {

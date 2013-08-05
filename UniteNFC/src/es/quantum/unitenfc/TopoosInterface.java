@@ -188,7 +188,6 @@ public class TopoosInterface {
     public static Bitmap LoadImageFromWebOperations(String uri) {
         try {
         	URL url = new URL(uri);
-        	
         	Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
             return bmp;
         } catch (Exception e) {
