@@ -200,12 +200,21 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 		if(arg2 == 0) return;
        	final View argview = arg1;
        	TextView v = (TextView)arg1.findViewById(R.id.text1);
-       	final Context ctx = getActivity().getApplicationContext();
+       	final Context ctx = (Context)this.getActivity();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         final String user = prefs.getString("session","");
        	final String[] t = (v.getText().toString()).split("\n");
 
         AsyncTask<Void, Void, String> toast = new AsyncTask<Void, Void, String>(){
+
+
+            @Override
+            protected void onPreExecute(){
+                progressDialog = new ProgressDialog(ctx);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.show();
+            }
 
             @Override
             protected String doInBackground(Void... params) {
@@ -270,6 +279,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
             @Override
             protected void onPostExecute(String result) {
                 //Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
                 startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
             }
 

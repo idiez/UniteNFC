@@ -16,6 +16,7 @@ public class Wall {
     private int my_rating;
     private int mean_rating;
     private List<Entry> entry_list;
+    private boolean sudo;
 
 
     public String getType() {
@@ -91,6 +92,13 @@ public class Wall {
     }
 
 
+    public boolean isSudo() {
+        return sudo;
+    }
+
+    public void setSudo(boolean sudo) {
+        this.sudo = sudo;
+    }
 }
 
 
