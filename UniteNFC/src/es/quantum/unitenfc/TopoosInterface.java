@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -271,6 +273,19 @@ public class TopoosInterface {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 		String i = topoos.Images.Operations.GetImageURI(prefs.getString("imageuri", "dummy_2"));
 		Bitmap bmp = TopoosInterface.LoadImageFromWebOperations(i);
+        int width = bmp.getWidth();
+        int heigth = bmp.getHeight();
+        Bitmap croppedBmp;
+        if(width == heigth){
+            croppedBmp = bmp;
+        }
+        else if(width > heigth){
+            croppedBmp = Bitmap.createBitmap(bmp,(width-heigth)/2, 0, heigth, heigth );
+        }
+        else {
+            croppedBmp = Bitmap.createBitmap(bmp,0, (heigth-width)/2, width, width );
+        }
+
 		//String path = Environment.getExternalStorageDirectory().toString()+"/unitenfc";
 		String path = Environment.getExternalStorageDirectory().toString();
 		File dir = new File(path,"/unitenfc");
@@ -279,7 +294,7 @@ public class TopoosInterface {
         FileOutputStream out;
         try {
             out = new FileOutputStream(file);
-               bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Bitmap.createScaledBitmap(croppedBmp,100,100,false).compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -356,6 +371,18 @@ public class TopoosInterface {
         t.start();
 
 
+
+    }
+
+    public static boolean isOnline(Context context){
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        try {
+            return activeNetwork.isConnectedOrConnecting();
+        }
+        catch (NullPointerException e){
+            return false;
+        }
 
     }
 }

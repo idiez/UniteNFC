@@ -4,6 +4,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,10 +19,11 @@ public class SplashActivity extends Activity {
 	 
 	   @Override
 	   protected void onCreate(Bundle savedInstanceState) {
-	      super.onCreate(savedInstanceState);
-	      setContentView(R.layout.splash);
-    	  IntentLauncher launcher = new IntentLauncher();
-    	  launcher.start();
+              super.onCreate(savedInstanceState);
+              setContentView(R.layout.splash);
+           IntentLauncher launcher = new IntentLauncher();
+           launcher.start();
+
 	   }
 	 
 	   @Override

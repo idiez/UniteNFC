@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,6 +52,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 	List<POI> poi_list;
 	boolean [] poi_vis;
 	CameraPosition cam;
+    private ProgressDialog progressDialog;
 	
 	public CustomMapFragment() {
 		super();
@@ -80,7 +82,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+        if(progressDialog != null) progressDialog.dismiss();
 		getActivity().invalidateOptionsMenu();
 
 		getMap().setOnInfoWindowClickListener(this);
@@ -272,10 +274,18 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 	@Override
 	public void onInfoWindowClick(Marker marker) {
 		final String name = marker.getTitle();
-		final Context ctx = getActivity().getApplicationContext();
+		final Context ctx = (Context)this.getActivity();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         final String user = prefs.getString("session","");
 		AsyncTask<Void, Void, String> toast = new AsyncTask<Void, Void, String>(){
+
+            @Override
+            protected void onPreExecute(){
+                progressDialog = new ProgressDialog(ctx);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.show();
+            }
 
 			@Override
 			protected String doInBackground(Void... params) {
@@ -340,6 +350,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 			@Override
 			protected void onPostExecute(String result) {
 				//Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
                 startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
 			}
       		

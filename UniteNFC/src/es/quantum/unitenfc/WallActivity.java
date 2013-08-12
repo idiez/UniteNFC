@@ -111,7 +111,7 @@ public class WallActivity extends Activity implements OnReg {
         ((TextView)findViewById(R.id.last_seen_when)).setText(when.substring(4,16));
         ((TextView)findViewById(R.id.last_seen_where)).setText(w.getLast_seen_where());
         mean = ((TextView)findViewById(R.id.rating_mean));
-        mean.setText(Integer.toString(w.getMean_rating()));
+        mean.setText(Float.toString(w.getMean_rating()));
         int my_rating = w.getMy_rating();
         ratingBar = ((RatingBar)findViewById(R.id.ratingBar));
         ratingBar.setRating(my_rating);
@@ -306,7 +306,6 @@ public class WallActivity extends Activity implements OnReg {
 
                     @Override
                     protected void onPostExecute(String result) {
-                        mean.setText(result);
                         Toast.makeText(getApplicationContext(), "Comentario eliminado", Toast.LENGTH_LONG).show();
                         refreshLists();
                     }

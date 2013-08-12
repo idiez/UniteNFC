@@ -4,12 +4,14 @@ package es.quantum.unitenfc;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -148,10 +150,20 @@ public class MainActivity extends Activity implements OnReg{
 		setContentView(R.layout.activity_main);
 
 
+        if(!TopoosInterface.isOnline(getApplicationContext())) {
+            new AlertDialog.Builder((Context)this).setTitle("Network Settings").setMessage("Internet connection required").setCancelable(false).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    onBackPressed();
+                }
+            }).show();
+         //   this.onDestroy();
+        }
 		TopoosInterface.initializeTopoosSession(this);	//initiate topoos session
 
         fb_dialog = new FacebookDialog();
         uiHelper = new UiLifecycleHelper(this, callback);
+
         uiHelper.onCreate(savedInstanceState);
 
 	
@@ -162,12 +174,15 @@ public class MainActivity extends Activity implements OnReg{
 
 
 
-
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean showfbdialog = prefs.getBoolean("showfbdialog", true);
         Session session = Session.getActiveSession();
-        if(!(session.getState() == SessionState.CREATED_TOKEN_LOADED || session.isOpened())) fb_dialog.show(getFragmentManager(), "fb log");
+        if(!(session.getState() == SessionState.CREATED_TOKEN_LOADED || session.isOpened())&& showfbdialog) {
+            fb_dialog.setCancelable(false);
+            fb_dialog.show(getFragmentManager(), "fb log");
+        }
 
 		map =  new CustomMapFragment();	//create map
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 	    float lat = prefs.getFloat("lastlat", 0);
 	    float lon = prefs.getFloat("lastlong", 0);
 		map.setPos(new LatLng(lat,lon));
@@ -505,10 +520,69 @@ public class MainActivity extends Activity implements OnReg{
 
 	
 	private class RegisterPosition implements LocationListener{
-		
+
+
+        private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+        /** Determines whether one Location reading is better than the current Location fix
+         * @param location  The new Location that you want to evaluate
+         * @param currentBestLocation  The current Location fix, to which you want to compare the new one
+         */
+        protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+            if (currentBestLocation == null) {
+                // A new location is always better than no location
+                return true;
+            }
+
+            // Check whether the new location fix is newer or older
+            long timeDelta = location.getTime() - currentBestLocation.getTime();
+            boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+            boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+            boolean isNewer = timeDelta > 0;
+
+            // If it's been more than two minutes since the current location, use the new location
+            // because the user has likely moved
+            if (isSignificantlyNewer) {
+                return true;
+                // If the new location is more than two minutes older, it must be worse
+            } else if (isSignificantlyOlder) {
+                return false;
+            }
+
+            // Check whether the new location fix is more or less accurate
+            int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+            boolean isLessAccurate = accuracyDelta > 0;
+            boolean isMoreAccurate = accuracyDelta < 0;
+            boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+            // Check if the old and new location are from the same provider
+            boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                    currentBestLocation.getProvider());
+
+            // Determine location quality using a combination of timeliness and accuracy
+            if (isMoreAccurate) {
+                return true;
+            } else if (isNewer && !isLessAccurate) {
+                return true;
+            } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+                return true;
+            }
+            return false;
+        }
+
+        /** Checks whether two providers are the same */
+        private boolean isSameProvider(String provider1, String provider2) {
+            if (provider1 == null) {
+                return provider2 == null;
+            }
+            return provider1.equals(provider2);
+        }
+
+
 		@Override
 		public void onLocationChanged(Location arg0) {
 			//showToast("NEW!");
+            if(!isBetterLocation(arg0,current_pos)) return;
 			map.setPos(new LatLng(arg0.getLatitude(),arg0.getLongitude()));
 			//discriminar medidas aqu�!
 			if(maptablistener.isActive()){

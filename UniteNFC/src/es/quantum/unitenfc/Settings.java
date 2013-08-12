@@ -27,6 +27,7 @@ import android.preference.PreferenceActivity;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ListView;
 
 import org.apache.http.HttpResponse;
@@ -81,7 +82,10 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
         p.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                new FacebookDialog().show(getFragmentManager(), "fb log");
+
+                FacebookDialog fbd = new FacebookDialog();
+                fbd.setCancelable(false);
+                fbd.show(getFragmentManager(), "fb log");
                 return false;
             }
         });
@@ -160,101 +164,101 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
     	    super.onActivityResult(requestCode, resultCode, imageReturnedIntent); 
 
     	    switch(requestCode) { 
-    	    case 3:
-    	        if(resultCode == RESULT_OK){  
-    	            Uri selectedImage = imageReturnedIntent.getData();
-    	            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                case 3:
+                    if(resultCode == RESULT_OK){
+                        Uri selectedImage = imageReturnedIntent.getData();
+                        String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
-    	            Cursor cursor = getContentResolver().query(
-    	                               selectedImage, filePathColumn, null, null, null);
-    	            cursor.moveToFirst();
+                        Cursor cursor = getContentResolver().query(
+                                           selectedImage, filePathColumn, null, null, null);
+                        cursor.moveToFirst();
 
-    	            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-    	            final String filePath = cursor.getString(columnIndex);
-    	            cursor.close();
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        final String filePath = cursor.getString(columnIndex);
+                        cursor.close();
 
-    	            Thread t = new Thread(new Runnable(){
+                        Thread t = new Thread(new Runnable(){
 
-    					@Override
-    					public void run() {
-    						
-    						try {
-    							User usr = null;
-    							try {
-    								usr = topoos.Users.Operations.Get(getApplicationContext(), "me");
-    							} catch (IOException e1) {
-    								e1.printStackTrace();
-    							} catch (TopoosException e1) {
-    								e1.printStackTrace();
-    							}
-    							final String unique = TopoosInterface.UploadPIC(getApplicationContext(), (usr != null)?usr.getName():"test",filePath);
-    			    			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-    			    			Editor editor = prefs.edit();
-    			    			editor.putString("imageuri", unique);
-    			    			editor.commit();
-    			    			TopoosInterface.setProfilePicture(getApplicationContext());
+                            @Override
+                            public void run() {
 
-                                Thread t = new Thread(new Runnable(){
-                                    @Override
-                                    public void run() {
+                                try {
+                                    User usr = null;
                                     try {
-                                        SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                        String new_user_name = prefss.getString("username","");
-                                        HttpClient httpclient = new DefaultHttpClient();
-                                        HttpResponse response = null;
-                                        String post_url = "http://unitenfc.herokuapp.com/objects/users/picuri/"+prefss.getString("session","")+"/";
-                                        HttpPost socket = new HttpPost(post_url);
-                                        socket.setHeader( "Content-Type", "application/xml" );
-                                        socket.setHeader( "Accept", "*/*" );
-                                        JSONObject json = new JSONObject();
-                                        try {
-                                            json.put("pic_uri", unique);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                        String deb = json.toString();
-                                        StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                                        usr = topoos.Users.Operations.Get(getApplicationContext(), "me");
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    } catch (TopoosException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                    final String unique = TopoosInterface.UploadPIC(getApplicationContext(), (usr != null)?usr.getName():"test",filePath);
+                                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    Editor editor = prefs.edit();
+                                    editor.putString("imageuri", unique);
+                                    editor.commit();
+                                    TopoosInterface.setProfilePicture(getApplicationContext());
 
-                                        socket.setEntity(entity);
-
-                                        Log.i("REQUEST",socket.getRequestLine().toString());
+                                    Thread t = new Thread(new Runnable(){
+                                        @Override
+                                        public void run() {
                                         try {
-                                            response = httpclient.execute(socket);
-                                        } catch (ClientProtocolException e) {
-                                            e.printStackTrace();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                        StatusLine statusLine = response.getStatusLine();
-                                        if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                            SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                            String new_user_name = prefss.getString("username","");
+                                            HttpClient httpclient = new DefaultHttpClient();
+                                            HttpResponse response = null;
+                                            String post_url = "http://unitenfc.herokuapp.com/objects/users/picuri/"+prefss.getString("session","")+"/";
+                                            HttpPost socket = new HttpPost(post_url);
+                                            socket.setHeader( "Content-Type", "application/xml" );
+                                            socket.setHeader( "Accept", "*/*" );
+                                            JSONObject json = new JSONObject();
                                             try {
-                                                response.getEntity().writeTo(out);
-                                                out.close();
+                                                json.put("pic_uri", unique);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                            String deb = json.toString();
+                                            StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+
+                                            socket.setEntity(entity);
+
+                                            Log.i("REQUEST",socket.getRequestLine().toString());
+                                            try {
+                                                response = httpclient.execute(socket);
+                                            } catch (ClientProtocolException e) {
+                                                e.printStackTrace();
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
-                                            String responseString = out.toString();
+                                            StatusLine statusLine = response.getStatusLine();
+                                            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                                try {
+                                                    response.getEntity().writeTo(out);
+                                                    out.close();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                                String responseString = out.toString();
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    }
-                                });
-                                t.start();
+                                        }
+                                    });
+                                    t.start();
 
 
-                                } catch (IOException e) {
-    							e.printStackTrace();
-    						} catch (TopoosException e) {
-    							e.printStackTrace();
-    						}
-    					}
+                                    } catch (IOException e) {
+                                    e.printStackTrace();
+                                } catch (TopoosException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-    	        	});
-    	        	t.start();
-    	        }
-    	    }
+                        });
+                        t.start();
+                    }
+                }
     	}
     
 }

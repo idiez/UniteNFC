@@ -14,7 +14,7 @@ public class Wall {
     private String last_seen_where;
     private String uri_tag_content;
     private int my_rating;
-    private int mean_rating;
+    private float mean_rating;
     private List<Entry> entry_list;
     private boolean sudo;
 
@@ -75,11 +75,11 @@ public class Wall {
         this.my_rating = my_rating;
     }
 
-    public int getMean_rating() {
+    public float getMean_rating() {
         return mean_rating;
     }
 
-    public void setMean_rating(int mean_rating) {
+    public void setMean_rating(float mean_rating) {
         this.mean_rating = mean_rating;
     }
 
