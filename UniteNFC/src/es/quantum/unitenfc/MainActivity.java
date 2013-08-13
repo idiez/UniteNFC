@@ -5,10 +5,15 @@ import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.location.Location;
@@ -22,6 +27,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,6 +46,8 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.IOException;
 import java.util.List;
 
+import es.quantum.unitenfc.background.Constants;
+import es.quantum.unitenfc.background.ProximityNotifier;
 import es.quantum.unitenfc.backup.CustomBackup;
 import topoos.AccessTokenOAuth;
 import topoos.Exception.TopoosException;
@@ -168,6 +177,18 @@ public class MainActivity extends Activity implements OnReg{
 	    actionBar.addTab(map_tab);
 	    actionBar.addTab(scan_tab);
 	    actionBar.addTab(social_tab);
+
+        IntentFilter mStatusIntentFilter = new IntentFilter(
+                Constants.BROADCAST_ACTION);
+        mStatusIntentFilter.addDataScheme("http");
+        //mDownloadStateReceiver = new ResponseReceiver();
+        // Registers the DownloadStateReceiver and its intent filters
+        //LocalBroadcastManager.getInstance(this).registerReceiver(mDownloadStateReceiver,mStatusIntentFilter);
+        // Adds a data filter for the HTTP scheme
+
+
+        this.startService(new Intent(this, ProximityNotifier.class));
+
 	}
 
 	@Override
@@ -321,8 +342,6 @@ public class MainActivity extends Activity implements OnReg{
 				switch (resultCode) {
 					case LoginActivity.RESULT_OK:
 						AccessTokenOAuth token = AccessTokenOAuth.GetAccessToken(getApplicationContext());
-						Log.i("TOKEN",token.getAccessToken());
-						Log.i("TOKEN",token.isValid()?"Valid":"Not valid");
 						if (token.isValid()) {
 							progressDialog = ProgressDialog.show((Context)this, "",
 						            getString(R.string.welcome),false,false);
@@ -563,4 +582,7 @@ public class MainActivity extends Activity implements OnReg{
         FacebookLogic.publishStory(MainActivity.this, mes);
 	    //	scan.refreshLists();
 	}
+
+    // Broadcast receiver for receiving status updates from the IntentService
+
 }
