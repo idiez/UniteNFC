@@ -11,12 +11,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-/**
- * Created by root on 8/5/13.
- */
 public class EntriesListViewAdapter extends ArrayAdapter<EntryItem> {
 
-    Context context;
+    private Context context;
 
     public EntriesListViewAdapter(Context context, int resourceId, List<EntryItem> items) {
         super(context, resourceId, items);
@@ -34,7 +31,6 @@ public class EntriesListViewAdapter extends ArrayAdapter<EntryItem> {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
         EntryItem rowItem = getItem(position);
-
         LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.entry, null);
@@ -45,13 +41,11 @@ public class EntriesListViewAdapter extends ArrayAdapter<EntryItem> {
             holder.imageView = (ImageView) convertView.findViewById(R.id.entry_icon);
             convertView.setTag(holder);
         } else
-            holder = (ViewHolder) convertView.getTag();
-
+        holder = (ViewHolder) convertView.getTag();
         holder.txtmessage.setText(rowItem.getMessage());
         holder.txtbydate.setText(rowItem.getAuthor());
         holder.txtdate.setText(rowItem.getDate());
         holder.imageView.setImageBitmap(rowItem.getImageId());
-
         return convertView;
     }
 }

@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,128 +49,26 @@ import topoos.Objects.User;
 
 public class Serve extends Activity {
 
-    ShareActionProvider mShareActionProvider;
-    String message;
+    private ShareActionProvider mShareActionProvider;
+    private String message;
     private LinearLayout mTagContent;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
-    OnReg a;
+    private OnReg a;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.splash);
         a = (OnReg) getParent();
         setContentView(R.layout.tag_viewer);
         mTagContent = (LinearLayout) findViewById(R.id.linear);
         resolveIntent(getIntent());
-
-        /*
-        setContentView(R.layout.nfc_dispatch);
-        ListView v = (ListView)findViewById(R.id.tags);
-        // see if app was started from a tag
-        resolveIntent(getIntent());
-        Intent i = getIntent();
-        Log.i("INTENT", i.getType());
-        if(i.getType() != null){
-            //if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()))
-
-            if(i.getType().equals("text/plain")) {	//add any intent you are filtering for
-                NdefMessage[] messages = null;
-                Parcelable[] rawMsgs = i.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-                if (rawMsgs != null) {
-                    messages = new NdefMessage[rawMsgs.length];
-                    for (int i1 = 0; i1 < rawMsgs.length; i1++) {
-                        messages[i1] = (NdefMessage) rawMsgs[i1];
-                        Log.i("BYTES", ""+messages[i1].toByteArray());
-                    }
-                }
-                if(messages[0] != null) {
-                    List<String> list = new ArrayList<String>();
-                    for(int a= 0; a<messages.length;a++){
-                        NdefRecord[] rec = messages[a].getRecords();
-                        message = parseNFCRecords(rec[0]);
-                        for(int c= 0; a<messages.length;a++){
-                            list.add(parseNFCRecords(rec[c]));
-                        }
-
-                    }
-                    List<RowItem> rowItems = new ArrayList<RowItem>();
-                    for (String s11:list) {
-                        RowItem item = new RowItem(null, s11);
-                        rowItems.add(item);
-                    }
-                    CustomListViewAdapter adapter = new CustomListViewAdapter(this.getApplicationContext(),
-                            R.layout.list, rowItems);
-                    v.setAdapter(adapter);
-                    Tag tagFromIntent = i.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                    CheckNFCPoint checkNFCPoint = new CheckNFCPoint();
-                    checkNFCPoint.execute(TopoosInterface.bytesToHexString(tagFromIntent.getId()));
-                }
-            }
-            else if (i.getType().equals("text/plain")){
-                //if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction()))
-                // tagFromIntent.getTechList();
-            }
-            else {
-                this.onBackPressed();
-            }
-
-            /*
-             String result="";
-             Toast.makeText(getApplicationContext(), ""+messages[0].getRecords()[0].getTnf(), Toast.LENGTH_SHORT).show();
-             byte[] payload = messages[0].getRecords()[0].getPayload();
-             // this assumes that we get back am SOH followed by host/code
-             for (int b = 1; b<payload.length; b++) { // skip SOH
-                  result += (char) payload[b];
-             }
-             Toast.makeText(getApplicationContext(), "Tag Contains " + result, Toast.LENGTH_SHORT).show();  */
-
-
-
-
-    /*           MifareUltralight m = MifareUltralight.get(tagFromIntent);
-                try {
-                    m.connect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*/
-
-
-            /*
-                //Log.i("TEST",intent.getAction());
-                Intent intent = new Intent("android.nfc.action.TECH_DISCOVERED");
-            PackageManager manager = getApplicationContext().getPackageManager();
-            List<ResolveInfo> r = manager.queryIntentActivities(intent, 0);
-            for(ResolveInfo e:r){
-                Log.i("TEST",e.activityInfo.packageName);
-            }
-
-
-            ComponentName componentName = new ComponentName(r.get(0).activityInfo.packageName, r.get(0).activityInfo.name);
-            //Intent i = new Intent("android.intent.action.MAIN");
-            //i.addCategory("android.intent.category.LAUNCHER").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setComponent(componentName);
-            i.setAction(Intent.ACTION_MAIN);
-            i.addCategory(Intent.CATEGORY_LAUNCHER);
-            i.setComponent(componentName).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-
-            //i = manager.getLaunchIntentForPackage("app package name");
-            //i.addCategory(Intent.CATEGORY_LAUNCHER);
-            startActivity(i);
-            //startActivityForResult(i,7);
-            */
-/*
-        }
-        else{this.onBackPressed();}
-
-*/
     }
 
     private void resolveIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+            || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage[] msgs;
             if (rawMsgs != null) {
@@ -182,7 +79,6 @@ public class Serve extends Activity {
                 Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 CheckNFCPoint checkNFCPoint = new CheckNFCPoint();
                 checkNFCPoint.execute(TopoosInterface.bytesToHexString(tagFromIntent.getId()));
-
                 message = parseNFCRecords(msgs[0].getRecords()[0]);
             } else {
                 // Unknown tag type
@@ -207,7 +103,6 @@ public class Serve extends Activity {
         sb.append("Tag ID (hex): ").append(getHex(id)).append("\n");
         sb.append("Tag ID (dec): ").append(getDec(id)).append("\n");
         sb.append("ID (reversed): ").append(getReversed(id)).append("\n");
-
         String prefix = "android.nfc.tech.";
         sb.append("Technologies: ");
         for (String tech : tag.getTechList()) {
@@ -246,7 +141,6 @@ public class Serve extends Activity {
                 sb.append("Mifare blocks: ");
                 sb.append(mifareTag.getBlockCount());
             }
-
             if (tech.equals(MifareUltralight.class.getName())) {
                 sb.append('\n');
                 MifareUltralight mifareUlTag = MifareUltralight.get(tag);
@@ -313,8 +207,6 @@ public class Serve extends Activity {
         Date now = new Date();
         List<ParsedNdefRecord> records = NdefMessageParser.parse(msgs[0]);
         final int size = records.size();
-        //DO SOMETHING SHOW!
-
         for (int i = 0; i < size; i++) {
             TextView timeView = new TextView(this);
             timeView.setText(TIME_FORMAT.format(now));
@@ -330,15 +222,12 @@ public class Serve extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu2, menu);
         MenuItem menuItem = menu.findItem(R.id.menu_share);
-
-
         if(menuItem != null);
         menuItem = menu.findItem(R.id.menu_share);
         if(menuItem != null)
             mShareActionProvider = (ShareActionProvider)menuItem.getActionProvider();
         mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(getString(R.string.share_1)+" "+message+" "+getString(R.string.share_2)));
         return true;
-
     }
 
     public String parseNFCRecords(NdefRecord ndefr){
@@ -375,7 +264,6 @@ public class Serve extends Activity {
                         String title = name+";"+poi.getCategories().get(0).getId()+";"+date+"ñ";
                         editor.putString("checkpoints", title.concat(s));
                         editor.commit();
-
                         NFCPoint nfcp = new NFCPoint();
                         nfcp.setName(name);
                         nfcp.setPosId(Integer.toString(poi.getCategories().get(0).getId()));
@@ -383,59 +271,54 @@ public class Serve extends Activity {
                         nfcp.setWall(wall);
                         final NFCPoint np = nfcp;
                         String mes = FacebookLogic.createFacebookFeed(FacebookLogic.REGISTER, tagid, nfcp, "");
-                        //a.onReg(mes);
+                        a.onReg(mes);
                         Thread t = new Thread(new Runnable(){
                             @Override
                             public void run() {
-                            try {
-                                SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                String new_user_name = prefss.getString("username","");
-                                HttpClient httpclient = new DefaultHttpClient();
-                                HttpResponse response = null;
-                                String post_url = "http://unitenfc.herokuapp.com/objects/nfcp/"+prefss.getString("session","")+"/False/";
-                                HttpPost socket = new HttpPost(post_url);
-                                socket.setHeader( "Content-Type", "application/xml" );
-                                socket.setHeader( "Accept", "*/*" );
-                                JSONObject json = new JSONObject();
                                 try {
-                                    json.put("name", np.getName());
-                                    json.put("posId", np.getPosId());
-                                    json.put("date", np.getDate());
-                                    json.put("wall", np.getWall());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                String deb = json.toString();
-                                StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
-
-                                socket.setEntity(entity);
-
-                                Log.i("REQUEST", socket.getRequestLine().toString());
-                                try {
-                                    response = httpclient.execute(socket);
-                                } catch (ClientProtocolException e) {
-                                    e.printStackTrace();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                StatusLine statusLine = response.getStatusLine();
-                                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                    SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                                    HttpClient httpclient = new DefaultHttpClient();
+                                    HttpResponse response = null;
+                                    String post_url = "http://unitenfc.herokuapp.com/objects/nfcp/"+prefss.getString("session","")+"/False/";
+                                    HttpPost socket = new HttpPost(post_url);
+                                    socket.setHeader( "Content-Type", "application/xml" );
+                                    socket.setHeader( "Accept", "*/*" );
+                                    JSONObject json = new JSONObject();
                                     try {
-                                        response.getEntity().writeTo(out);
-                                        out.close();
+                                        json.put("name", np.getName());
+                                        json.put("posId", np.getPosId());
+                                        json.put("date", np.getDate());
+                                        json.put("wall", np.getWall());
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                                    socket.setEntity(entity);
+                                    try {
+                                        response = httpclient.execute(socket);
+                                    } catch (ClientProtocolException e) {
+                                        e.printStackTrace();
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
-                                    String responseString = out.toString();
+                                    StatusLine statusLine = response.getStatusLine();
+                                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                        try {
+                                            response.getEntity().writeTo(out);
+                                            out.close();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        String responseString = out.toString();
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
-                        }
-                    });
-                    t.start();
-                    break;
+                        });
+                        t.start();
+                        break;
                     }
                 }
             } catch (IOException e) {
@@ -448,7 +331,4 @@ public class Serve extends Activity {
             return true;
         }
     }
-
-
-
 }

@@ -1,9 +1,9 @@
 <resources>
-    <string-array name="poiType"><item>USER</item>
-        
-    <item >PROMOTION</item>
-    <item >INFO</item>
-    <item >HOTSPOT</item>
+    <string-array name="poiType">
+    <item>INFO</item>
+    <item >TURISM</item>
+    <item >LEISURE</item>
+    <item >EVENTS</item>
     </string-array>
 
       <string-array name="radius">

@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,12 +31,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-import es.quantum.unitenfc.Objects.Entry;
-import es.quantum.unitenfc.Objects.NFCPoint;
-
-/**
- * Created by root on 8/5/13.
- */
 public class AddCommentFragment extends DialogFragment {
 
     private OnReg mListener;
@@ -48,7 +41,6 @@ public class AddCommentFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final String wall_id = this.getTag();
         builder.setView(inflater.inflate(R.layout.comment, null));
@@ -62,7 +54,6 @@ public class AddCommentFragment extends DialogFragment {
                         } else {
                             new RegisterEntry().execute(wall_id);
                         }
-
                     }
 
                 })
@@ -142,13 +133,6 @@ public class AddCommentFragment extends DialogFragment {
             if(result) {
                 mListener.onReg(comment+";"+date);
             }
-            else {
-
-            }
         }
-
     }
-
-
-
 }

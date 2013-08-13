@@ -2,15 +2,12 @@ package es.quantum.unitenfc;
 
 import android.graphics.Bitmap;
 
-/**
- * Created by root on 8/5/13.
- */
 public class EntryItem implements Comparable<Object>{
+
     private Bitmap imageId;
     private String author;
     private String date;
     private String message;
-
 
     public EntryItem(Bitmap imageId, String author, String date, String message) {
         this.imageId = imageId;
@@ -18,9 +15,11 @@ public class EntryItem implements Comparable<Object>{
         this.date = date;
         this.message = message;
     }
+
     public Bitmap getImageId() {
         return imageId;
     }
+
     public void setImageId(Bitmap imageId) {
         this.imageId = imageId;
     }
@@ -53,10 +52,10 @@ public class EntryItem implements Comparable<Object>{
     public String toString() {
         return message;
     }
+
     @Override
     public int compareTo(Object arg0) {
         EntryItem row = (EntryItem)arg0;
         return this.message.compareToIgnoreCase(row.message);
     }
-
 }

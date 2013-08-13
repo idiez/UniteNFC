@@ -1,90 +1,51 @@
 package es.quantum.unitenfc;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import topoos.Exception.TopoosException;
-import topoos.Objects.POI;
-import topoos.Objects.User;
-import topoos.Objects.UserIdPosition;
-
 import android.app.Fragment;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcAdapter.CreateNdefMessageCallback;
-import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
-import android.nfc.NfcEvent;
-import android.nfc.tech.NfcF;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SocialFragment extends Fragment implements OnClickListener{
 	
 	
 	private static final int NAME = 1; 
-	private static final int ID = 0; 
-	
+	private static final int ID = 0;
 	
 	private ListView list;
-	List<UserIdPosition> friends;
-	List<RowItem> rowItems;
-	private List<String> names;
-	private ProgressDialog progressDialog;
 	private NfcAdapter mAdapter;
-	
-	
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, 
-        Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
     	View V = inflater.inflate(R.layout.social_fragment, container, false);
     	V.findViewById(R.id.add_friend).setOnClickListener((OnClickListener) this);
-    	
     	list = (ListView) V.findViewById(R.id.friend_list);
-    	
         View header = inflater.inflate(R.layout.header_layout, null);
         list.addHeaderView(header);
-    	
-       // V.findViewById(R.id.add_friend).setOnClickListener(this);
         refreshLists();
-        
         mAdapter = NfcAdapter.getDefaultAdapter(getActivity().getApplicationContext());
-        
         return V;
     }
-    
-    public void setFriendList(List<UserIdPosition> friends){
-    	this.friends = friends;
-    }
-    
-    
-      
+
     public List<RowItem> parseString(String s){
     	List<String> listcheck = TopoosInterface.itemize(s);
     	List<RowItem> rows = new ArrayList<RowItem>();
@@ -114,7 +75,6 @@ public class SocialFragment extends Fragment implements OnClickListener{
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.getActivity().getApplicationContext());
         String s1 = prefs.getString("friends", "");
         List<RowItem> r1 = parseString(s1);
-
         CustomListViewAdapter adapter = new CustomListViewAdapter(getActivity().getApplicationContext(),
                 R.layout.list, r1);
         list.setAdapter(adapter);
@@ -133,7 +93,6 @@ public class SocialFragment extends Fragment implements OnClickListener{
 
     @Override
     public void onClick(View arg0) {
-	
         if (mAdapter != null && mAdapter.isEnabled()) {
             // adapter exists and is enabled.
             startActivityForResult(new Intent(getActivity().getApplicationContext(), UserCard.class).setType("BEAM"),1);
@@ -147,5 +106,4 @@ public class SocialFragment extends Fragment implements OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent ReturnedIntent) {
         refreshLists();
     }
-    
 }

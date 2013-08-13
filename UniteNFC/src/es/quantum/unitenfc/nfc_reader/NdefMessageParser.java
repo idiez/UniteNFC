@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2010 The Android Open Source Project
  *
@@ -33,13 +32,10 @@ import es.quantum.unitenfc.nfc_reader.record.SmartPoster;
 import es.quantum.unitenfc.nfc_reader.record.TextRecord;
 import es.quantum.unitenfc.nfc_reader.record.UriRecord;
 
-
-
 public class NdefMessageParser {
 
     // Utility class
     private NdefMessageParser() {
-
     }
 
     /** Parse an NdefMessage */
@@ -64,7 +60,7 @@ public class NdefMessageParser {
                         text.setText(new String(record.getPayload()));
 				        return text;
 					}
-            		
+
             	});
             }
         }

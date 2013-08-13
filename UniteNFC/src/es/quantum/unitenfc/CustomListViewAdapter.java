@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public class CustomListViewAdapter extends ArrayAdapter<RowItem> {
 	 
-    Context context;
+    private Context context;
  
     public CustomListViewAdapter(Context context, int resourceId,
             List<RowItem> items) {
@@ -28,24 +28,21 @@ public class CustomListViewAdapter extends ArrayAdapter<RowItem> {
     }
  
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         RowItem rowItem = getItem(position);
- 
         LayoutInflater mInflater = (LayoutInflater) context
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.list, null);
             holder = new ViewHolder();
-            
             holder.txtTitle = (TextView) convertView.findViewById(R.id.text1);
             holder.imageView = (ImageView) convertView.findViewById(R.id.icon);
             convertView.setTag(holder);
-        } else
+        } else {
             holder = (ViewHolder) convertView.getTag();
- 
+        }
         holder.txtTitle.setText(rowItem.getTitle());
         holder.imageView.setImageBitmap(rowItem.getImageId());
- 
         return convertView;
     }
 }

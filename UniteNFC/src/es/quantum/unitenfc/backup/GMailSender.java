@@ -19,9 +19,8 @@ import java.io.OutputStream;
 import java.security.Security;   
 import java.util.Properties;   
 
-public class GMailSender extends javax.mail.Authenticator {   
-    private String mailhost = "smtp.gmail.com";   
-    private String user;   
+public class GMailSender extends javax.mail.Authenticator {
+    private String user;
     private String password;   
     private Session session;   
 
@@ -34,8 +33,9 @@ public class GMailSender extends javax.mail.Authenticator {
         this.password = password;   
 
         Properties props = new Properties();   
-        props.setProperty("mail.transport.protocol", "smtp");   
-        props.setProperty("mail.host", mailhost);   
+        props.setProperty("mail.transport.protocol", "smtp");
+        String mailhost = "smtp.gmail.com";
+        props.setProperty("mail.host", mailhost);
         props.put("mail.smtp.auth", "true");   
         props.put("mail.smtp.port", "465");   
         props.put("mail.smtp.socketFactory.port", "465");   
@@ -92,7 +92,7 @@ public class GMailSender extends javax.mail.Authenticator {
             this.type = type;   
         }   
 
-        public ByteArrayDataSource(byte[] data) {   
+        public ByteArrayDataSource(byte[] data) {
             super();   
             this.data = data;   
         }   

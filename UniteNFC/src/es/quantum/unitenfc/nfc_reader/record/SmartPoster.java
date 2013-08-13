@@ -35,7 +35,6 @@ import java.util.NoSuchElementException;
 import es.quantum.unitenfc.R;
 import es.quantum.unitenfc.nfc_reader.NdefMessageParser;
 
-
 /**
  * A representation of an NFC Forum "Smart Poster".
  */

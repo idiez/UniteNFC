@@ -2,7 +2,6 @@ package es.quantum.unitenfc;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -20,7 +19,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,23 +59,23 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 	
 	public final String MIME_TYPE = "application/es.quantum.unitenfc";
 
-	ProgressDialog progressDialog;
-	ShareActionProvider mShareActionProvider;
-	ImageView pic;
-	TextView name, acc;
-	ListView check;
+	private ProgressDialog progressDialog;
+    private ShareActionProvider mShareActionProvider;
+    private ImageView pic;
+    private TextView name, acc;
+    private ListView check;
 	boolean beam;
 	boolean newf;
 	boolean timeout;
 	private NfcAdapter mAdapter;
-	String blue_mac;
-	SharedPreferences prefs;
+    private String blue_mac;
+    private SharedPreferences prefs;
 	
 	private Handler mHandler = new Handler();
 	Runnable mShow = new Runnable() {
         public void run() {
-          progressDialog.show();
-          progressDialog.setCancelable(false);
+            progressDialog.show();
+            progressDialog.setCancelable(false);
         }
 	};
 	Runnable mHide = new Runnable() {
@@ -86,19 +84,18 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
         }
 	};
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.usercard);
-		progressDialog = new ProgressDialog((Context)this);
+		progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage(getString(R.string.loading));
 		beam = false;
 		pic = (ImageView) findViewById(R.id.profile);
 		name = (TextView) findViewById(R.id.username);
 		acc = (TextView) findViewById(R.id.useraccount);
 		check = (ListView) findViewById(R.id.tags);
-		
-		prefs = PreferenceManager.getDefaultSharedPreferences((Context)this);
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		// see if app was started from a tag
 		Intent i = getIntent();
 		if(i.getType().equals(MIME_TYPE)) {
@@ -108,14 +105,14 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
             NdefRecord cardRecord = msg.getRecords()[0];
             String[] rcv_data = new String(cardRecord.getPayload()).split(" ");
             String user_data = rcv_data[0];
-            String mac = rcv_data[1];
-			//save friend data
+            //save friend data
             boolean correct = addFriend(user_data);
             final String[] names = user_data.split(";");
             //download image
             if(correct){
 	            new AsyncTask<String,Void,Void>(){	            	
-	            	@Override
+
+                    @Override
 	            	protected void onPreExecute(){
 	            		progressDialog.show();
 	            		progressDialog.setCancelable(false);
@@ -143,9 +140,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
-			    	        
 			    	        String responseString = out.toString();
-
                             Gson gson = new Gson();
                             UserInfo session = gson.fromJson(responseString, UserInfo.class);
                             List<Friend> friends = session.getFriends();
@@ -155,13 +150,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
                             me.setFriend_pic_uri(prefs.getString("imageuri", ""));
                             friends.add(me);
                             session.setFriends(friends);
-
                             String json = gson.toJson(session);
-/*
-			    	        String[] param = responseString.split("\n");
-			    	        String myuser = prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "")+"�";
-			    	        String content = param[0]+"\n"+param[1]+"\n"+param[2]+"\n"+param[3]+"\n"+myuser.concat(param[4])+"\nend";
-			    	     */
 			                GMailSender sender = new GMailSender("unitenfc@gmail.com", "unitenfctopoos");
 			                try {
 								sender.sendMail(filename,   
@@ -170,8 +159,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 								        "izan_005d@sendtodropbox.com");
 							} catch (Exception e) {
 								e.printStackTrace();
-							}  
-			    	        
+							}
 			    	    } else{
 			    	        //Closes the connection.
 			    	        try {
@@ -187,19 +175,19 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 								e.printStackTrace();
 							}
 			    	    }
-			                String i1 = topoos.Images.Operations.GetImageURIThumb(TopoosInterface.extract(element[0], 2),topoos.Images.Operations.SIZE_SMALL);
-							Bitmap bmp1 = TopoosInterface.LoadImageFromWebOperations(i1);
-							String path1 = Environment.getExternalStorageDirectory().toString()+"/unitenfc/";
-							File file1 = new File(path1,TopoosInterface.extract(element[0], 0)+".png");
-							FileOutputStream out11;
-							try {
-								out11 = new FileOutputStream(file1);
-								bmp1.compress(Bitmap.CompressFormat.PNG, 100, out11);
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
-							} catch (NullPointerException e) {
-							e.printStackTrace();
-							}
+                        String i1 = topoos.Images.Operations.GetImageURIThumb(TopoosInterface.extract(element[0], 2),topoos.Images.Operations.SIZE_SMALL);
+                        Bitmap bmp1 = TopoosInterface.LoadImageFromWebOperations(i1);
+                        String path1 = Environment.getExternalStorageDirectory().toString()+"/unitenfc/";
+                        File file1 = new File(path1,TopoosInterface.extract(element[0], 0)+".png");
+                        FileOutputStream out11;
+                        try {
+                            out11 = new FileOutputStream(file1);
+                            bmp1.compress(Bitmap.CompressFormat.PNG, 100, out11);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        }
 						return null;
 					}
 	            	@Override
@@ -208,9 +196,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 	            	}
 	            }.execute(user_data);
             }
-
-            //MANDAR DATOS PROPIOS
-			
 		}
 		else if(i.getType().compareTo("BEAM") == 0){
 		    beam = true;
@@ -220,14 +205,11 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			name.setText(prefs.getString("username", "empty"));
 			LoadCard l = new LoadCard();
 			l.execute("me");
-
 	    	View header = this.getLayoutInflater().inflate(R.layout.header_layout, null);
 	        check.addHeaderView(header);
-
 			mAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
 			mAdapter.setNdefPushMessageCallback(this,this);
 			mAdapter.setOnNdefPushCompleteCallback(this, this);
-			//NDEF PUSH!!!
 		}
 		else{
 			String names = i.getStringExtra("NAME");
@@ -241,24 +223,22 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.empty_menu, menu);		
 		MenuItem menuItem = menu.findItem(R.id.menu_share);
-
 		if(menuItem != null);
 		menuItem = menu.findItem(R.id.menu_share);
 		if(menuItem != null)
 		mShareActionProvider = (ShareActionProvider)menuItem.getActionProvider();
         mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(getString(R.string.share_1)+getString(R.string.share_2)));
 		return true;
-
 	}
-	
-	private class LoadCard extends AsyncTask<String,Void,UserInfo>{
 
-		String iid;
-		String uname = "";
+    private class LoadCard extends AsyncTask<String,Void,UserInfo>{
+
+		private String iid;
+		private String uname = "";
 		
 		@Override
 		protected UserInfo doInBackground(String... id) {
-			User usr = null;
+			User usr;
 			HttpClient httpclient = new DefaultHttpClient();
     	    HttpResponse response = null;
     	    iid = id[0];
@@ -288,8 +268,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 				}
 	    	    String responseString = out.toString();
 	    	    Gson gson = new Gson();
-	    	    UserInfo session = gson.fromJson(responseString, UserInfo.class);
-		    	return session;
+                return gson.fromJson(responseString, UserInfo.class);
     	    } else{
 	    	    //Closes the connection.
 	    	    try {
@@ -310,7 +289,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		
 		@Override
 		protected void onPreExecute(){
-
 			progressDialog.show();
 			progressDialog.setCancelable(false);
 		}
@@ -346,13 +324,13 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 				for(NFCPoint element: vis){
 		    		int res_id;
 		    		switch(Integer.parseInt(element.getPosId())){
-		    			case POICategories.USER:
+		    			case POICategories.INFO:
 		    				res_id = R.drawable.nfc_blue;
 		    				break;
-			    		case POICategories.PROMOTION:
+			    		case POICategories.TURISM:
 			    			res_id = R.drawable.nfc_orange;
 			    			break;
-			    		case POICategories.INFO:
+			    		case POICategories.LEISURE:
 			    			res_id = R.drawable.nfc_violet;
 			    			break;
 			    		default:
@@ -372,7 +350,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			check.setAdapter(adapter1);
 			
 		}
-}
+    }
 
 	private NdefMessage createMessage(){
 		//NdefRecord appRecord = NdefRecord.createApplicationRecord("es.quantum.unitenfc");
@@ -392,10 +370,8 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 
 	@Override
 	public void onNdefPushComplete(NfcEvent event) {
-		// RELOAD USER CARD
+		// RELOAD INFO CARD
 		final String friendfield = prefs.getString("friends", "");
-		/*progressDialog.show();
-		progressDialog.setCancelable(false);*/
 		AsyncTask<Void, Void, Void> b = new AsyncTask<Void, Void, Void>(){
 
 			@Override 
@@ -408,8 +384,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			protected Void doInBackground(Void... arg0) {
 				long milis = System.currentTimeMillis();
 				timeout = false;
-				/*ProgressDialog progressDialog = ProgressDialog.show(ctx, "",
-	            "Loading user data...",false,false);*/
 				do{
 				CustomBackup c = new CustomBackup();
 				c.requestrestore(getApplicationContext());
@@ -432,20 +406,18 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			}
 		};
 		b.execute();
-    	
-		Log.i("BTSRV", "SECOND");
 	}
 
     //MOVE TO TOPOOS INTERFACE
 	public boolean addFriend(String friend_data){
         String[] data = friend_data.split(";");
         String friend = data[1];
-        boolean duplicated = TopoosInterface.isFriendDuplicated(friend, (Context)this);
+        boolean duplicated = TopoosInterface.isFriendDuplicated(friend, this);
 		if(!duplicated){
-            TopoosInterface.saveFriend(friend_data, (Context)this);
+            TopoosInterface.saveFriend(friend_data, this);
 		}
         else {
-            Toast.makeText((Context)this, getString(R.string.add_already), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.add_already), Toast.LENGTH_LONG).show();
             showFriend(friend);
         }
 		return !duplicated;
@@ -453,28 +425,26 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 
 	
 	public void showFriend(String names){
-		
 		String friends = prefs.getString("friends", "");
 		List<String> flist = TopoosInterface.itemize(friends);
 		String[] params;
-			for(String element:flist){
-				params = element.split(";");
-				if(params[1].compareTo(names)==0){
-					String path = Environment.getExternalStorageDirectory().toString();
-					Bitmap bmp = BitmapFactory.decodeFile(path+"/unitenfc/"+params[0]+".png");
-					pic.setImageBitmap(bmp);
-					name.setText(params[1]);
-					LoadCard l = new LoadCard();
-					l.execute(params[0]);
-
-			    	 View header = this.getLayoutInflater().inflate(R.layout.header_layout, null);
-			    	 if(check.getHeaderViewsCount() < 1){
-				         check.addHeaderView(header);
-				         ((TextView)header).setText(getString(R.string.last_visited));
-			    	 }
-					break;
-				}	
-			}
+        for(String element:flist){
+            params = element.split(";");
+            if(params[1].compareTo(names)==0){
+            String path = Environment.getExternalStorageDirectory().toString();
+            Bitmap bmp = BitmapFactory.decodeFile(path+"/unitenfc/"+params[0]+".png");
+            pic.setImageBitmap(bmp);
+            name.setText(params[1]);
+            LoadCard l = new LoadCard();
+            l.execute(params[0]);
+            View header = this.getLayoutInflater().inflate(R.layout.header_layout, null);
+            if(check.getHeaderViewsCount() < 1){
+                check.addHeaderView(header);
+                ((TextView)header).setText(getString(R.string.last_visited));
+            }
+            break;
+            }
+        }
 	}
 	
 	protected void onDestroy() {
@@ -487,7 +457,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 					CustomBackup c = new CustomBackup();
 					c.requestbackup(getApplicationContext());
 				}
-	    		
+
 	    	});
 	    	b.start();
 		}

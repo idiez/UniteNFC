@@ -2,9 +2,6 @@ package es.quantum.unitenfc.Objects;
 
 import java.util.List;
 
-/**
- * Created by root on 8/4/13.
- */
 public class Wall {
 
     private String wall_pos_type;
@@ -17,7 +14,6 @@ public class Wall {
     private float mean_rating;
     private List<Entry> entry_list;
     private boolean sudo;
-
 
     public String getType() {
         return wall_pos_type;
@@ -100,5 +96,3 @@ public class Wall {
         this.sudo = sudo;
     }
 }
-
-

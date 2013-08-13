@@ -2,13 +2,8 @@ package es.quantum.unitenfc;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.location.Location;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.FacebookRequestError;
 import com.facebook.HttpMethod;
@@ -16,12 +11,9 @@ import com.facebook.Request;
 import com.facebook.RequestAsyncTask;
 import com.facebook.Response;
 import com.facebook.Session;
-import com.facebook.model.GraphLocation;
 import com.facebook.model.GraphUser;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -39,7 +31,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -47,11 +38,7 @@ import java.util.List;
 import es.quantum.unitenfc.Objects.NFCPoint;
 import es.quantum.unitenfc.Objects.UserInfo;
 import es.quantum.unitenfc.backup.CustomBackup;
-import es.quantum.unitenfc.backup.GMailSender;
 
-/**
- * Created by root on 7/22/13.
- */
 public class FacebookLogic {
 
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
@@ -62,7 +49,6 @@ public class FacebookLogic {
     public static final int VISIT = 200;
     public static final int COMMENT = 300;
     public static final int NEW_FRIEND = 400;
-
 
     public static void linkUser(String fb_id, String usr_id, List<GraphUser> users, Context context){
         final Context ctx = context;
@@ -119,7 +105,6 @@ public class FacebookLogic {
     }
 
     public static void searchFriends(BiMap<String,String> biMap, List<GraphUser> users, Context context){
-        int count = 0;
         for(GraphUser friend:users){
             if(biMap.containsKey(friend.getId())){
                 String id = biMap.get(friend.getId());
@@ -147,7 +132,6 @@ public class FacebookLogic {
                         UserInfo session = gson.fromJson(responseString, UserInfo.class);
                         String user_data = id+";"+session.getUser_name()+";"+session.getPic_uri();
                         TopoosInterface.saveFriend(user_data,context);
-                        count++;
                     }
                 }
             }
@@ -181,7 +165,6 @@ public class FacebookLogic {
                 session.requestNewPublishPermissions(newPermissionsRequest);
                 return;
             }
-
             Bundle postParams = new Bundle();
             postParams.putString("message", message);
             //postParams.putString("tags", "NFC");
@@ -230,17 +213,17 @@ public class FacebookLogic {
         String message = "";
         String type = "";
         switch (Integer.decode(nfcp.getPosId())) {
+            case POICategories.LEISURE:
+                type = "LEISURE";
+                break;
+            case POICategories.EVENT:
+                type = "EVENT";
+                break;
             case POICategories.INFO:
                 type = "INFO";
                 break;
-            case POICategories.HOTSPOT:
-                type = "HOTSPOT";
-                break;
-            case POICategories.USER_DATA:
-                type = "USER DATA";
-                break;
-            case POICategories.PROMOTION:
-                type = "PROMOTION";
+            case POICategories.TURISM:
+                type = "TURISM";
                 break;
             default:
                 break;

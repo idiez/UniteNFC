@@ -1,12 +1,12 @@
 package es.quantum.unitenfc;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,8 +19,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -46,31 +44,23 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import es.quantum.unitenfc.Objects.Entry;
 import es.quantum.unitenfc.Objects.Wall;
 
-/**
- * Created by root on 8/4/13.
- */
 public class WallActivity extends Activity implements OnReg {
 
-    ShareActionProvider mShareActionProvider;
-    String message;
+    private ShareActionProvider mShareActionProvider;
+    private String message;
     private String wall_id;
     private List<Entry> entries;
     private ListView list;
     private List<EntryItem> r1;
-    private ProgressDialog progressDialog;
     private RatingBar ratingBar;
     private TextView mean;
     private ProgressBar pg;
-    private boolean sudo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,16 +79,16 @@ public class WallActivity extends Activity implements OnReg {
         ((TextView)findViewById(R.id.wall_title)).setText(w.getTitle());
         ((TextView)findViewById(R.id.wall_description)).setText(w.getDescription());
         entries = w.getEntry_list();
-        sudo = w.isSudo();
+        boolean sudo = w.isSudo();
         int res_id;
         switch(Integer.parseInt(w.getType())){
-            case POICategories.USER:
+            case POICategories.INFO:
                 res_id = R.drawable.nfc_blue;
                 break;
-            case POICategories.PROMOTION:
+            case POICategories.TURISM:
                 res_id = R.drawable.nfc_orange;
                 break;
-            case POICategories.INFO:
+            case POICategories.LEISURE:
                 res_id = R.drawable.nfc_violet;
                 break;
             default:
@@ -125,12 +115,12 @@ public class WallActivity extends Activity implements OnReg {
         }
         else {
             final Context ctxx = (Context) this;
-            ((Button) findViewById(R.id.rate)).setOnClickListener(new View.OnClickListener() {
+            findViewById(R.id.rate).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     final int rating = (int) ratingBar.getRating();
-                    if(rating != 0){
-                        new AsyncTask<Void,Void,String>(){
+                    if (rating != 0) {
+                        new AsyncTask<Void, Void, String>() {
 
                             @Override
                             protected String doInBackground(Void... voids) {
@@ -139,13 +129,13 @@ public class WallActivity extends Activity implements OnReg {
                                 HttpResponse response = null;
                                 String post_url = "http://unitenfc.herokuapp.com/objects/wall/rate/";
                                 HttpPost socket = new HttpPost(post_url);
-                                socket.setHeader( "Content-Type", "application/xml" );
-                                socket.setHeader( "Accept", "*/*" );
+                                socket.setHeader("Content-Type", "application/xml");
+                                socket.setHeader("Accept", "*/*");
                                 JSONObject json = new JSONObject();
                                 try {
                                     json.put("wall", wall_id);
                                     json.put("value", rating);
-                                    json.put("user_id", prefs.getString("session",""));
+                                    json.put("user_id", prefs.getString("session", ""));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -165,7 +155,7 @@ public class WallActivity extends Activity implements OnReg {
                                     e.printStackTrace();
                                 }
                                 StatusLine statusLine = response.getStatusLine();
-                                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
                                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                                     try {
                                         response.getEntity().writeTo(out);
@@ -181,7 +171,7 @@ public class WallActivity extends Activity implements OnReg {
 
                             @Override
                             protected void onPostExecute(String result) {
-                                if(result.compareTo("")!=0) {
+                                if (result.compareTo("") != 0) {
                                     Toast.makeText(getApplicationContext(), "Puntuación enviada", Toast.LENGTH_LONG).show();
                                     mean.setText(result);
                                     ratingBar.setOnTouchListener(new View.OnTouchListener() {
@@ -189,8 +179,7 @@ public class WallActivity extends Activity implements OnReg {
                                             return true;
                                         }
                                     });
-                                }
-                                else {
+                                } else {
                                     Toast.makeText(getApplicationContext(), "Algo fue mal, prueba de nuevo", Toast.LENGTH_LONG).show();
                                 }
                                 refreshLists();
@@ -203,9 +192,8 @@ public class WallActivity extends Activity implements OnReg {
 
                             }
                         }).start();
-                    }
-                    else {
-                        Toast.makeText(ctxx,"Da una puntuación primero",Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(ctxx, "Da una puntuación primero", Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -243,8 +231,7 @@ public class WallActivity extends Activity implements OnReg {
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
-    {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_ctx, menu);
@@ -260,7 +247,6 @@ public class WallActivity extends Activity implements OnReg {
                 new AsyncTask<Void, Void, String>() {
                     @Override
                     protected String doInBackground(Void... voids) {
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                         HttpClient httpclient = new DefaultHttpClient();
                         HttpResponse response = null;
                         String post_url = "http://unitenfc.herokuapp.com/objects/entry/delete/";
@@ -309,7 +295,6 @@ public class WallActivity extends Activity implements OnReg {
                         Toast.makeText(getApplicationContext(), "Comentario eliminado", Toast.LENGTH_LONG).show();
                         refreshLists();
                     }
-
                 }.execute();
                 return true;
             default:
@@ -317,10 +302,33 @@ public class WallActivity extends Activity implements OnReg {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.settings) {
+            startActivityForResult(new Intent(getApplicationContext(),Settings.class),2);
+            return true;
+        } else if (itemId == R.id.about) {
+            startActivity(new Intent(getApplicationContext(),About.class));
+            return true;
+        } else if (itemId == R.id.report) {
+            new ReportBug().show(this.getFragmentManager(), "");
+            return true;
+        } else if (itemId == R.id.exit) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("saveuser", false);
+            editor.commit();
+            this.onBackPressed();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void refreshLists(){
         EntriesListViewAdapter adapter1 = new EntriesListViewAdapter(getApplicationContext(),R.layout.entry, r1);
         list.setAdapter(adapter1);
-        //list.setOnItemClickListener(this);
     }
 
     @Override
@@ -352,23 +360,28 @@ public class WallActivity extends Activity implements OnReg {
             }
             else {
                 for(Entry e:entries){
-                    //String i = topoos.Images.Operations.GetImageURIThumb(e.getAuthor_pic_uri(),topoos.Images.Operations.SIZE_SMALL);
-                    //Bitmap bmp = TopoosInterface.LoadImageFromWebOperations(i);
-                    URL url = null;
-                    try {
-                        String uri = e.getAuthor_pic_uri();
-                        url = new URL(("https://pic.topoos.com/"+uri+"?size=small"));
-                    } catch (MalformedURLException e1) {
-                        e1.printStackTrace();
-                    }
+                    String i = topoos.Images.Operations.GetImageURIThumb(e.getAuthor_pic_uri(),topoos.Images.Operations.SIZE_SMALL);
                     Bitmap bmp;
+                    Bitmap croppedBmp;
                     try {
-                        bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    } catch (IOException e1) {
-                        bmp = BitmapFactory.decodeResource(getResources(), R.drawable.dummy);
+                        bmp = TopoosInterface.LoadImageFromWebOperations(i);
+                        int width = bmp.getWidth();
+                        int heigth = bmp.getHeight();
+                        if(width == heigth){
+                            croppedBmp = bmp;
+                        }
+                        else if(width > heigth){
+                            croppedBmp = Bitmap.createBitmap(bmp,(width-heigth)/2, 0, heigth, heigth);
+                        }
+                        else {
+                            croppedBmp = Bitmap.createBitmap(bmp,0, (heigth-width)/2, width, width);
+                        }
+
+                    } catch (Exception e1) {
+                        croppedBmp = BitmapFactory.decodeResource(getResources(), R.drawable.dummy);
                         e1.printStackTrace();
                     }
-                    r1.add(new EntryItem(bmp,e.getAuthor_name(),e.getTime_stamp(), e.getMessage()));
+                    r1.add(new EntryItem(Bitmap.createScaledBitmap(croppedBmp,100,100,false),e.getAuthor_name(),e.getTime_stamp(), e.getMessage()));
                 }
             }
             return null;

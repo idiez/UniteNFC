@@ -1,23 +1,16 @@
 package es.quantum.unitenfc;
 
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,59 +22,46 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
-
-import com.facebook.LoggingBehavior;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
-
-
-import com.facebook.widget.UserSettingsFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.List;
 
-import es.quantum.unitenfc.OnReg;
 import es.quantum.unitenfc.backup.CustomBackup;
 import topoos.AccessTokenOAuth;
 import topoos.Exception.TopoosException;
 import topoos.LoginActivity;
 import topoos.Objects.POI;
 import topoos.Objects.User;
-import topoos.Objects.UserIdPosition;
 
 public class MainActivity extends Activity implements OnReg{
 
-	ProgressDialog progressDialog;
-	ShareActionProvider mShareActionProvider;
-	CustomMapFragment map;
-	ScanFragment scan;
-	CustomTabListener maptablistener;
-	CustomTabListener scantablistener;
-	boolean first;
-	String userid;
-	List <UserIdPosition> friends;
-	
-	private Location current_pos;
+	private ProgressDialog progressDialog;
+    private ShareActionProvider mShareActionProvider;
+    private CustomMapFragment map;
+    private ScanFragment scan;
+    private CustomTabListener maptablistener;
+    private CustomTabListener scantablistener;
+    private boolean first;
+    private Location current_pos;
 	private LocationManager mLocationManager;
 	private RegisterPosition mCustomLocationListener;
-	
 	private List<POI> poi_list;
-	
 	private Handler mHandler = new Handler();
 	Runnable mUpdateMap = new Runnable() {
+
         public void run() {
            map.setPOIList(poi_list);
            if(maptablistener.isActive()){
@@ -102,7 +82,6 @@ public class MainActivity extends Activity implements OnReg{
            }
         }
 	};
-
     private FacebookDialog fb_dialog;
     private UiLifecycleHelper uiHelper;
     private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -111,7 +90,6 @@ public class MainActivity extends Activity implements OnReg{
             onSessionStateChange(session, state, exception);
         }
     };
-
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if(fb_dialog.isAdded())fb_dialog.dismiss();
         if (state.isOpened()) {
@@ -122,7 +100,6 @@ public class MainActivity extends Activity implements OnReg{
                 public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
                     final GraphUser usr = user;
-                    // FacebookLogic.publishStory(MainActivity.this);
                     showToast("Hello " + user.getName() + "!");
                     Request.executeMyFriendsRequestAsync(s, new Request.GraphUserListCallback() {
                         @Override
@@ -140,40 +117,26 @@ public class MainActivity extends Activity implements OnReg{
         }
     }
 
-
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
-
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-
         if(!TopoosInterface.isOnline(getApplicationContext())) {
-            new AlertDialog.Builder((Context)this).setTitle("Network Settings").setMessage("Internet connection required").setCancelable(false).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+            new AlertDialog.Builder(this).setTitle("Network Settings").setMessage("Internet connection required").setCancelable(false).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     onBackPressed();
                 }
             }).show();
-         //   this.onDestroy();
         }
 		TopoosInterface.initializeTopoosSession(this);	//initiate topoos session
-
         fb_dialog = new FacebookDialog();
         uiHelper = new UiLifecycleHelper(this, callback);
-
         uiHelper.onCreate(savedInstanceState);
-
-	
 		/*	REGISTER CATEEGORIES FOR THE FIRST TIME
 		RegisterCategoryWorker worker = new RegisterCategoryWorker();
 		Thread thread = new Thread(worker);
 		thread.start();*/
-
-
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         boolean showfbdialog = prefs.getBoolean("showfbdialog", true);
         Session session = Session.getActiveSession();
@@ -181,29 +144,22 @@ public class MainActivity extends Activity implements OnReg{
             fb_dialog.setCancelable(false);
             fb_dialog.show(getFragmentManager(), "fb log");
         }
-
 		map =  new CustomMapFragment();	//create map
 	    float lat = prefs.getFloat("lastlat", 0);
 	    float lon = prefs.getFloat("lastlong", 0);
 		map.setPos(new LatLng(lat,lon));
-	    
-	    
 	    map.setPOIVis();
-
 	    first = true;
 	    //set listeners
 	    mCustomLocationListener = new RegisterPosition();
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, mCustomLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, mCustomLocationListener);
-        
         //create action bar
         ActionBar actionBar = getActionBar();
 	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-	    
 	    SocialFragment social = new SocialFragment();
 	    scan = new ScanFragment();
-	    
 	    maptablistener = new CustomTabListener(map);
 	    scantablistener = new CustomTabListener(scan);
 	    Tab map_tab = actionBar.newTab().setText(getString(R.string.map_tab)).setTabListener(maptablistener);
@@ -212,12 +168,6 @@ public class MainActivity extends Activity implements OnReg{
 	    actionBar.addTab(map_tab);
 	    actionBar.addTab(scan_tab);
 	    actionBar.addTab(social_tab);
-
-	    
-	    /* Thread d = new Thread(new FetchPositionWorker());
-	    d.start();*/
-		
-        
 	}
 
 	@Override
@@ -225,28 +175,23 @@ public class MainActivity extends Activity implements OnReg{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		if(maptablistener.isActive())getMenuInflater().inflate(R.menu.menu1, menu);
 		else getMenuInflater().inflate(R.menu.menu2, menu);
-		
 		MenuItem menuItem = menu.findItem(R.id.menu_share);
 		if(menuItem != null) mShareActionProvider = (ShareActionProvider)menuItem.getActionProvider();
-
 		int state = getState();
 		if(state == 1){
 			mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(getString(R.string.share_explore)));
 		}
 		else{
-			mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent((Context)this, state));
-		}		
-        
+			mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent(this, state));
+		}
 		return true;
 	}
 
-
-
 	@Override
 	public void onAttachFragment(Fragment fragment){
-
-		if(mShareActionProvider != null)
-        mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent((Context)this, getState()));
+		if(mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(TopoosInterface.createShareIntent((Context)this, getState()));
+        }
 	}
 	
 	@Override
@@ -271,9 +216,11 @@ public class MainActivity extends Activity implements OnReg{
 			startActivityForResult(new Intent(getApplicationContext(),Settings.class),2);
 			return true;
 		} else if (itemId == R.id.about) {
-			//ABOUT ACTIVITY
 			startActivity(new Intent(getApplicationContext(),About.class));
 			return true;
+        } else if (itemId == R.id.report) {
+            new ReportBug().show(this.getFragmentManager(),"");
+            return true;
 		} else if (itemId == R.id.exit) {
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 			Editor editor = prefs.edit();
@@ -309,8 +256,6 @@ public class MainActivity extends Activity implements OnReg{
         super.onStop();
     }
 
-
-
 	protected void onDestroy() {
 		super.onDestroy();
         uiHelper.onDestroy();
@@ -318,7 +263,6 @@ public class MainActivity extends Activity implements OnReg{
     		mLocationManager.removeUpdates(mCustomLocationListener);
     		mLocationManager = null;
     	}
-		
 	}
 	
 	public void showToast(final String toast) {
@@ -331,78 +275,20 @@ public class MainActivity extends Activity implements OnReg{
 	}
 	
 	public void onNewIntent(Intent intent) {
-		//showToast("TEST");
 		Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 		NdefMessage[] messages = null; 
         if (rawMsgs != null) {  
              messages = new NdefMessage[rawMsgs.length];  
              for (int i1 = 0; i1 < rawMsgs.length; i1++) {  
-                  messages[i1] = (NdefMessage) rawMsgs[i1];  
-                  Log.i("BYTES", ""+messages[i1].toByteArray());
+                  messages[i1] = (NdefMessage) rawMsgs[i1];
              }  
         }  
         if(messages[0] != null) {  
      		NdefRecord[] rec = (messages[0].getRecords());
      		byte[] ans = rec[0].getPayload();
      		String str = new String(ans);
-			Log.i("PAYLOAD", str);
         }
-        //Log.i("INTENT", intent.getType());
         if(intent.getType() != null && intent.getType().equals("application/es.quantum.unitenfc")) {
-	        /*Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);  
-	        NdefMessage[] messages = null; 
-	        if (rawMsgs != null) {  
-	             messages = new NdefMessage[rawMsgs.length];  
-	             for (int i1 = 0; i1 < rawMsgs.length; i1++) {  
-	                  messages[i1] = (NdefMessage) rawMsgs[i1];  
-	                  Log.i("BYTES", ""+messages[i1].toByteArray());
-	             }  
-	        } 
-	        if(messages[0] != null) {  
-	             		NdefRecord[] rec = (messages[0].getRecords());
-	             		byte[] ans = rec[0].getPayload();
-	             		String str;
-						try {
-							str = new String(ans, "UTF-8");
-							Log.i("BTRCV", str);
-							String friend = str.substring(0, 35);
-							SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences((Context)this);
-							String friendlist = pref.getString("friends", "");
-							List<String> list = TopoosInterface.itemize(friendlist);
-							boolean duplicated = false;
-							for(String element:list){
-								if(element.compareTo(friend) == 0){
-									showToast("You are already friends!");
-									duplicated = true;
-									break;
-								}
-				        	}
-							if(!duplicated){		
-								User usr = topoos.Users.Operations.Get(getApplicationContext(), friend);
-								Editor editor = pref.edit();
-								String title = usr.getName()+";"+friend+"�";
-					    		editor.putString("checkpoints", title.concat(friendlist));
-					    		editor.commit();
-								String MAC = str.substring(36);
-								//INICIAR BLUETOOTH
-								BluetoothConn btc = new BluetoothConn(false);
-								btc.setMAC(MAC);
-								btc.setMes(pref.getString("session", ""));
-								btc.configureBluetooth();
-							}
-
-						} catch (UnsupportedEncodingException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (TopoosException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-	             		
-	        }*/
         }
         else {
 		    Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -414,24 +300,19 @@ public class MainActivity extends Activity implements OnReg{
 		    		isRegistered = true;
 		    		break;
 		    	}
-		    		    	
 		    }
 		    if(!isRegistered){	//!isRegistered
 		        RegisterPOIFragment newRegisterFragment = new RegisterPOIFragment();
 			    topoos.Objects.Location loc = new topoos.Objects.Location(current_pos.getLatitude(),current_pos.getLongitude());
 			    newRegisterFragment.setArguments(tagid,loc);
-			    //DialogFragment dialog = newRegisterFragment;
 			    newRegisterFragment.show(getFragmentManager(), "register");
-			    //do something with tagFromIntent
 		    }
 		    else{
 		    	showToast(getString(R.string.nfc_duplicated));
 		    }
         }
 	}
-	
-	
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         uiHelper.onActivityResult(requestCode, resultCode, data);
@@ -443,38 +324,28 @@ public class MainActivity extends Activity implements OnReg{
 						Log.i("TOKEN",token.getAccessToken());
 						Log.i("TOKEN",token.isValid()?"Valid":"Not valid");
 						if (token.isValid()) {
-
-							//showToast("Valid!");
 							progressDialog = ProgressDialog.show((Context)this, "",
 						            getString(R.string.welcome),false,false);
 							Thread b = new Thread(new Runnable(){
 
 								@Override
 								public void run() {
-									/*ProgressDialog progressDialog = ProgressDialog.show(ctx, "",
-								            "Loading user data...",false,false);*/
 									CustomBackup c = new CustomBackup();
 									c.requestrestore(getApplicationContext());
 									TopoosInterface.setProfilePicture(getApplicationContext());
 									progressDialog.dismiss();
 								}
-				        	});
+			                	        	});
 				        	b.start();
 							Thread t = new Thread(new FetchUser());
 							t.start();
-							
 							mHandler.removeCallbacks(mUpdateMap);
 						    mHandler.postDelayed(mCentreMap, 0);
 				        	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 			    			Editor editor = prefs.edit();
 			    			editor.putBoolean("saveuser", true);
 			    			editor.commit();
-
-
-
-
 						}
-						
 						break;
 					case LoginActivity.RESULT_CANCELED:
 						this.onBackPressed();
@@ -494,7 +365,7 @@ public class MainActivity extends Activity implements OnReg{
 								c.requestrestore(ctx);
 								TopoosInterface.setProfilePicture(getApplicationContext());
 							}
-			            });
+			                     });
 			        	b.start();
 						break;
 					default:
@@ -505,22 +376,15 @@ public class MainActivity extends Activity implements OnReg{
 					FetchPOIWorker wrk = new FetchPOIWorker();
 					Thread thread1 = new Thread(wrk);
 					thread1.start();
-				
 				break;
 			case 3:
-				Log.i("onAc", "llego");
 				break;
 			default:
-				Log.i("onAc", "nollego");
 				break;
 		}
 	}
-	
-	
 
-	
 	private class RegisterPosition implements LocationListener{
-
 
         private static final int TWO_MINUTES = 1000 * 60 * 2;
 
@@ -533,13 +397,11 @@ public class MainActivity extends Activity implements OnReg{
                 // A new location is always better than no location
                 return true;
             }
-
             // Check whether the new location fix is newer or older
             long timeDelta = location.getTime() - currentBestLocation.getTime();
             boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
             boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
             boolean isNewer = timeDelta > 0;
-
             // If it's been more than two minutes since the current location, use the new location
             // because the user has likely moved
             if (isSignificantlyNewer) {
@@ -548,17 +410,13 @@ public class MainActivity extends Activity implements OnReg{
             } else if (isSignificantlyOlder) {
                 return false;
             }
-
             // Check whether the new location fix is more or less accurate
             int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
             boolean isLessAccurate = accuracyDelta > 0;
             boolean isMoreAccurate = accuracyDelta < 0;
             boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
             // Check if the old and new location are from the same provider
-            boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                    currentBestLocation.getProvider());
-
+            boolean isFromSameProvider = isSameProvider(location.getProvider(), currentBestLocation.getProvider());
             // Determine location quality using a combination of timeliness and accuracy
             if (isMoreAccurate) {
                 return true;
@@ -578,39 +436,31 @@ public class MainActivity extends Activity implements OnReg{
             return provider1.equals(provider2);
         }
 
-
 		@Override
 		public void onLocationChanged(Location arg0) {
-			//showToast("NEW!");
             if(!isBetterLocation(arg0,current_pos)) return;
 			map.setPos(new LatLng(arg0.getLatitude(),arg0.getLongitude()));
-			//discriminar medidas aqu�!
+			//discriminar medidas aquí!
 			if(maptablistener.isActive()){
-				
 				SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		    	boolean foo = prefs.getBoolean("track", false);
 				if(first) {
 					first = false;
 					map.centerMapAndRefresh(false);
 				}
-			     map.UpdateMarker();
-			     if(foo) map.centerMapAndRefresh(true);
-			     current_pos = arg0;
-			     
-
-			     RegisterPositionWorker worker = new RegisterPositionWorker(arg0);
-			     Thread thread = new Thread(worker);
-			     thread.start();
-		
-			     FetchPOIWorker wrk = new FetchPOIWorker();
-			     Thread thread1 = new Thread(wrk);
-			     thread1.start();
-			     
-			     SharedPreferences.Editor editor = prefs.edit();
-			     editor.putFloat("lastlat", (float)arg0.getLatitude());
-			     editor.putFloat("lastlong", (float)arg0.getLongitude());
-			     editor.commit();
-
+			    map.UpdateMarker();
+			    if(foo) map.centerMapAndRefresh(true);
+			    current_pos = arg0;
+			    RegisterPositionWorker worker = new RegisterPositionWorker(arg0);
+			    Thread thread = new Thread(worker);
+			    thread.start();
+		        FetchPOIWorker wrk = new FetchPOIWorker();
+			    Thread thread1 = new Thread(wrk);
+			    thread1.start();
+			    SharedPreferences.Editor editor = prefs.edit();
+			    editor.putFloat("lastlat", (float)arg0.getLatitude());
+			    editor.putFloat("lastlong", (float)arg0.getLongitude());
+			    editor.commit();
 			}
 		}
 
@@ -626,28 +476,22 @@ public class MainActivity extends Activity implements OnReg{
 
 		@Override
 		public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-			
 		}
-
    }
 
 	private class FetchUser implements Runnable {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			try {
 				User u = topoos.Users.Operations.Get(MainActivity.this, "me");
-				userid = u.getId();
-				//friends = topoos.Users.Operations.NearPositionGet(getApplicationContext(), current_pos.getLatitude(), current_pos.getLongitude(), 8000000, groupID, 1000, null);
-				if(u!=null)Log.i("ID", u.getId());
+                if(u!=null)Log.i("ID", u.getId());
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (TopoosException e) {
 				e.printStackTrace();
 			}
 		}
-	
 	}
 	
 	private class RegisterPositionWorker implements Runnable {
@@ -660,8 +504,7 @@ public class MainActivity extends Activity implements OnReg{
     	
 		public void run(){
 			try {
-					topoos.Positions.Operations.Add(getApplicationContext(), position.getLatitude(), position.getLongitude(), null, null, null, null, null, null, null);
-					Log.i("POS", "WORKING!");
+				topoos.Positions.Operations.Add(getApplicationContext(), position.getLatitude(), position.getLongitude(), null, null, null, null, null, null, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -670,7 +513,7 @@ public class MainActivity extends Activity implements OnReg{
 	
 	private class RegisterCategoryWorker implements Runnable {
 		
-    public void run(){
+        public void run(){
 			try {
 				TopoosInterface.PreregisterPOICategories();
 			} catch (Exception e) {
@@ -678,44 +521,34 @@ public class MainActivity extends Activity implements OnReg{
 			}
 		}
 	}
-	
-	
-	private class FetchPOIWorker implements Runnable{
+
+	private class FetchPOIWorker implements Runnable {
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
-					try {
-						poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(),current_pos.getLongitude()),0);
-						mHandler.removeCallbacks(mUpdateMap);
-					    mHandler.postDelayed(mUpdateMap, 0);
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (TopoosException e) {
-						e.printStackTrace();
-					} catch (NullPointerException e) {
-						e.printStackTrace();
-					}
-			}
+            try {
+                poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(),current_pos.getLongitude()),0);
+                mHandler.removeCallbacks(mUpdateMap);
+                mHandler.postDelayed(mUpdateMap, 0);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TopoosException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+		}
 	}
-	
-	
-	
-	
+
 	private class FetchPositionWorker implements Runnable{
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
-					try {
-						//topoos.AccessTokenOAuth token1 = new topoos.AccessTokenOAuth("771697e2-c59d-468e-b937-ac9d3632d67b");
-						topoos.Positions.Operations.GetLastUser(getApplicationContext(), topoos.Users.Operations.Get(MainActivity.this, "me").getId());
-						showToast("NEW!");
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (TopoosException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+            try {
+                topoos.Positions.Operations.GetLastUser(getApplicationContext(), topoos.Users.Operations.Get(MainActivity.this, "me").getId());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (TopoosException e) {
+                e.printStackTrace();
+            }
 		}
 	}
 
@@ -725,13 +558,9 @@ public class MainActivity extends Activity implements OnReg{
 		else return 3;
 	}
 
-
 	@Override
 	public void onReg(String mes) {
         FacebookLogic.publishStory(MainActivity.this, mes);
-	//	scan.refreshLists();
+	    //	scan.refreshLists();
 	}
-
-
-	
 }

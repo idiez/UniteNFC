@@ -13,7 +13,13 @@
 	<item 	android:id="@+id/about"
           	android:title="@string/action_about"
           	android:showAsAction="never"/>
-		<item 	android:id="@+id/exit"
+
+    <item 	android:id="@+id/report"
+             android:title="@string/action_report"
+             android:showAsAction="never"/>
+
+
+    <item 	android:id="@+id/exit"
           	android:title="@string/action_exit"
           	android:showAsAction="never"/>
 	
