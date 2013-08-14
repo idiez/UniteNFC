@@ -5,11 +5,7 @@ import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,8 +23,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -164,6 +158,7 @@ public class MainActivity extends Activity implements OnReg{
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, mCustomLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, mCustomLocationListener);
+        current_pos = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         //create action bar
         ActionBar actionBar = getActionBar();
 	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -485,12 +480,12 @@ public class MainActivity extends Activity implements OnReg{
 
 		@Override
 		public void onProviderDisabled(String arg0) {
-			
+
 		}
 
 		@Override
 		public void onProviderEnabled(String arg0) {
-			
+
 		}
 
 		@Override
