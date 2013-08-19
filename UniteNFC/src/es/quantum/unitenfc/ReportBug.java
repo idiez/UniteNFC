@@ -31,12 +31,12 @@ public class ReportBug extends DialogFragment {
         final String wall_id = this.getTag();
         builder.setView(inflater.inflate(R.layout.comment, null));
         builder
-                .setTitle("Problema")
-                .setPositiveButton("Enviar", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.report_title))
+                .setPositiveButton(getString(R.string.report_send), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         comment = ((EditText) getDialog().findViewById(R.id.commentline)).getText().toString().trim();
                         if (comment.compareTo("") == 0) {
-                            Toast.makeText(getActivity().getApplicationContext(), "Escribe algo", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.dialog_empty_comment), Toast.LENGTH_LONG).show();
                         } else {
                             new SendBug().execute();
                         }
@@ -85,10 +85,10 @@ public class ReportBug extends DialogFragment {
         protected void onPostExecute(Boolean result) {
             String mes = "";
             if(result) {
-                mes = "Enviado correctamente";
+                mes = getString(R.string.report_ok);
             }
             else {
-                mes = "Algo fue mal, intentalo de nuevo";
+                mes = getString(R.string.report_fail);
             }
             Toast.makeText(ctx,mes, Toast.LENGTH_LONG).show();
         }

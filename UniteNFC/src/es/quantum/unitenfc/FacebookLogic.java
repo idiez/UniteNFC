@@ -236,10 +236,10 @@ public class FacebookLogic {
                 message = "Tag "+nfcp.getName()+" just visited of type "+type+". #"+id+" #NFC #UniteNFC";
                 break;
             case COMMENT:
-                message = "Tag "+nfcp.getName()+" just registered of type "+type+". #"+id+" #NFC #UniteNFC";
+                //message = "Tag "+nfcp.getName()+" just registered of type "+type+". #"+id+" #NFC #UniteNFC";
                 break;
             case NEW_FRIEND:
-                message = "Tag "+nfcp.getName()+" just registered of type "+type+". #"+id+" #NFC #UniteNFC";
+                //message = "Tag "+nfcp.getName()+" just registered of type "+type+". #"+id+" #NFC #UniteNFC";
                 break;
             default:
                 break;

@@ -2,6 +2,12 @@
 <resources>
     <!-- App name-->
     <string name="app_name">UniteNFC</string>
+    <!--CLIENT ID-->
+    <string name="client_id">2886137d-5535-444b-82c9-9826d8025deb</string>
+    <!-- Internet warnings -->
+    <string name="internet_no_connection">Network Settings</string>
+    <string name="internet_required">Internet connection required</string>
+    <string name="internet_failure">Connection failure</string>
     <!-- Tabs -->
     <string name="map_tab">MAP</string>
     <string name="nfc_points_tab">NFC POINTS</string>
@@ -22,7 +28,7 @@
     <!-- Map tab -->
     <string name="stick_man">I\'m here!</string>
     <!-- Scan tab -->
-    <string name="bttn_scan">Scan</string>
+    <string name="bttn_scan">Nuevo Punto NFC</string>
     <string name="last_visited">Last NFC Points visited:</string>
     <string name="last_registered">Last NFC Points registered:</string>
     <string name="nfc_error">Please, enable NFC in your settings</string>
@@ -57,4 +63,42 @@
     <string name="share_friend">Just become friend with </string>
     <string name="share_unite">Join and share your NFC experience with UniteNFC.</string>
     <string name="share_explore">Exploring NFC Points with UniteNFC.</string>
+    <string name="share_undef">Last NFC Point checked: </string>
+    <!-- Facebook -->
+    <string name="fb_app_id">480588798692205</string>
+    <string name="fb_reminder">Don\'t show again</string>
+    <string name="fb_negative">Not now</string>
+    <string name="fb_salutation">Hello </string>
+    <string name="fb_share_nfcp">NFC Point </string>
+    <string name="fb_share_registered"> just registered of type </string>
+    <string name="fb_share_visited"> just visited of type </string>
+    <!-- Wall -->
+    <string name="tag_content">Tag content</string>
+    <string name="wall_comments">Comments:</string>
+    <string name="mean_rating">Mean:</string>
+    <string name="rate">¡Rate!</string>
+    <string name="tag_privacy">Hidden</string>
+    <string name="wall_title">Title</string>
+    <string name="wall_description">Description</string>
+    <string name="last_seen">Last seen:</string>
+    <string name="tag_date">00/00/0000</string>
+    <string name="tag_address">Direction</string>
+    <string name="add_newcomment">+ Add comment</string>
+    <string name="comment_hint">Add your comment</string>
+    <string name="empty_wall">No comments yet</string>
+    <!-- Add comment dialog -->
+    <string name="dialog_add_comment">Add comment</string>
+    <string name="dialog_empty_comment">Write something</string>
+    <string name="dialog_comment_deleted">Comment deleted</string>
+    <!-- Report bug -->
+    <string name="report_title">Bug</string>
+    <string name="report_send">Send</string>
+    <string name="report_ok">Correctly sent</string>
+    <string name="report_fail">Something went wrong, try again</string>
+    <!-- Rate messages -->
+    <string name="rating_sent">Rating sent</string>
+    <string name="rating_empty">Rate first, please</string>
+    <!-- Notifications -->
+    <string name="notification_text">NFC Point close by</string>
+
 </resources>

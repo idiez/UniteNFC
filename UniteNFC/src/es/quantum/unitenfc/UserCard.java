@@ -202,11 +202,14 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			String path = Environment.getExternalStorageDirectory().toString();
 			Bitmap bmp = BitmapFactory.decodeFile(path+"/unitenfc/profile.png");
 			pic.setImageBitmap(bmp);
-			name.setText(prefs.getString("username", "empty"));
+			name.setText(prefs.getString("username", ""));
 			LoadCard l = new LoadCard();
-			l.execute("me");
+			l.execute(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session",""));
 	    	View header = this.getLayoutInflater().inflate(R.layout.header_layout, null);
-	        check.addHeaderView(header);
+            if(check.getHeaderViewsCount() < 1){
+                check.addHeaderView(header);
+                ((TextView)header).setText(getString(R.string.last_visited));
+            }
 			mAdapter = NfcAdapter.getDefaultAdapter(getApplicationContext());
 			mAdapter.setNdefPushMessageCallback(this,this);
 			mAdapter.setOnNdefPushCompleteCallback(this, this);
@@ -238,10 +241,11 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		
 		@Override
 		protected UserInfo doInBackground(String... id) {
+            iid = id[0];
 			User usr;
 			HttpClient httpclient = new DefaultHttpClient();
     	    HttpResponse response = null;
-    	    iid = id[0];
+
     	    try {
 				usr = topoos.Users.Operations.Get(getApplicationContext(), iid);
 				uname = usr.getName();
@@ -431,18 +435,18 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
         for(String element:flist){
             params = element.split(";");
             if(params[1].compareTo(names)==0){
-            String path = Environment.getExternalStorageDirectory().toString();
-            Bitmap bmp = BitmapFactory.decodeFile(path+"/unitenfc/"+params[0]+".png");
-            pic.setImageBitmap(bmp);
-            name.setText(params[1]);
-            LoadCard l = new LoadCard();
-            l.execute(params[0]);
-            View header = this.getLayoutInflater().inflate(R.layout.header_layout, null);
-            if(check.getHeaderViewsCount() < 1){
-                check.addHeaderView(header);
-                ((TextView)header).setText(getString(R.string.last_visited));
-            }
-            break;
+                String path = Environment.getExternalStorageDirectory().toString();
+                Bitmap bmp = BitmapFactory.decodeFile(path+"/unitenfc/"+params[0]+".png");
+                pic.setImageBitmap(bmp);
+                name.setText(params[1]);
+                LoadCard l = new LoadCard();
+                l.execute(params[0]);
+                View header = this.getLayoutInflater().inflate(R.layout.header_layout, null);
+                if(check.getHeaderViewsCount() < 1){
+                    check.addHeaderView(header);
+                    ((TextView)header).setText(getString(R.string.last_visited));
+                }
+                break;
             }
         }
 	}

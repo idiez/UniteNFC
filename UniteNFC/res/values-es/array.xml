@@ -6,7 +6,13 @@
         <item >EVENTOS</item>
     </string-array>
 
-      <string-array name="radius">
+    <string-array name="gendre">
+        <item>Hombre</item>
+        <item >Mujer</item>
+    </string-array>
+
+
+    <string-array name="radius">
       <item>10</item>
       <item>100</item>
       <item>1000</item>

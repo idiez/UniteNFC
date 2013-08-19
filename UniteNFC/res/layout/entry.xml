@@ -19,7 +19,7 @@
               android:layout_toRightOf="@+id/entry_icon"
               android:layout_alignBottom="@+id/entry_icon"
               android:layout_margin="2dp"
-              android:text="dummy"
+              android:text="@string/empty_wall"
               android:textSize="17dp"/>
     <TextView android:id="@+id/entry_bydate"
               android:layout_width="wrap_content"

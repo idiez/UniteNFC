@@ -85,6 +85,21 @@ public class MainActivity extends Activity implements OnReg{
            }
         }
 	};
+    Runnable mLaunchPoll = new Runnable() {
+
+        public void run() {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            if(prefs.getBoolean("poll",false)){
+                Editor editor = prefs.edit();
+                editor.putBoolean("poll", false);				//saves last user session
+                editor.commit();
+                PollDialog newRegisterFragment = new PollDialog();
+                newRegisterFragment.show(getFragmentManager(), "register");
+
+            }
+
+        }
+    };
     private FacebookDialog fb_dialog;
     private UiLifecycleHelper uiHelper;
     private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -103,7 +118,7 @@ public class MainActivity extends Activity implements OnReg{
                 public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
                     final GraphUser usr = user;
-                    showToast("Hello " + user.getName() + "!");
+                    showToast(getString(R.string.fb_salutation)+" "+ user.getName() + "!");
                     Request.executeMyFriendsRequestAsync(s, new Request.GraphUserListCallback() {
                         @Override
                         public void onCompleted(List<GraphUser> users, Response response) {
@@ -125,7 +140,7 @@ public class MainActivity extends Activity implements OnReg{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
         if(!TopoosInterface.isOnline(getApplicationContext())) {
-            new AlertDialog.Builder(this).setTitle("Network Settings").setMessage("Internet connection required").setCancelable(false).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+            new AlertDialog.Builder(this).setTitle(getString(R.string.internet_no_connection)).setMessage(getString(R.string.internet_required)).setCancelable(false).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     onBackPressed();
@@ -182,7 +197,11 @@ public class MainActivity extends Activity implements OnReg{
         // Adds a data filter for the HTTP scheme
 
 
-        this.startService(new Intent(this, ProximityNotifier.class));
+        //this.startService(new Intent(this, ProximityNotifier.class));
+
+
+        mHandler.removeCallbacks(mLaunchPoll);
+        mHandler.postDelayed(mLaunchPoll, 0);
 
 	}
 

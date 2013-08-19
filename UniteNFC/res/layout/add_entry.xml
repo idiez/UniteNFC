@@ -11,7 +11,7 @@
     <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="+ Añadir comentario"
+            android:text="@string/add_newcomment"
             android:id="@+id/add_comment"
             android:layout_gravity="center_horizontal"
             android:textColor="#023475"

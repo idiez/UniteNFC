@@ -45,8 +45,8 @@ public class ResponseReceiver extends BroadcastReceiver{
                     new NotificationCompat.Builder(context)
                             .setSmallIcon(R.drawable.scan_tab)
                             .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),res))
-                            .setContentTitle("UniteNFC")
-                            .setContentText("Punto NFC cercano");
+                            .setContentTitle(context.getString(R.string.app_name))
+                            .setContentText(context.getString(R.string.notification_text));
             mBuilder.setContentIntent(contentIntent);
             mBuilder.setDefaults(Notification.DEFAULT_SOUND);
             mBuilder.setAutoCancel(true);
@@ -56,13 +56,5 @@ public class ResponseReceiver extends BroadcastReceiver{
             NotificationManager mNotificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(1, mBuilder.build());
-        }
-
-        private Notification crear_Notificacion() {
-            Notification notification = new Notification();
-            notification.flags |= Notification.FLAG_AUTO_CANCEL;
-            //notification.icon = R.drawable.brujula; //que salga con nuestro icono
-            notification.when = System.currentTimeMillis();
-            return notification;
         }
 }

@@ -45,12 +45,12 @@ public class AddCommentFragment extends DialogFragment {
         final String wall_id = this.getTag();
         builder.setView(inflater.inflate(R.layout.comment, null));
         builder
-                .setTitle("Añadir comentario")
+                .setTitle(getString(R.string.dialog_add_comment))
                 .setPositiveButton(getString(R.string.new_nfc_ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         comment = ((EditText) getDialog().findViewById(R.id.commentline)).getText().toString().trim();
                         if (comment.compareTo("") == 0) {
-                            Toast.makeText(getActivity().getApplicationContext(), "Escribe algo", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity().getApplicationContext(), getString(R.string.dialog_empty_comment), Toast.LENGTH_LONG).show();
                         } else {
                             new RegisterEntry().execute(wall_id);
                         }

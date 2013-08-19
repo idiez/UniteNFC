@@ -20,7 +20,7 @@ public class FacebookDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.fb, null);
         builder.setView(v);
-        builder.setNegativeButton("Ahora no", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.fb_negative), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 boolean nomore =  ((CheckBox)getDialog().findViewById(R.id.checkBox)).isChecked();

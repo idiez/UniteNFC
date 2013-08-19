@@ -45,7 +45,7 @@ public class TopoosInterface {
 
 	//Must get your tokens from topoos developer panel https://developers.topoos.com
 	private static final String TOPOOS_ADMIN_APP_TOKEN = "XXXX";
-    public static final String CLIENT_ID = "2886137d-5535-444b-82c9-9826d8025deb";
+
 
     /**
      * Prepare a valid AccessTokenOAuth
@@ -55,6 +55,7 @@ public class TopoosInterface {
     public static void initializeTopoosSession(Activity act) {
     	Context ctx = act.getApplicationContext();
     	AccessTokenOAuth token = topoos.AccessTokenOAuth.GetAccessToken(ctx);
+        String CLIENT_ID = ctx.getString(R.string.client_id);
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
     	boolean foo = prefs.getBoolean("saveuser", true);
     	if (token == null || !token.isValid() || !foo)
@@ -191,7 +192,7 @@ public class TopoosInterface {
 				String checkpoints = prefs.getString("checkpoints", "");
 				List <String> l = itemize(checkpoints);
 				if(l != null && !l.isEmpty())
-					message = "Last NFC Point checked: "+(TopoosInterface.extract(l.get(0), 0)+"\n"+TopoosInterface.extract(l.get(0), 2))+".";
+					message = context.getString(R.string.share_undef)+(TopoosInterface.extract(l.get(0), 0)+"\n"+TopoosInterface.extract(l.get(0), 2))+".";
 				break;
 			case 3: 
 				String friends = prefs.getString("friends", "");

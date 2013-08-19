@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.nfc.NfcAdapter;
+import android.nfc.tech.NfcF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -100,10 +101,12 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 	public void onClick(View v) {
 		if (mAdapter != null && mAdapter.isEnabled()) {
 		    // adapter exists and is enabled.
-			PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(), 0,
-		            new Intent(getActivity().getApplicationContext(), getActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+			//PendingIntent pendingIntent = PendingIntent.getActivity(getActivity().getApplicationContext(), 0,
+		    //        new Intent(getActivity().getApplicationContext(), getActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this.getActivity(), 0, new Intent(this.getActivity(),getActivity().getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 			IntentFilter [] intentfilter = new IntentFilter[] {new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)};
-            mAdapter.enableForegroundDispatch(getActivity(), pendingIntent, intentfilter, null);
+            String [][] techlist = new String[][] { new String[] { NfcF.class.getName() } };
+            mAdapter.enableForegroundDispatch(this.getActivity(), pendingIntent, intentfilter, null);
 	        mHandler.removeCallbacks(mMuestraMensaje);
 	        mHandler.postDelayed(mMuestraMensaje, 5000);
 	        progressDialog = ProgressDialog.show(this.getActivity(), getString(R.string.reg_nfc),
@@ -227,7 +230,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
                         String responseString = out.toString();
                         Gson gson = new Gson();
                         Wall w = gson.fromJson(responseString, Wall.class);
-                        w.setLast_seen_when(poi.get(0).getLastUpdate().toString());
+                        w.setLast_seen_when(poi.get(0).getLastUpdate().toLocaleString().substring(0, 16));
                         w.setLast_seen_where(address);
                         return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
                     }

@@ -50,7 +50,7 @@ public class CustomBackup {
 		User usr;
 		try {
 			usr = topoos.Users.Operations.Get(ctx, "me");
-            Editor editor = prefs.edit();
+            final Editor editor = prefs.edit();
             final String session = usr.getId();
 			editor.putString("session", session);				//saves last user session
 			editor.commit();
@@ -99,6 +99,11 @@ public class CustomBackup {
                             e.printStackTrace();
                         }
                         String responseString = out.toString();
+                        editor.putBoolean("poll", true);				//saves last user session
+                        editor.commit();
+                    }
+                    else {
+                        //TOAST
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -251,4 +256,8 @@ public class CustomBackup {
     	t.start();
 		return true;
 	}
+
+    public interface OnNew {
+        public void onNew();
+    }
 }

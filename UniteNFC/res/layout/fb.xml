@@ -16,7 +16,7 @@
     <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No volver a mostrar"
+            android:text="@string/fb_reminder"
             android:id="@+id/checkBox"
             android:layout_below="@+id/authButton"
             android:checked="false"

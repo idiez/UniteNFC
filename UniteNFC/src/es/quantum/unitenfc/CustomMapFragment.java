@@ -298,7 +298,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
                         String responseString = out.toString();
                         Gson gson = new Gson();
                         Wall w = gson.fromJson(responseString, Wall.class);
-                        w.setLast_seen_when(poi.get(0).getLastUpdate().toString());
+                        w.setLast_seen_when(poi.get(0).getLastUpdate().toLocaleString().substring(0, 16));
                         w.setLast_seen_where(address);
                         return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
                     }

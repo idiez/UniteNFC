@@ -98,7 +98,7 @@ public class WallActivity extends Activity implements OnReg {
         String when = w.getLast_seen_when();
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), res_id);
         ((ImageView)findViewById(R.id.wall_image)).setImageBitmap(bmp);
-        ((TextView)findViewById(R.id.last_seen_when)).setText(when.substring(4,16));
+        ((TextView)findViewById(R.id.last_seen_when)).setText(when);
         ((TextView)findViewById(R.id.last_seen_where)).setText(w.getLast_seen_where());
         mean = ((TextView)findViewById(R.id.rating_mean));
         mean.setText(Float.toString(w.getMean_rating()));
@@ -172,7 +172,7 @@ public class WallActivity extends Activity implements OnReg {
                             @Override
                             protected void onPostExecute(String result) {
                                 if (result.compareTo("") != 0) {
-                                    Toast.makeText(getApplicationContext(), "Puntuación enviada", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.rating_sent), Toast.LENGTH_LONG).show();
                                     mean.setText(result);
                                     ratingBar.setOnTouchListener(new View.OnTouchListener() {
                                         public boolean onTouch(View v, MotionEvent event) {
@@ -180,7 +180,7 @@ public class WallActivity extends Activity implements OnReg {
                                         }
                                     });
                                 } else {
-                                    Toast.makeText(getApplicationContext(), "Algo fue mal, prueba de nuevo", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), getString(R.string.report_fail), Toast.LENGTH_LONG).show();
                                 }
                                 refreshLists();
                             }
@@ -193,7 +193,7 @@ public class WallActivity extends Activity implements OnReg {
                             }
                         }).start();
                     } else {
-                        Toast.makeText(ctxx, "Da una puntuación primero", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ctxx, getString(R.string.rating_empty), Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -292,7 +292,7 @@ public class WallActivity extends Activity implements OnReg {
 
                     @Override
                     protected void onPostExecute(String result) {
-                        Toast.makeText(getApplicationContext(), "Comentario eliminado", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), getString(R.string.dialog_comment_deleted), Toast.LENGTH_LONG).show();
                         refreshLists();
                     }
                 }.execute();
@@ -356,7 +356,7 @@ public class WallActivity extends Activity implements OnReg {
             r1 = new ArrayList<EntryItem>();
             if(entries.isEmpty()){
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.dummy);
-                r1.add(new EntryItem(bmp,"dummy", "date","Ningún comentario aún"));
+                r1.add(new EntryItem(bmp,"", "",getString(R.string.empty_wall)));
             }
             else {
                 for(Entry e:entries){

@@ -43,7 +43,7 @@
                     <TextView
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:text="Título"
+                            android:text="@string/wall_title"
                             android:id="@+id/wall_title"
                             android:paddingLeft="5dp"
                             android:paddingTop="3dp"
@@ -56,7 +56,7 @@
                     <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Descripción"
+                            android:text="@string/wall_description"
                             android:id="@+id/wall_description"
                             android:layout_gravity="center"
                             android:layout_marginLeft="5dp"
@@ -74,7 +74,7 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Última vez visto:"
+                        android:text="@string/last_seen"
                         android:id="@+id/textView3"
                         android:layout_gravity="center_horizontal"
                         android:layout_alignParentBottom="false"
@@ -83,7 +83,7 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="00/00/2013"
+                        android:text="@string/tag_date"
                         android:id="@+id/last_seen_when"
                         android:layout_gravity="center_horizontal"
                         android:layout_alignParentTop="true"
@@ -94,7 +94,7 @@
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="DIRECCIÓN"
+                        android:text="@string/tag_address"
                         android:id="@+id/last_seen_where"
                         android:layout_gravity="center_horizontal"
                         android:layout_below="@+id/textView3"
@@ -117,7 +117,7 @@
             <TextView
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:text="Contenido de etiqueta"
+                    android:text="@string/tag_content"
                     android:id="@+id/textView2"
                     android:background="#043676"
                     android:gravity="center_horizontal"
@@ -127,7 +127,7 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Private"
+                    android:text="@string/tag_privacy"
                     android:id="@+id/tagcontent"
                     android:layout_gravity="center"
                     android:gravity="center_horizontal"
@@ -157,7 +157,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¡Puntúa!"
+                android:text="@string/rate"
                 android:id="@+id/rate"
                 android:layout_gravity="center"
                 android:background="@drawable/custom_button"
@@ -175,7 +175,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MEDIA:"
+                android:text="@string/mean_rating"
                 android:id="@+id/textView"
                 android:layout_alignParentTop="false"
                 android:layout_alignParentEnd="false"
@@ -206,7 +206,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Comentarios:"
+                android:text="@string/wall_comments"
                 android:id="@+id/comments"
                 android:padding="5dp"
                 android:background="#023475"
