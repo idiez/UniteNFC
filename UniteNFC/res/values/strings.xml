@@ -28,7 +28,7 @@
     <!-- Map tab -->
     <string name="stick_man">I\'m here!</string>
     <!-- Scan tab -->
-    <string name="bttn_scan">Nuevo Punto NFC</string>
+    <string name="bttn_scan">New NFC Point</string>
     <string name="last_visited">Last NFC Points visited:</string>
     <string name="last_registered">Last NFC Points registered:</string>
     <string name="nfc_error">Please, enable NFC in your settings</string>

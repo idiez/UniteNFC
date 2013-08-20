@@ -36,6 +36,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.quantum.unitenfc.Objects.Wall;
@@ -48,6 +49,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 	private LatLng pos;
 	private Marker main_marker;
 	private List<POI> poi_list;
+    private List<Marker> mrklist = new ArrayList<Marker>();
 	private boolean [] poi_vis;
 	private CameraPosition cam;
     private ProgressDialog progressDialog;
@@ -163,6 +165,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 	public void POIMarkers() throws NullPointerException{
 		if(poi_list !=null){
 			getMap().clear();
+            Marker mrk;
 			for(POI poi:poi_list){
 				int poiType = poi.getCategories().get(0).getId();
 				LatLng POIloc = new LatLng(poi.getLatitude(), poi.getLongitude());
@@ -184,12 +187,25 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 													visibility = poi_vis[0];
 													break;
 				}
-				this.getMap().addMarker(new MarkerOptions().icon(icon).position(POIloc).title(title).snippet(description)).setVisible(visibility);
+				mrk = this.getMap().addMarker(new MarkerOptions().icon(icon).position(POIloc).title(title).snippet(description));
+                mrk.setVisible(visibility);
+                mrklist.add(mrk);
 			}
 		}
 	}
 
-	@SuppressLint("ValidFragment")
+    public void selMarker(LatLng poi_latlon) {
+        for(Marker mrk:mrklist){
+            LatLng l = mrk.getPosition();
+            double d = Math.pow(l.latitude-poi_latlon.latitude,2)+Math.pow(l.longitude-poi_latlon.longitude,2);
+            int e = Math.getExponent(d);
+            if(e <= -45){
+                mrk.showInfoWindow();
+            }
+        }
+    }
+
+    @SuppressLint("ValidFragment")
 	private class VisiblePOIFragment extends DialogFragment {
 
 	    @Override

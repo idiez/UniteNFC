@@ -52,7 +52,13 @@
     android:title="Track position"
     android:summary="Center map at new positions" 
     android:defaultValue="false"/>
-     
+
+    <CheckBoxPreference
+            android:key="notify"
+            android:title="Notifications"
+            android:summary="Notify about near by NFC Points"
+            android:defaultValue="true"/>
+
       </PreferenceCategory>
      
 </PreferenceScreen>

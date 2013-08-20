@@ -20,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -62,6 +64,19 @@ public class Serve extends Activity {
         setContentView(R.layout.tag_viewer);
         mTagContent = (LinearLayout) findViewById(R.id.linear);
         resolveIntent(getIntent());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
     }
 
     private void resolveIntent(Intent intent) {

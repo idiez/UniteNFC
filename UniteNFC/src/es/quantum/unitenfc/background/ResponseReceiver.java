@@ -20,11 +20,15 @@ import es.quantum.unitenfc.R;
  */
 public class ResponseReceiver extends BroadcastReceiver{
 
+
         // Called when the BroadcastReceiver gets an Intent it's registered to receive
         @Override
         public void onReceive(Context context, Intent intent) {
+            double latitude = intent.getDoubleExtra("lat", 0);
+            double longitude = intent.getDoubleExtra("lon", 0);
             PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
-                    new Intent(context, MainActivity.class), 0);
+                    new Intent(context, MainActivity.class).setAction(Constants.NOTIFY)
+                            .putExtra("lat",latitude).putExtra("lon",longitude), 0);
             int count = intent.getIntExtra("counter", 1);
             int poiType = intent.getIntExtra(Constants.EXTENDED_DATA_STATUS, POICategories.INFO);
             int res = R.drawable.nfc_blue;
@@ -52,7 +56,7 @@ public class ResponseReceiver extends BroadcastReceiver{
             mBuilder.setAutoCancel(true);
             mBuilder.setVibrate(new long[]{100, 100, 100, 400});
             mBuilder.setLights(Color.CYAN, 300, 300);
-            mBuilder.setNumber(count);
+            //mBuilder.setNumber(count);
             NotificationManager mNotificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.notify(1, mBuilder.build());

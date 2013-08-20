@@ -2,6 +2,7 @@ package es.quantum.unitenfc;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -22,12 +23,14 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -50,12 +53,14 @@ import java.util.List;
 import es.quantum.unitenfc.Objects.Friend;
 import es.quantum.unitenfc.Objects.NFCPoint;
 import es.quantum.unitenfc.Objects.UserInfo;
+import es.quantum.unitenfc.Objects.Wall;
 import es.quantum.unitenfc.backup.CustomBackup;
 import es.quantum.unitenfc.backup.GMailSender;
 import topoos.Exception.TopoosException;
+import topoos.Objects.POI;
 import topoos.Objects.User;
 
-public class UserCard extends Activity implements CreateNdefMessageCallback, OnNdefPushCompleteCallback {
+public class UserCard extends Activity implements CreateNdefMessageCallback, OnNdefPushCompleteCallback, AdapterView.OnItemClickListener {
 	
 	public final String MIME_TYPE = "application/es.quantum.unitenfc";
 
@@ -95,6 +100,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		name = (TextView) findViewById(R.id.username);
 		acc = (TextView) findViewById(R.id.useraccount);
 		check = (ListView) findViewById(R.id.tags);
+        check.setOnItemClickListener(this);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		// see if app was started from a tag
 		Intent i = getIntent();
@@ -234,6 +240,19 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		return true;
 	}
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
+    }
+
     private class LoadCard extends AsyncTask<String,Void,UserInfo>{
 
 		private String iid;
@@ -352,7 +371,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			}
 			CustomListViewAdapter adapter1 = new CustomListViewAdapter(getApplicationContext(), R.layout.list, rows);
 			check.setAdapter(adapter1);
-			
 		}
     }
 
@@ -466,4 +484,93 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 	    	b.start();
 		}
 	}
+
+    @Override
+    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+        if(arg2 == 0) return;
+        TextView v = (TextView)arg1.findViewById(R.id.text1);
+        final Context ctx = this;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        final String user = prefs.getString("session","");
+        final String[] t = (v.getText().toString()).split("\n");
+        AsyncTask<Void, Void, String> toast = new AsyncTask<Void, Void, String>(){
+
+            @Override
+            protected void onPreExecute(){
+                progressDialog = new ProgressDialog(ctx);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage(getString(R.string.loading));
+                progressDialog.show();
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                List<POI> poi;
+                try {
+                    String address;
+                    poi = topoos.POI.Operations.GetWhere(ctx, new Integer[]{POICategories.NFC} ,null, null, null, null, t[0]);
+                    POI nfcpoi = null;
+                    if(poi.isEmpty()){
+                        return getString(R.string.not_found);
+                    }
+                    else {
+                        String name;
+                        for(POI p:poi){
+                            name= p.getName().substring(16);
+                            if(name.compareTo(t[0])==0){
+                                nfcpoi = p;
+                                break;
+                            }
+                        }
+                        if(nfcpoi == null){
+                            return getString(R.string.not_found);
+                        }
+                        address = nfcpoi.getAddress();
+                    }
+                    HttpClient httpclient = new DefaultHttpClient();
+                    HttpResponse response = null;
+                    try {
+                        String wall_id = nfcpoi.getName().substring(0,16);
+                        response = httpclient.execute(new HttpGet("http://unitenfc.herokuapp.com/objects/wall/"+wall_id+"/"+user+"/"));
+                    } catch (ClientProtocolException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    StatusLine statusLine = response.getStatusLine();
+                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        try {
+                            response.getEntity().writeTo(out);
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        String responseString = out.toString();
+                        Gson gson = new Gson();
+                        Wall w = gson.fromJson(responseString, Wall.class);
+                        w.setLast_seen_when(poi.get(0).getLastUpdate().toLocaleString().substring(0, 16));
+                        w.setLast_seen_where(address);
+                        return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
+                    }
+                    else {
+                        return getString(R.string.not_found);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (TopoosException e) {
+                    e.printStackTrace();
+                }
+                return getString(R.string.not_found);
+            }
+            @Override
+            protected void onPostExecute(String result) {
+                //Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
+            }
+        };
+        toast.execute();
+    }
+
 }

@@ -30,6 +30,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -145,10 +147,18 @@ public class Settings extends PreferenceActivity implements OnPreferenceChangeLi
     }
 
     @Override
-    public void onStop(){
-    	super.onStop();
+    public void onStart() {
+        super.onStart();
+        // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
     }
-    
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);

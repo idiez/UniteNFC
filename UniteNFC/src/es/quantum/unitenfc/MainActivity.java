@@ -3,8 +3,10 @@ package es.quantum.unitenfc;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +24,7 @@ import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -35,9 +38,11 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 import es.quantum.unitenfc.background.Constants;
@@ -62,7 +67,8 @@ public class MainActivity extends Activity implements OnReg{
 	private LocationManager mLocationManager;
 	private RegisterPosition mCustomLocationListener;
 	private List<POI> poi_list;
-	private Handler mHandler = new Handler();
+    private LatLng poi_latlon;
+    private Handler mHandler = new Handler();
 	Runnable mUpdateMap = new Runnable() {
 
         public void run() {
@@ -71,6 +77,10 @@ public class MainActivity extends Activity implements OnReg{
         	   try{
         		   map.POIMarkers();
         		   map.UpdateMarker();
+                   if(!poi_latlon.equals(new LatLng(0,0))){
+                       map.selMarker(poi_latlon);
+                       poi_latlon = new LatLng(0,0);
+                   }
         	   }
         	   catch(NullPointerException e){
         		   e.printStackTrace();
@@ -85,21 +95,7 @@ public class MainActivity extends Activity implements OnReg{
            }
         }
 	};
-    Runnable mLaunchPoll = new Runnable() {
 
-        public void run() {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            if(prefs.getBoolean("poll",false)){
-                Editor editor = prefs.edit();
-                editor.putBoolean("poll", false);				//saves last user session
-                editor.commit();
-                PollDialog newRegisterFragment = new PollDialog();
-                newRegisterFragment.show(getFragmentManager(), "register");
-
-            }
-
-        }
-    };
     private FacebookDialog fb_dialog;
     private UiLifecycleHelper uiHelper;
     private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -195,15 +191,32 @@ public class MainActivity extends Activity implements OnReg{
         // Registers the DownloadStateReceiver and its intent filters
         //LocalBroadcastManager.getInstance(this).registerReceiver(mDownloadStateReceiver,mStatusIntentFilter);
         // Adds a data filter for the HTTP scheme
-
-
+        Intent intent = new Intent(this, ProximityNotifier.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        int PERIOD = 30000;
+        alarm.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + PERIOD, PERIOD, pintent);
         //this.startService(new Intent(this, ProximityNotifier.class));
-
-
-        mHandler.removeCallbacks(mLaunchPoll);
-        mHandler.postDelayed(mLaunchPoll, 0);
-
+        String act = getIntent().getAction();
+        if(act!=null){
+            if(act.compareTo(Constants.NOTIFY)==0){
+                poi_latlon = new LatLng(getIntent().getDoubleExtra("lat",0), getIntent().getDoubleExtra("lon",0));
+            }
+        }
 	}
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -284,11 +297,6 @@ public class MainActivity extends Activity implements OnReg{
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         uiHelper.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onStop(){
-        super.onStop();
     }
 
 	protected void onDestroy() {

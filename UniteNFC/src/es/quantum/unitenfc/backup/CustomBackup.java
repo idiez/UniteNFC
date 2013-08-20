@@ -99,8 +99,6 @@ public class CustomBackup {
                             e.printStackTrace();
                         }
                         String responseString = out.toString();
-                        editor.putBoolean("poll", true);				//saves last user session
-                        editor.commit();
                     }
                     else {
                         //TOAST
@@ -256,8 +254,4 @@ public class CustomBackup {
     	t.start();
 		return true;
 	}
-
-    public interface OnNew {
-        public void onNew();
-    }
 }

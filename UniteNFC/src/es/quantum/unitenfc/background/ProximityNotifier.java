@@ -54,16 +54,15 @@ public class ProximityNotifier extends IntentService {
         mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, mCustomLocationListener);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, mCustomLocationListener);
         current_pos = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int count = 0;
                 List<POI> poi_list = null;
                 AccessTokenOAuth token = topoos.AccessTokenOAuth.GetAccessToken(getApplicationContext());
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                int count = prefs.getInt("count", 0);
                 boolean foo = prefs.getBoolean("saveuser", true);
-                while(!(token == null || !token.isValid() || !foo)) {
+                if(!(token == null || !token.isValid() || !foo) && prefs.getBoolean("notify", true)) {
                     try {
                         if(current_pos != null){
                             poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(), current_pos.getLongitude()),100);
@@ -78,20 +77,15 @@ public class ProximityNotifier extends IntentService {
                     }
                     else if(!poi_list.isEmpty()){
                         count++;
+                        POI poi = poi_list.get(0);
                         Intent localIntent = new Intent().setAction(Constants.BROADCAST_ACTION)
                                 // Puts the status into the Intent
-                                .putExtra(Constants.EXTENDED_DATA_STATUS,(poi_list.get(0).getCategories().get(0)).getId())
-                                .putExtra("counter",count);
+                                .putExtra(Constants.EXTENDED_DATA_STATUS,(poi.getCategories().get(0)).getId())
+                                .putExtra("lat",poi.getLatitude())
+                                .putExtra("lon",poi.getLongitude());
                         // Broadcasts the Intent to receivers in this app.
                         sendBroadcast(localIntent);
                     }
-                    try {
-                        Thread.sleep(30000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    token = topoos.AccessTokenOAuth.GetAccessToken(getApplicationContext());
-                    foo = prefs.getBoolean("saveuser", true);
                 }
             }
         }).start();

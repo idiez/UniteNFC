@@ -27,6 +27,7 @@ import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
@@ -214,6 +215,19 @@ public class WallActivity extends Activity implements OnReg {
         });
         list.addHeaderView(header1);
         new loadComments().execute();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // The rest of your onStart() code.
+        EasyTracker.getInstance(this).activityStart(this);  // Add this method.
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        EasyTracker.getInstance(this).activityStop(this);
     }
 
     @Override

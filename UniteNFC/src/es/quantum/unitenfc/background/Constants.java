@@ -10,4 +10,5 @@ public final class Constants {
     public static final String EXTENDED_DATA_STATUS =
             "com.example.android.threadsample.STATUS";
 
+    public static final String NOTIFY = "application/es.quantum.unitenfc/notification";
 }
