@@ -73,6 +73,7 @@
     <string name="fb_share_registered"> registrado de tipo </string>
     <string name="fb_share_visited"> visitado de tipo </string>
     <!-- Wall -->
+    <string name="bttn_wall">Ir a tablón de Punto NFC</string>
     <string name="tag_content">Contenido de etiqueta</string>
     <string name="wall_comments">Comentarios:</string>
     <string name="mean_rating">Media:</string>

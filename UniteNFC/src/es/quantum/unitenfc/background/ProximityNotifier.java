@@ -65,7 +65,7 @@ public class ProximityNotifier extends IntentService {
                 if(!(token == null || !token.isValid() || !foo) && prefs.getBoolean("notify", true)) {
                     try {
                         if(current_pos != null){
-                            poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(), current_pos.getLongitude()),100);
+                            poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(), current_pos.getLongitude()),5);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -76,15 +76,25 @@ public class ProximityNotifier extends IntentService {
 
                     }
                     else if(!poi_list.isEmpty()){
-                        count++;
                         POI poi = poi_list.get(0);
-                        Intent localIntent = new Intent().setAction(Constants.BROADCAST_ACTION)
-                                // Puts the status into the Intent
-                                .putExtra(Constants.EXTENDED_DATA_STATUS,(poi.getCategories().get(0)).getId())
-                                .putExtra("lat",poi.getLatitude())
-                                .putExtra("lon",poi.getLongitude());
-                        // Broadcasts the Intent to receivers in this app.
-                        sendBroadcast(localIntent);
+                        int counter = prefs.getInt("poicount",0);
+                        int last = prefs.getInt("lastpoi", 0);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        if(poi.getId() == last && counter < 2*30){
+                            editor.putInt("poicount", counter+1);
+                        }
+                        else {
+                            Intent localIntent = new Intent().setAction(Constants.BROADCAST_ACTION)
+                                    // Puts the status into the Intent
+                                    .putExtra(Constants.EXTENDED_DATA_STATUS,(poi.getCategories().get(0)).getId())
+                                    .putExtra("lat",poi.getLatitude())
+                                    .putExtra("lon",poi.getLongitude());
+                            // Broadcasts the Intent to receivers in this app.
+                            sendBroadcast(localIntent);
+                            editor.putInt("poicount", 0);
+                            editor.putInt("lastpoi", poi.getId());
+                        }
+                        editor.commit();
                     }
                 }
             }

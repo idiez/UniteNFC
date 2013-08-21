@@ -318,6 +318,12 @@ public class MainActivity extends Activity implements OnReg{
 	}
 	
 	public void onNewIntent(Intent intent) {
+        if(intent.getAction().compareTo(Constants.NOTIFY)==0){
+            poi_latlon = new LatLng(intent.getDoubleExtra("lat",0), intent.getDoubleExtra("lon",0));
+            mHandler.removeCallbacks(mUpdateMap);
+            mHandler.postDelayed(mUpdateMap, 0);
+            return;
+        }
 		Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 		NdefMessage[] messages = null; 
         if (rawMsgs != null) {  

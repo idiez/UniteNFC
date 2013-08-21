@@ -20,6 +20,8 @@ import es.quantum.unitenfc.R;
  */
 public class ResponseReceiver extends BroadcastReceiver{
 
+        private double lat;
+        private double lon;
 
         // Called when the BroadcastReceiver gets an Intent it's registered to receive
         @Override

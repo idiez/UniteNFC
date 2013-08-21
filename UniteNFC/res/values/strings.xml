@@ -73,6 +73,7 @@
     <string name="fb_share_registered"> just registered of type </string>
     <string name="fb_share_visited"> just visited of type </string>
     <!-- Wall -->
+    <string name="bttn_wall">Go to NFC Point wall</string>
     <string name="tag_content">Tag content</string>
     <string name="wall_comments">Comments:</string>
     <string name="mean_rating">Mean:</string>
