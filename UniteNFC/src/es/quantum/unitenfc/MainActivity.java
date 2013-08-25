@@ -114,7 +114,7 @@ public class MainActivity extends Activity implements OnReg{
                 public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
                     final GraphUser usr = user;
-                    showToast(getString(R.string.fb_salutation)+" "+ user.getName() + "!");
+                    //showToast(getString(R.string.fb_salutation)+" "+ user.getName() + "!");
                     Request.executeMyFriendsRequestAsync(s, new Request.GraphUserListCallback() {
                         @Override
                         public void onCompleted(List<GraphUser> users, Response response) {
@@ -139,7 +139,7 @@ public class MainActivity extends Activity implements OnReg{
             new AlertDialog.Builder(this).setTitle(getString(R.string.internet_no_connection)).setMessage(getString(R.string.internet_required)).setCancelable(false).setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    onBackPressed();
+                    startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
                 }
             }).show();
         }
@@ -324,24 +324,31 @@ public class MainActivity extends Activity implements OnReg{
             mHandler.postDelayed(mUpdateMap, 0);
             return;
         }
-		Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-		NdefMessage[] messages = null; 
-        if (rawMsgs != null) {  
-             messages = new NdefMessage[rawMsgs.length];  
-             for (int i1 = 0; i1 < rawMsgs.length; i1++) {  
-                  messages[i1] = (NdefMessage) rawMsgs[i1];
-             }  
-        }  
-        if(messages[0] != null) {  
-     		NdefRecord[] rec = (messages[0].getRecords());
-     		byte[] ans = rec[0].getPayload();
-     		String str = new String(ans);
-        }
         if(intent.getType() != null && intent.getType().equals("application/es.quantum.unitenfc")) {
         }
         else {
-		    Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-		    String tagid = TopoosInterface.bytesToHexString(tagFromIntent.getId());
+            String tagid;
+            String message;
+            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            NdefMessage[] msgs;
+            if (rawMsgs != null) {
+                msgs = new NdefMessage[rawMsgs.length];
+                for (int i = 0; i < rawMsgs.length; i++) {
+                    msgs[i] = (NdefMessage) rawMsgs[i];
+                }
+                Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                tagid = TopoosInterface.bytesToHexString(tagFromIntent.getId());
+                message = Serve.parseNFCRecords(msgs[0].getRecords()[0]);
+            } else {
+                // Unknown tag type
+                byte[] empty = new byte[0];
+                byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
+                tagid = TopoosInterface.bytesToHexString(id);
+                Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                byte[] payload = Serve.dumpTagData(tag).getBytes();
+                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
+                message = Serve.parseNFCRecords(record);
+            }
 		    boolean isRegistered = false;
 		    for(POI poi:poi_list){
 		    	
@@ -353,7 +360,7 @@ public class MainActivity extends Activity implements OnReg{
 		    if(!isRegistered){	//!isRegistered
 		        RegisterPOIFragment newRegisterFragment = new RegisterPOIFragment();
 			    topoos.Objects.Location loc = new topoos.Objects.Location(current_pos.getLatitude(),current_pos.getLongitude());
-			    newRegisterFragment.setArguments(tagid,loc);
+			    newRegisterFragment.setArguments(tagid,message,loc);
 			    newRegisterFragment.show(getFragmentManager(), "register");
 		    }
 		    else{
@@ -608,7 +615,7 @@ public class MainActivity extends Activity implements OnReg{
 	@Override
 	public void onReg(String mes) {
         FacebookLogic.publishStory(MainActivity.this, mes);
-	    //	scan.refreshLists();
+	    scan.refreshLists();
 	}
 
     // Broadcast receiver for receiving status updates from the IntentService

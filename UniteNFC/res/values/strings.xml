@@ -34,6 +34,7 @@
     <string name="nfc_error">Please, enable NFC in your settings</string>
     <string name="default_visited">No NFC Point visited/registered yet</string>
     <string name="nfc_duplicated">NFC Point already registered</string>
+    <string name="wall_private">Hide content</string>
     <!-- Social tab -->
     <string name="bttn_add_friend">Add Friend</string>
     <string name="add_friend_ms">Tap and add friends</string>
@@ -87,10 +88,14 @@
     <string name="add_newcomment">+ Add comment</string>
     <string name="comment_hint">Add your comment</string>
     <string name="empty_wall">No comments yet</string>
+    <string name="make_public">Show content in wall</string>
+    <string name="make_private">Hide content</string>
+    <string name="wall_not_found">NFC Point not registered</string>
     <!-- Add comment dialog -->
     <string name="dialog_add_comment">Add comment</string>
     <string name="dialog_empty_comment">Write something</string>
     <string name="dialog_comment_deleted">Comment deleted</string>
+    <string name="dialog_delete">Delete</string>
     <!-- Report bug -->
     <string name="report_title">Bug</string>
     <string name="report_send">Send</string>

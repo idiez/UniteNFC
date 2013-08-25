@@ -129,9 +129,9 @@
                     android:layout_height="wrap_content"
                     android:text="@string/tag_privacy"
                     android:id="@+id/tagcontent"
-                    android:layout_gravity="center"
                     android:gravity="center_horizontal"
-                    android:layout_marginTop="13dp"/>
+                    android:layout_marginTop="13dp"
+                    android:scrollbars = "vertical"/>
         </LinearLayout>
 
     </LinearLayout>

@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.*;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -114,6 +115,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 		}
 		else {
 			Toast.makeText(this.getActivity(), getString(R.string.nfc_error), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
 		}
 	}
 	
@@ -215,8 +217,10 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
                         response = httpclient.execute(new HttpGet("http://unitenfc.herokuapp.com/objects/wall/"+wall_id+"/"+user+"/"));
                     } catch (ClientProtocolException e) {
                         e.printStackTrace();
+                        return getString(R.string.internet_failure);
                     } catch (IOException e) {
                         e.printStackTrace();
+                        return getString(R.string.internet_failure);
                     }
                     StatusLine statusLine = response.getStatusLine();
                     if(statusLine.getStatusCode() == HttpStatus.SC_OK){
@@ -226,6 +230,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
                             out.close();
                         } catch (IOException e) {
                             e.printStackTrace();
+                            return getString(R.string.internet_failure);
                         }
                         String responseString = out.toString();
                         Gson gson = new Gson();
@@ -235,20 +240,28 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
                         return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
                     }
                     else {
-                        return getString(R.string.not_found);
+                        return getString(R.string.internet_failure);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (TopoosException e) {
                     e.printStackTrace();
                 }
-                return getString(R.string.not_found);
+                return getString(R.string.internet_failure);
             }
             @Override
             protected void onPostExecute(String result) {
-                //Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
-                startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
+                //Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                if(result.compareTo(getString(R.string.not_found))==0) {
+                    Toast.makeText(getActivity(),getString(R.string.not_found), Toast.LENGTH_LONG).show();
+                }
+                else if(result.compareTo(getString(R.string.internet_failure))==0) {
+                    Toast.makeText(getActivity(),getString(R.string.internet_failure), Toast.LENGTH_LONG).show();
+                }
+                else {
+                    startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
+                }
             }
         };
       	toast.execute();

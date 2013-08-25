@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -299,8 +300,10 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
                         response = httpclient.execute(new HttpGet("http://unitenfc.herokuapp.com/objects/wall/"+wall_id+"/"+user+"/"));
                     } catch (ClientProtocolException e) {
                         e.printStackTrace();
+                        return getString(R.string.internet_failure);
                     } catch (IOException e) {
                         e.printStackTrace();
+                        return getString(R.string.internet_failure);
                     }
                     StatusLine statusLine = response.getStatusLine();
                     if(statusLine.getStatusCode() == HttpStatus.SC_OK){
@@ -323,14 +326,21 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
                     }
 				} catch (IOException e) {
 					e.printStackTrace();
+                    return getString(R.string.internet_failure);
 				} catch (TopoosException e) {
 					e.printStackTrace();
+                    return getString(R.string.internet_failure);
 				}
-				return getString(R.string.not_found);
 			}
 			@Override
 			protected void onPostExecute(String result) {
 				//Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                if(result.compareTo(getString(R.string.not_found))==0){
+                    Toast.makeText(getActivity(),getString(R.string.not_found), Toast.LENGTH_LONG).show();
+                }
+                else if(result.compareTo(getString(R.string.internet_failure))==0){
+                    Toast.makeText(getActivity(), getString(R.string.internet_failure), Toast.LENGTH_LONG).show();
+                }
                 progressDialog.dismiss();
                 startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
 			}

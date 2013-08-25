@@ -99,6 +99,7 @@ public class SocialFragment extends Fragment implements OnClickListener{
         }
         else {
             Toast.makeText(this.getActivity(), getString(R.string.nfc_error), Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
         }
     }
 

@@ -9,7 +9,8 @@ public class Wall {
     private String wall_description;
     private String last_seen_when;
     private String last_seen_where;
-    private String uri_tag_content;
+    private String wall_tag_content;
+    private boolean wall_tag_private;
     private int my_rating;
     private float mean_rating;
     private List<Entry> entry_list;
@@ -55,12 +56,12 @@ public class Wall {
         this.last_seen_where = last_seen_where;
     }
 
-    public String getUri_tag_content() {
-        return uri_tag_content;
+    public String getWall_tag_content() {
+        return wall_tag_content;
     }
 
-    public void setUri_tag_content(String uri_tag_content) {
-        this.uri_tag_content = uri_tag_content;
+    public void setWall_tag_content(String wall_tag_content) {
+        this.wall_tag_content = wall_tag_content;
     }
 
     public int getMy_rating() {
@@ -94,5 +95,13 @@ public class Wall {
 
     public void setSudo(boolean sudo) {
         this.sudo = sudo;
+    }
+
+    public boolean isWall_tag_private() {
+        return wall_tag_private;
+    }
+
+    public void setWall_tag_private(boolean wall_tag_private) {
+        this.wall_tag_private = wall_tag_private;
     }
 }

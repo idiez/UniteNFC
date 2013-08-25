@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +24,14 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.gson.Gson;
 
@@ -64,16 +72,39 @@ public class Serve extends Activity {
     private LinearLayout mTagContent;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
     private OnReg a;
+    private String mes;
     private ProgressDialog progressDialog;
+
+    private FacebookDialog fb_dialog;
+    private UiLifecycleHelper uiHelper;
+    private Session.StatusCallback callback = new Session.StatusCallback() {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+            onSessionStateChange(session, state, exception);
+        }
+    };
+    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+        if(fb_dialog.isAdded())fb_dialog.dismiss();
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         a = (OnReg) getParent();
         setContentView(R.layout.tag_viewer);
+        fb_dialog = new FacebookDialog();
+        uiHelper = new UiLifecycleHelper(this, callback);
+        uiHelper.onCreate(savedInstanceState);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean showfbdialog = prefs.getBoolean("showfbdialog", true);
+        Session session = Session.getActiveSession();
+        if(!(session.getState() == SessionState.CREATED_TOKEN_LOADED || session.isOpened())&& showfbdialog) {
+            fb_dialog.setCancelable(false);
+            fb_dialog.show(getFragmentManager(), "fb log");
+        }
         mTagContent = (LinearLayout) findViewById(R.id.linear);
         final Context ctx = this;
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         final String user = prefs.getString("session","");
         ((Button) findViewById(R.id.bttn_wall)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,8 +138,10 @@ public class Serve extends Activity {
                                 response = httpclient.execute(new HttpGet("http://unitenfc.herokuapp.com/objects/wall/"+wall_id+"/"+user+"/"));
                             } catch (ClientProtocolException e) {
                                 e.printStackTrace();
+                                return getString(R.string.internet_failure);
                             } catch (IOException e) {
                                 e.printStackTrace();
+                                return getString(R.string.internet_failure);
                             }
                             StatusLine statusLine = response.getStatusLine();
                             if(statusLine.getStatusCode() == HttpStatus.SC_OK){
@@ -118,6 +151,7 @@ public class Serve extends Activity {
                                     out.close();
                                 } catch (IOException e) {
                                     e.printStackTrace();
+                                    return getString(R.string.internet_failure);
                                 }
                                 String responseString = out.toString();
                                 Gson gson = new Gson();
@@ -131,16 +165,25 @@ public class Serve extends Activity {
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
+                            return getString(R.string.internet_failure);
                         } catch (TopoosException e) {
                             e.printStackTrace();
+                            return getString(R.string.internet_failure);
                         }
-                        return getString(R.string.not_found);
                     }
                     @Override
                     protected void onPostExecute(String result) {
                         //Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
-                        startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
+                        if(result.compareTo(getString(R.string.not_found))==0){
+                            Toast.makeText(getApplicationContext(),getString(R.string.not_found),Toast.LENGTH_LONG).show();
+                        }
+                        else if(result.compareTo(getString(R.string.internet_failure))==0){
+                            Toast.makeText(getApplicationContext(),getString(R.string.internet_failure),Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
+                        }
                     }
                 };
                 toast.execute();
@@ -160,6 +203,28 @@ public class Serve extends Activity {
     public void onStop(){
         super.onStop();
         EasyTracker.getInstance(this).activityStop(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        uiHelper.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        uiHelper.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        uiHelper.onSaveInstanceState(outState);
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void resolveIntent(Intent intent) {
@@ -195,7 +260,7 @@ public class Serve extends Activity {
         }
     }
 
-    private String dumpTagData(Parcelable p) {
+    public static String dumpTagData(Parcelable p) {
         StringBuilder sb = new StringBuilder();
         Tag tag = (Tag) p;
         byte[] id = tag.getId();
@@ -259,7 +324,7 @@ public class Serve extends Activity {
         return sb.toString();
     }
 
-    private String getHex(byte[] bytes) {
+    public static String getHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (int i = bytes.length - 1; i >= 0; --i) {
             int b = bytes[i] & 0xff;
@@ -273,7 +338,7 @@ public class Serve extends Activity {
         return sb.toString();
     }
 
-    private long getDec(byte[] bytes) {
+    public static long getDec(byte[] bytes) {
         long result = 0;
         long factor = 1;
         for (int i = 0; i < bytes.length; ++i) {
@@ -284,7 +349,7 @@ public class Serve extends Activity {
         return result;
     }
 
-    private long getReversed(byte[] bytes) {
+    public static long getReversed(byte[] bytes) {
         long result = 0;
         long factor = 1;
         for (int i = bytes.length - 1; i >= 0; --i) {
@@ -329,7 +394,7 @@ public class Serve extends Activity {
         return true;
     }
 
-    public String parseNFCRecords(NdefRecord ndefr){
+    public static String parseNFCRecords(NdefRecord ndefr){
         short tnf = ndefr.getTnf();
         byte[] type = ndefr.getType();
         String result = "";
@@ -348,7 +413,7 @@ public class Serve extends Activity {
             try{
                 User me = topoos.Users.Operations.Get(getApplicationContext(), "me");
                 Position current_pos = topoos.Positions.Operations.GetLastUser(getApplicationContext(), me.getId());
-                List<POI> poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(),current_pos.getLongitude()),10);
+                List<POI> poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(),current_pos.getLongitude()),10000);
                 for(POI poi:poi_list){
                     if(poi.getName().substring(0, 16).compareTo(tagid)==0){
                         TopoosInterface.Checking(getApplicationContext(), poi);
@@ -369,55 +434,56 @@ public class Serve extends Activity {
                         nfcp.setDate(date);
                         nfcp.setWall(wall);
                         final NFCPoint np = nfcp;
-                        String mes = FacebookLogic.createFacebookFeed(FacebookLogic.REGISTER, tagid, nfcp, "");
+                        mes = FacebookLogic.createFacebookFeed(FacebookLogic.VISIT, tagid, nfcp, "");
+
 //                        a.onReg(mes);
-                        Thread t = new Thread(new Runnable(){
-                            @Override
-                            public void run() {
-                                try {
-                                    SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                                    HttpClient httpclient = new DefaultHttpClient();
-                                    HttpResponse response = null;
-                                    String post_url = "http://unitenfc.herokuapp.com/objects/nfcp/"+prefss.getString("session","")+"/False/";
-                                    HttpPost socket = new HttpPost(post_url);
-                                    socket.setHeader( "Content-Type", "application/xml" );
-                                    socket.setHeader( "Accept", "*/*" );
-                                    JSONObject json = new JSONObject();
-                                    try {
-                                        json.put("name", np.getName());
-                                        json.put("posId", np.getPosId());
-                                        json.put("date", np.getDate());
-                                        json.put("wall", np.getWall());
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                    StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
-                                    socket.setEntity(entity);
-                                    try {
-                                        response = httpclient.execute(socket);
-                                    } catch (ClientProtocolException e) {
-                                        e.printStackTrace();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    StatusLine statusLine = response.getStatusLine();
-                                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-                                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                                        try {
-                                            response.getEntity().writeTo(out);
-                                            out.close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                        String responseString = out.toString();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                        try {
+                            SharedPreferences prefss = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                            HttpClient httpclient = new DefaultHttpClient();
+                            HttpResponse response = null;
+                            String post_url = "http://unitenfc.herokuapp.com/objects/nfcp/"+prefss.getString("session","")+"/False/";
+                            HttpPost socket = new HttpPost(post_url);
+                            socket.setHeader( "Content-Type", "application/xml" );
+                            socket.setHeader( "Accept", "*/*" );
+                            JSONObject json = new JSONObject();
+                            try {
+                                json.put("name", np.getName());
+                                json.put("posId", np.getPosId());
+                                json.put("date", np.getDate());
+                                json.put("wall", np.getWall());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                return false;
                             }
-                        });
-                        t.start();
-                        break;
+                            StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                            socket.setEntity(entity);
+                            try {
+                                response = httpclient.execute(socket);
+                            } catch (ClientProtocolException e) {
+                                e.printStackTrace();
+                                return false;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return false;
+                            }
+                            StatusLine statusLine = response.getStatusLine();
+                            if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                                try {
+                                    response.getEntity().writeTo(out);
+                                    out.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    return false;
+                                }
+                                String responseString = out.toString();
+                                return true;
+                            }
+                            return false;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return false;
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -428,6 +494,18 @@ public class Serve extends Activity {
                 return false;
             }
             return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if(result){
+                if(mes != null) {
+                    FacebookLogic.publishStory(Serve.this, mes);
+                }
+            }
+            else {
+                Toast.makeText(getApplicationContext(),getString(R.string.wall_not_found), Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

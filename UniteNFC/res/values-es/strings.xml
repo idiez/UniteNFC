@@ -34,6 +34,7 @@
     <string name="nfc_error">Activa NFC en las preferencias de móvil, por favor</string>
     <string name="default_visited">Ningún Punto NFC visitado/registrado todavía</string>
     <string name="nfc_duplicated">Punto NFC ya registrado</string>
+    <string name="wall_private">Ocultar contenido</string>
     <!-- Social tab -->
     <string name="bttn_add_friend">Añadir amigo</string>
     <string name="add_friend_ms">Tap para añadir amigos</string>
@@ -87,10 +88,14 @@
     <string name="add_newcomment">+ Añadir comentario</string>
     <string name="comment_hint">Añade tu comentario</string>
     <string name="empty_wall">Ningún comentario todavía</string>
+    <string name="make_public">Mostrar contenido en el muro</string>
+    <string name="make_private">Ocultar contenido</string>
+    <string name="wall_not_found">Punto NFC no registrado</string>
     <!-- Add comment dialog -->
     <string name="dialog_add_comment">Añadir comentario</string>
     <string name="dialog_empty_comment">Escribe algo</string>
     <string name="dialog_comment_deleted">Comentario eliminado</string>
+    <string name="dialog_delete">Eliminar</string>
     <!-- Report bug -->
     <string name="report_title">Problema</string>
     <string name="report_send">Enviar</string>

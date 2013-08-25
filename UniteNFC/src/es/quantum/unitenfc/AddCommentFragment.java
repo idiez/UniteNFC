@@ -133,6 +133,9 @@ public class AddCommentFragment extends DialogFragment {
             if(result) {
                 mListener.onReg(comment+";"+date);
             }
+            else {
+                Toast.makeText(getActivity(),getString(R.string.internet_failure), Toast.LENGTH_LONG).show();
+            }
         }
     }
 }

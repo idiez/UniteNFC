@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -35,6 +39,7 @@ import es.quantum.unitenfc.Objects.NFCPoint;
 public class RegisterPOIFragment extends DialogFragment {
 	
 	private String idd;
+    private String tag_content;
 	private int poiType;
 	private topoos.Objects.Location loc;
 	private String name;
@@ -50,61 +55,60 @@ public class RegisterPOIFragment extends DialogFragment {
         builder
             .setTitle(getString(R.string.new_nfc))
             .setSingleChoiceItems(R.array.poiType, 0,
-                new DialogInterface.OnClickListener() {
+                    new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface arg0, int which) {
-                    switch(which){
-                        case 1:
-                            poiType = POICategories.TURISM;
-                            break;
-                        case 2:
-                            poiType = POICategories.LEISURE;
-                            break;
-                        case 3:
-                            poiType = POICategories.EVENT;
-                            break;
-                        default:
-                            poiType = POICategories.INFO;
-                            break;
+                        @Override
+                        public void onClick(DialogInterface arg0, int which) {
+                            switch (which) {
+                                case 1:
+                                    poiType = POICategories.TURISM;
+                                    break;
+                                case 2:
+                                    poiType = POICategories.LEISURE;
+                                    break;
+                                case 3:
+                                    poiType = POICategories.EVENT;
+                                    break;
+                                default:
+                                    poiType = POICategories.INFO;
+                                    break;
+                            }
                         }
-                    }
-            })
+                    })
             .setPositiveButton(getString(R.string.new_nfc_ok), new DialogInterface.OnClickListener() {
 
                 public void onClick(DialogInterface dialog, int id) {
                     name = ((EditText) getDialog().findViewById(R.id.name)).getText().toString().trim();
                     description = ((EditText) getDialog().findViewById(R.id.description)).getText().toString().trim();
-                    if(!(name.isEmpty()||description.isEmpty())){
+                    if (!(name.isEmpty() || description.isEmpty())) {
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
-                        String s = prefs.getString("regpoints", "");
-                        final String user_id = prefs.getString("session","");
-                        Editor editor = prefs.edit();
+                        final String s = prefs.getString("regpoints", "");
+                        final String user_id = prefs.getString("session", "");
+                        final Editor editor = prefs.edit();
                         Date d = new Date();
                         String date = d.toLocaleString().substring(0, 16);
-                        @SuppressWarnings("deprecation")
-                        String title = name+";"+poiType+";"+date+"ñ";
-                        editor.putString("regpoints", title.concat(s));
-                        editor.commit();
+                        @SuppressWarnings("deprecation") final
+                        String title = name + ";" + poiType + ";" + date + "ñ";
                         RegisterPOIWorker wrk = new RegisterPOIWorker();
                         Thread thread = new Thread(wrk);
                         thread.start();
-                        NFCPoint nfcp = new NFCPoint();
+                        final NFCPoint nfcp = new NFCPoint();
                         nfcp.setName(name);
                         nfcp.setPosId(Integer.toString(poiType));
                         nfcp.setDate(date);
                         nfcp.setWall(idd);
+                        final boolean wall_private = ((CheckBox) getDialog().findViewById(R.id.checkprivate)).isChecked();
                         final NFCPoint np = nfcp;
-                        Thread t = new Thread(new Runnable(){
+                        new AsyncTask<Void, Void, Boolean>() {
                             @Override
-                            public void run() {
+                            protected Boolean doInBackground(Void... voids) {
                                 try {
                                     HttpClient httpclient = new DefaultHttpClient();
                                     HttpResponse response = null;
-                                    String post_url = "http://unitenfc.herokuapp.com/objects/nfcp/"+user_id+"/True/";
+                                    String post_url = "http://unitenfc.herokuapp.com/objects/nfcp/" + user_id + "/True/";
                                     HttpPost socket = new HttpPost(post_url);
-                                    socket.setHeader( "Content-Type", "application/xml" );
-                                    socket.setHeader( "Accept", "*/*" );
+                                    socket.setHeader("Content-Type", "application/xml");
+                                    socket.setHeader("Accept", "*/*");
                                     JSONObject json = new JSONObject();
                                     try {
                                         json.put("name", np.getName());
@@ -112,8 +116,11 @@ public class RegisterPOIFragment extends DialogFragment {
                                         json.put("date", np.getDate());
                                         json.put("wall", np.getWall());
                                         json.put("wall_description", description);
+                                        json.put("wall_tag_content", tag_content);
+                                        json.put("wall_tag_private", wall_private);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
+                                        return false;
                                     }
                                     StringEntity entity = new StringEntity(json.toString(), HTTP.UTF_8);
                                     socket.setEntity(entity);
@@ -121,28 +128,43 @@ public class RegisterPOIFragment extends DialogFragment {
                                         response = httpclient.execute(socket);
                                     } catch (ClientProtocolException e) {
                                         e.printStackTrace();
+                                        return false;
                                     } catch (IOException e) {
                                         e.printStackTrace();
+                                        return false;
                                     }
                                     StatusLine statusLine = response.getStatusLine();
-                                    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                                    if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
                                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                                         try {
-                                        response.getEntity().writeTo(out);
-                                        out.close();
+                                            response.getEntity().writeTo(out);
+                                            out.close();
                                         } catch (IOException e) {
                                             e.printStackTrace();
+                                            return false;
                                         }
                                         String responseString = out.toString();
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    return false;
+                                }
+                                return true;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Boolean result) {
+                                if (!result) {
+                                    Context ctx = getActivity().getApplicationContext();
+                                    Toast.makeText(ctx, ctx.getString(R.string.internet_failure), Toast.LENGTH_LONG).show();
+                                } else {
+                                    editor.putString("regpoints", title.concat(s));
+                                    editor.commit();
+                                    String mes = FacebookLogic.createFacebookFeed(FacebookLogic.REGISTER, idd, np, "");
+                                    mListener.onReg(mes);
                                 }
                             }
-                        });
-                        t.start();
-                        String mes = FacebookLogic.createFacebookFeed(FacebookLogic.REGISTER, idd, nfcp, "");
-                        mListener.onReg(mes);
+                        }.execute();
                     } else {
                         Toast.makeText(getActivity().getApplicationContext(), getString(R.string.new_nfc_fill), Toast.LENGTH_SHORT).show();
                     }
@@ -153,7 +175,8 @@ public class RegisterPOIFragment extends DialogFragment {
                 public void onClick(DialogInterface dialog, int id) {
                     // User cancelled the dialog
                 }
-        });
+            });
+
         // Create the AlertDialog object and return it
         return builder.create();
     }
@@ -168,8 +191,9 @@ public class RegisterPOIFragment extends DialogFragment {
         }
     }
 
-    public void setArguments(String id, topoos.Objects.Location loc){
+    public void setArguments(String id, String tag_content, topoos.Objects.Location loc){
     	this.idd=id;
+        this.tag_content = tag_content;
     	this.loc= loc;
     	poiType = POICategories.INFO;
     }

@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -60,8 +61,10 @@ public class WallActivity extends Activity implements OnReg {
     private ListView list;
     private List<EntryItem> r1;
     private RatingBar ratingBar;
+    private TextView tagcontent;
     private TextView mean;
     private ProgressBar pg;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +105,11 @@ public class WallActivity extends Activity implements OnReg {
         ((TextView)findViewById(R.id.last_seen_when)).setText(when);
         ((TextView)findViewById(R.id.last_seen_where)).setText(w.getLast_seen_where());
         mean = ((TextView)findViewById(R.id.rating_mean));
+        tagcontent = ((TextView)findViewById(R.id.tagcontent));
         mean.setText(Float.toString(w.getMean_rating()));
+        if(!w.isWall_tag_private() || sudo){
+            tagcontent.setText(w.getWall_tag_content());
+        }
         int my_rating = w.getMy_rating();
         ratingBar = ((RatingBar)findViewById(R.id.ratingBar));
         ratingBar.setRating(my_rating);
@@ -203,6 +210,7 @@ public class WallActivity extends Activity implements OnReg {
         if(sudo) {
             ((TextView) findViewById(R.id.admin)).setText("(Admin)");
             registerForContextMenu(list);
+            registerForContextMenu(tagcontent);
         }
         LayoutInflater li = LayoutInflater.from(getApplicationContext());
         View header1 = li.inflate(R.layout.add_entry, null);
@@ -215,6 +223,7 @@ public class WallActivity extends Activity implements OnReg {
         });
         list.addHeaderView(header1);
         new loadComments().execute();
+        tagcontent.setMovementMethod(new ScrollingMovementMethod());
     }
 
     @Override
@@ -248,7 +257,12 @@ public class WallActivity extends Activity implements OnReg {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_ctx, menu);
+        if(v.getId() == R.id.tagcontent){
+            inflater.inflate(R.menu.menu_ctx2, menu);
+        }
+        else {
+            inflater.inflate(R.menu.menu_ctx, menu);
+        }
     }
 
     @Override
@@ -308,6 +322,102 @@ public class WallActivity extends Activity implements OnReg {
                     protected void onPostExecute(String result) {
                         Toast.makeText(getApplicationContext(), getString(R.string.dialog_comment_deleted), Toast.LENGTH_LONG).show();
                         refreshLists();
+                    }
+                }.execute();
+                return true;
+            case R.id.make_private:
+                new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected String doInBackground(Void... voids) {
+                        HttpClient httpclient = new DefaultHttpClient();
+                        HttpResponse response = null;
+                        String post_url = "http://unitenfc.herokuapp.com/objects/wall/updateprivacy/";
+                        HttpPost socket = new HttpPost(post_url);
+                        socket.setHeader( "Content-Type", "application/xml" );
+                        socket.setHeader( "Accept", "*/*" );
+                        JSONObject json = new JSONObject();
+                        try {
+                            json.put("wall", wall_id);
+                            json.put("private", true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        StringEntity entity = null;
+                        try {
+                            entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                        } catch (UnsupportedEncodingException e1) {
+                            e1.printStackTrace();
+                        }
+                        socket.setEntity(entity);
+                        Log.i("REQUEST", socket.getRequestLine().toString());
+                        try {
+                            response = httpclient.execute(socket);
+                        } catch (ClientProtocolException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        StatusLine statusLine = response.getStatusLine();
+                        if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            try {
+                                response.getEntity().writeTo(out);
+                                String responseString = out.toString();
+                                out.close();
+                                return responseString;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return "";
+                    }
+                }.execute();
+                return true;
+            case R.id.make_public:
+                new AsyncTask<Void, Void, String>() {
+                    @Override
+                    protected String doInBackground(Void... voids) {
+                        HttpClient httpclient = new DefaultHttpClient();
+                        HttpResponse response = null;
+                        String post_url = "http://unitenfc.herokuapp.com/objects/wall/updateprivacy/";
+                        HttpPost socket = new HttpPost(post_url);
+                        socket.setHeader( "Content-Type", "application/xml" );
+                        socket.setHeader( "Accept", "*/*" );
+                        JSONObject json = new JSONObject();
+                        try {
+                            json.put("wall", wall_id);
+                            json.put("private", false);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        StringEntity entity = null;
+                        try {
+                            entity = new StringEntity(json.toString(), HTTP.UTF_8);
+                        } catch (UnsupportedEncodingException e1) {
+                            e1.printStackTrace();
+                        }
+                        socket.setEntity(entity);
+                        Log.i("REQUEST", socket.getRequestLine().toString());
+                        try {
+                            response = httpclient.execute(socket);
+                        } catch (ClientProtocolException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        StatusLine statusLine = response.getStatusLine();
+                        if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+                            ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            try {
+                                response.getEntity().writeTo(out);
+                                String responseString = out.toString();
+                                out.close();
+                                return responseString;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return "";
                     }
                 }.execute();
                 return true;
