@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="es.quantum.unitenfc"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="1.1" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -37,9 +37,11 @@
         <!--
               <meta-data 		android:name="com.google.android.maps.v2.API_KEY"
                                 android:value="AIzaSyDeQEkxanYNHVfxEgMGk947cN9wU1sUGL0"/>
+
+                RELEASE API KEY
         -->
 
-                      RELEASE API KEY
+
                      <meta-data
                          android:name="com.google.android.maps.v2.API_KEY"
                          android:value="AIzaSyDa1yM8mtfKuiwm91a12talBC5hRiXpLbc" />
