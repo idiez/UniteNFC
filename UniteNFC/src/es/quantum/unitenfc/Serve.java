@@ -86,7 +86,7 @@ public class Serve extends Activity {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if(fb_dialog.isAdded())fb_dialog.dismiss();
     }
-
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,7 +156,8 @@ public class Serve extends Activity {
                                 String responseString = out.toString();
                                 Gson gson = new Gson();
                                 Wall w = gson.fromJson(responseString, Wall.class);
-                                w.setLast_seen_when(poi.get(0).getLastUpdate().toLocaleString().substring(0, 16));
+                                String date = formatter.format(poi.get(0).getLastUpdate());
+                                w.setLast_seen_when(date);
                                 w.setLast_seen_where(address);
                                 return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
                             }
@@ -422,8 +423,7 @@ public class Serve extends Activity {
                         SharedPreferences.Editor editor = prefs.edit();
                         String name = poi.getName().substring(16);
                         String wall = poi.getName().substring(0,16);
-                        Date d = new Date();
-                        String date = d.toLocaleString().substring(0, 16);
+                        String date = formatter.format(new Date());
                         @SuppressWarnings("deprecation")
                         String title = name+";"+poi.getCategories().get(0).getId()+";"+date+"ñ";
                         editor.putString("checkpoints", title.concat(s));
@@ -500,7 +500,12 @@ public class Serve extends Activity {
         protected void onPostExecute(Boolean result) {
             if(result){
                 if(mes != null) {
-                    FacebookLogic.publishStory(Serve.this, mes);
+                    String ac = Session.getActiveSession().getAccessToken();
+                    if(ac != null){
+                        if(!ac.isEmpty()){
+                            FacebookLogic.publishStory(Serve.this, mes);
+                        }
+                    }
                 }
             }
             else {

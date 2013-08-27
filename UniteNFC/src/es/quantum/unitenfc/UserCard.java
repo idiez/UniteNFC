@@ -127,7 +127,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 					@Override
 					protected Boolean doInBackground(String... element) {
 						String[] fields = element[0].split(";");
-						String filename = fields[0];
+/*						String filename = fields[0];
 						HttpClient httpclient = new DefaultHttpClient();
 			    	    HttpResponse response = null;
 						try {
@@ -167,15 +167,27 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 								e.printStackTrace();
                                 return false;
 							}
-			    	    }
+			    	    }*/
                         String i1 = topoos.Images.Operations.GetImageURIThumb(TopoosInterface.extract(element[0], 2),topoos.Images.Operations.SIZE_SMALL);
                         Bitmap bmp1 = TopoosInterface.LoadImageFromWebOperations(i1);
+                        Bitmap croppedBmp;
+                        int width = bmp1.getWidth();
+                        int heigth = bmp1.getHeight();
+                        if(width == heigth){
+                            croppedBmp = bmp1;
+                        }
+                        else if(width > heigth){
+                            croppedBmp = Bitmap.createBitmap(bmp1,(width-heigth)/2, 0, heigth, heigth );
+                        }
+                        else {
+                            croppedBmp = Bitmap.createBitmap(bmp1,0, (heigth-width)/2, width, width );
+                        }
                         String path1 = Environment.getExternalStorageDirectory().toString()+"/unitenfc/";
                         File file1 = new File(path1,TopoosInterface.extract(element[0], 0)+".png");
                         FileOutputStream out11;
                         try {
                             out11 = new FileOutputStream(file1);
-                            bmp1.compress(Bitmap.CompressFormat.PNG, 100, out11);
+                            Bitmap.createScaledBitmap(croppedBmp,100,100,false).compress(Bitmap.CompressFormat.PNG, 100, out11);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                             return false;
@@ -187,6 +199,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 					}
 	            	@Override
 	            	protected void onPostExecute(Boolean result){
+                        progressDialog.dismiss();
                         if(!result){
                             Toast.makeText(getApplicationContext(), getString(R.string.internet_failure), Toast.LENGTH_LONG).show();
                         }
@@ -313,11 +326,11 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		
 		@Override
 		protected void onPostExecute(UserInfo result) {
+            progressDialog.dismiss();
             if(result == null) {
                 Toast.makeText(getApplicationContext(),getString(R.string.internet_failure), Toast.LENGTH_LONG).show();
             }
             else {
-                progressDialog.dismiss();
                 if(beam){
                     beam = false;
                     Toast.makeText(getApplicationContext(), getString(R.string.beam), Toast.LENGTH_LONG).show();
@@ -470,18 +483,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 	
 	protected void onDestroy() {
 		super.onDestroy();
-		if(newf){
-			Thread b = new Thread(new Runnable(){
-	
-				@Override
-				public void run() {
-					CustomBackup c = new CustomBackup();
-					c.requestbackup(getApplicationContext());
-				}
-
-	    	});
-	    	b.start();
-		}
 	}
 
     @Override
@@ -568,7 +569,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
             }
             @Override
             protected void onPostExecute(String result) {
-                //Toast.makeText(ctx , "" +result, Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
                 if(result.compareTo(getString(R.string.not_found))==0){
                     Toast.makeText(getApplicationContext(),getString(R.string.not_found),Toast.LENGTH_LONG).show();
                 }
@@ -576,7 +577,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
                     Toast.makeText(getApplicationContext(),getString(R.string.internet_failure),Toast.LENGTH_LONG).show();
                 }
                 else {
-                    progressDialog.dismiss();
                     startActivity(new Intent(ctx, WallActivity.class).putExtra("wall_values",result));
                 }
             }

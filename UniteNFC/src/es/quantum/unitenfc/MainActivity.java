@@ -614,7 +614,12 @@ public class MainActivity extends Activity implements OnReg{
 
 	@Override
 	public void onReg(String mes) {
-        FacebookLogic.publishStory(MainActivity.this, mes);
+        String ac = Session.getActiveSession().getAccessToken();
+        if(ac != null){
+            if(!ac.isEmpty()){
+                FacebookLogic.publishStory(MainActivity.this, mes);
+            }
+        }
 	    scan.refreshLists();
 	}
 

@@ -37,6 +37,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,7 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
 	private boolean [] poi_vis;
 	private CameraPosition cam;
     private ProgressDialog progressDialog;
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy HH:mm");
 	
 	public CustomMapFragment() {
 		super();
@@ -317,7 +319,8 @@ public class CustomMapFragment extends MapFragment implements OnInfoWindowClickL
                         String responseString = out.toString();
                         Gson gson = new Gson();
                         Wall w = gson.fromJson(responseString, Wall.class);
-                        w.setLast_seen_when(poi.get(0).getLastUpdate().toLocaleString().substring(0, 16));
+                        String date = formatter.format(poi.get(0).getLastUpdate());
+                        w.setLast_seen_when(date);
                         w.setLast_seen_where(address);
                         return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
                     }

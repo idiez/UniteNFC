@@ -188,13 +188,14 @@ public class CustomBackup {
     			editor.commit();
 				String i = topoos.Images.Operations.GetImageURIThumb(session.getPic_uri(),topoos.Images.Operations.SIZE_SMALL);
 				Bitmap bmp = TopoosInterface.LoadImageFromWebOperations(i);
+                Bitmap croppedBmp = squareBitmap(bmp);
 				String path = Environment.getExternalStorageDirectory().toString()+"/unitenfc/";
 				File file = new File(path,"profile.png");
 				FileOutputStream out1;
 				try {
 					out1 = new FileOutputStream(file);
-					bmp.compress(Bitmap.CompressFormat.PNG, 100, out1);
-				} catch (FileNotFoundException e) {
+                    Bitmap.createScaledBitmap(croppedBmp,100,100,false).compress(Bitmap.CompressFormat.PNG, 100, out1);
+                } catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (NullPointerException e) {
 				    e.printStackTrace();
@@ -203,18 +204,7 @@ public class CustomBackup {
 				for(String element:friendlist){
 					String i1 = topoos.Images.Operations.GetImageURIThumb(TopoosInterface.extract(element, 2),topoos.Images.Operations.SIZE_SMALL);
 					Bitmap bmp1 = TopoosInterface.LoadImageFromWebOperations(i1);
-                    int width = bmp1.getWidth();
-                    int heigth = bmp1.getHeight();
-                    Bitmap croppedBmp1;
-                    if(width == heigth){
-                        croppedBmp1 = bmp1;
-                    }
-                    else if(width > heigth){
-                        croppedBmp1 = Bitmap.createBitmap(bmp1,(width-heigth)/2, 0, heigth, heigth );
-                    }
-                    else {
-                        croppedBmp1 = Bitmap.createBitmap(bmp1,0, (heigth-width)/2, width, width );
-                    }
+                    Bitmap croppedBmp1 = squareBitmap(bmp1);
 					String path1 = Environment.getExternalStorageDirectory().toString()+"/unitenfc/";
 					File file1 = new File(path1,TopoosInterface.extract(element, 0)+".png");
 					FileOutputStream out11;
@@ -254,4 +244,19 @@ public class CustomBackup {
     	t.start();
 		return true;
 	}
+    public Bitmap squareBitmap(Bitmap bmp){
+        int width = bmp.getWidth();
+        int heigth = bmp.getHeight();
+        Bitmap croppedBmp1;
+        if(width == heigth){
+            croppedBmp1 = bmp;
+        }
+        else if(width > heigth){
+            croppedBmp1 = Bitmap.createBitmap(bmp,(width-heigth)/2, 0, heigth, heigth );
+        }
+        else {
+            croppedBmp1 = Bitmap.createBitmap(bmp,0, (heigth-width)/2, width, width );
+        }
+        return croppedBmp1;
+    }
 }

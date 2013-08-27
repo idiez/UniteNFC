@@ -170,7 +170,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical|center_horizontal">
 
         <TextView
                 android:layout_width="wrap_content"
@@ -179,11 +179,13 @@
                 android:id="@+id/textView"
                 android:layout_alignParentTop="false"
                 android:layout_alignParentEnd="false"
-                android:layout_marginLeft="140dip"
                 android:gravity="center_vertical"
                 android:textAlignment="gravity"
                 android:layout_alignWithParentIfMissing="false"
-                android:padding="2dp"/>
+                android:padding="2dp"
+                android:layout_marginRight="3dip"
+                android:layout_toLeftOf="@+id/rating_mean"
+                android:layout_centerHorizontal="true"/>
 
         <TextView
                 android:layout_width="wrap_content"
@@ -192,10 +194,10 @@
                 android:id="@+id/rating_mean"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="140dp"
                 android:textStyle="bold"
                 android:textSize="16dp"
-                android:textAlignment="gravity"/>
+                android:textAlignment="gravity"
+                android:layout_marginLeft="5dip"/>
     </RelativeLayout>
 
     <LinearLayout

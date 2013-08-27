@@ -38,6 +38,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
 	};
 	private ListView list1;
 	private ListView list2;
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy HH:mm");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -235,7 +237,8 @@ public class ScanFragment extends Fragment implements OnClickListener, OnItemCli
                         String responseString = out.toString();
                         Gson gson = new Gson();
                         Wall w = gson.fromJson(responseString, Wall.class);
-                        w.setLast_seen_when(poi.get(0).getLastUpdate().toLocaleString().substring(0, 16));
+                        String date = formatter.format(poi.get(0).getLastUpdate());
+                        w.setLast_seen_when(date);
                         w.setLast_seen_where(address);
                         return gson.toJson(w)+";"+nfcpoi.getName().substring(0,16);
                     }

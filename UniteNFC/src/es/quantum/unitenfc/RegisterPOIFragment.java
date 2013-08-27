@@ -32,6 +32,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import es.quantum.unitenfc.Objects.NFCPoint;
@@ -45,6 +46,7 @@ public class RegisterPOIFragment extends DialogFragment {
 	private String name;
 	private String description;
 	private OnReg mListener;
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy HH:mm");
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -85,10 +87,8 @@ public class RegisterPOIFragment extends DialogFragment {
                         final String s = prefs.getString("regpoints", "");
                         final String user_id = prefs.getString("session", "");
                         final Editor editor = prefs.edit();
-                        Date d = new Date();
-                        String date = d.toLocaleString().substring(0, 16);
-                        @SuppressWarnings("deprecation") final
-                        String title = name + ";" + poiType + ";" + date + "ñ";
+                        String date = formatter.format(new Date());
+                        final String title = name + ";" + poiType + ";" + date + "ñ";
                         RegisterPOIWorker wrk = new RegisterPOIWorker();
                         Thread thread = new Thread(wrk);
                         thread.start();

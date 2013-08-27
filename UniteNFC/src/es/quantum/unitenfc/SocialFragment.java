@@ -46,6 +46,12 @@ public class SocialFragment extends Fragment implements OnClickListener{
         return V;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshLists();
+    }
+
     public List<RowItem> parseString(String s){
     	List<String> listcheck = TopoosInterface.itemize(s);
     	List<RowItem> rows = new ArrayList<RowItem>();
