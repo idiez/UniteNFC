@@ -20,7 +20,7 @@
          android:dialogTitle="Nombre"
          />
 		
-     <es.quantum.unitenfc.CustomPrefDialog
+     <com.quantum.unitenfc.CustomPrefDialog
             android:key="comp_edittext_pref"
             android:summary="Selecciona foto de perfil"
             android:title="Foto de perfil"/>
