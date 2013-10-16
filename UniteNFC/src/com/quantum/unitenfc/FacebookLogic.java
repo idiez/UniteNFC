@@ -174,7 +174,6 @@ public class FacebookLogic {
             postParams.putString("description", "Discover and share NFC points that surrounds you. Register new NFC Points you may encounter and comment on its content on the wall!");
             postParams.putString("link", "https://developers.facebook.com/android");
             postParams.putString("picture", "http://s23.postimg.org/bq7oqpfzr/nfc_blue.png");
-
             Request.Callback callback= new Request.Callback() {
                 public void onCompleted(Response response) {
                     JSONObject graphResponse = response

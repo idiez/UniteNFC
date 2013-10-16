@@ -116,7 +116,7 @@ public class TopoosInterface {
         int height = options.outHeight;
         int width = options.outWidth;
         int inSampleSize = 1;
-        if (height > 98 || width > 98) {	//power of 2
+        if (height > 98 || width > 98) {
             // Calculate ratios of height and width to requested height and width
             int heightRatio = Math.round((float) height / (float) 98);
             int widthRatio = Math.round((float) width / (float) 98);

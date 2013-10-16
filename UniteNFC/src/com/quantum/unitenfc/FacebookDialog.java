@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 public class FacebookDialog extends DialogFragment {
 
@@ -26,6 +27,7 @@ public class FacebookDialog extends DialogFragment {
                 boolean nomore =  ((CheckBox)getDialog().findViewById(R.id.checkBox)).isChecked();
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
                 SharedPreferences.Editor editor = prefs.edit();
+                Toast.makeText(getActivity().getApplicationContext(),"hello",Toast.LENGTH_LONG);
                 editor.putBoolean("showfbdialog", !nomore);
                 editor.commit();
             }

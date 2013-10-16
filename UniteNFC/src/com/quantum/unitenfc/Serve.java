@@ -86,7 +86,7 @@ public class Serve extends Activity {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if(fb_dialog.isAdded())fb_dialog.dismiss();
     }
-    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy HH:mm");
+    private final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -385,7 +385,7 @@ public class Serve extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu2, menu);
+        getMenuInflater().inflate(R.menu.empty_menu, menu);
         MenuItem menuItem = menu.findItem(R.id.menu_share);
         if(menuItem != null);
         menuItem = menu.findItem(R.id.menu_share);

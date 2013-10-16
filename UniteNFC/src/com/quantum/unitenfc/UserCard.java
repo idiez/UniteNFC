@@ -392,8 +392,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 		byte[] payload = (prefs.getString("session", "")+";"+prefs.getString("username", "")+";"+prefs.getString("imageuri", "dummy_4")+" "+blue_mac).getBytes();
 		byte[] mimeBytes = MIME_TYPE.getBytes(Charset.forName("US-ASCII"));
 		NdefRecord cardRecord = new NdefRecord(NdefRecord.TNF_MIME_MEDIA, mimeBytes, new byte[0], payload);
-		//MANDAR URI Y NOMBRE APARTE DE ID
-		//MANDAR TAMBI�N MAC BLUETOOTH	
 		return new NdefMessage(new NdefRecord[] { cardRecord});
 	}
 

@@ -242,7 +242,7 @@ public class WallActivity extends Activity implements OnReg {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu2, menu);
+        getMenuInflater().inflate(R.menu.empty_menu, menu);
         MenuItem menuItem = menu.findItem(R.id.menu_share);
         if(menuItem != null);
         menuItem = menu.findItem(R.id.menu_share);

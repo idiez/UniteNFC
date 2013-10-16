@@ -202,7 +202,6 @@ public class RegisterPOIFragment extends DialogFragment {
 		public void run(){
 			try {
 				TopoosInterface.RegisterNFCPOI(getActivity().getApplicationContext(), idd+name, description, poiType, loc);
-
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

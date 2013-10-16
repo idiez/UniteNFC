@@ -19,7 +19,7 @@
     <!-- Menu -->
     <string name="action_share">Compartir</string>
     <string name="action_settings">Configuración</string>
-    <string name="action_about">Acerca de</string>
+    <string name="action_about">Instrucciones</string>
     <string name="action_report">Reportar fallo</string>
     <string name="action_exit">Cerrar sesión</string>
     <!-- Login message -->
