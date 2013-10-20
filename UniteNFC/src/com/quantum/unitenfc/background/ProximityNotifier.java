@@ -65,7 +65,7 @@ public class ProximityNotifier extends IntentService {
                 if(!(token == null || !token.isValid() || !foo) && prefs.getBoolean("notify", true)) {
                     try {
                         if(current_pos != null){
-                            poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(), current_pos.getLongitude()),5);
+                            poi_list = TopoosInterface.GetNearNFCPOI(getApplicationContext(), new topoos.Objects.Location(current_pos.getLatitude(), current_pos.getLongitude()),100);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();

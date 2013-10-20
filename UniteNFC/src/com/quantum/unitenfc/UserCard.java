@@ -109,8 +109,8 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			Parcelable[] rawMsgs = i.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             NdefMessage msg = (NdefMessage) rawMsgs[0];
             NdefRecord cardRecord = msg.getRecords()[0];
-            String[] rcv_data = new String(cardRecord.getPayload()).split(" ");
-            String user_data = rcv_data[0];
+            String rcv_data = new String(cardRecord.getPayload());
+            String user_data = rcv_data.replace(" null","");
             //save friend data
             boolean correct = addFriend(user_data);
             final String[] names = user_data.split(";");
@@ -127,47 +127,6 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 					@Override
 					protected Boolean doInBackground(String... element) {
 						String[] fields = element[0].split(";");
-/*						String filename = fields[0];
-						HttpClient httpclient = new DefaultHttpClient();
-			    	    HttpResponse response = null;
-						try {
-							response = httpclient.execute(new HttpGet(CustomBackup.BACKUP_URI+filename));
-						} catch (ClientProtocolException e) {
-							e.printStackTrace();
-                            return false;
-						} catch (IOException e) {
-							e.printStackTrace();
-                            return false;
-						}
-			    	    StatusLine statusLine = response.getStatusLine();
-			    	    if(statusLine.getStatusCode() == HttpStatus.SC_OK){
-			    	        ByteArrayOutputStream out = new ByteArrayOutputStream();
-			    	        try {
-								response.getEntity().writeTo(out);
-								out.close();
-							} catch (IOException e) {
-								e.printStackTrace();
-                                return false;
-							}
-			    	        String responseString = out.toString();
-			    	    } else{
-			    	        //Closes the connection.
-			    	        try {
-								response.getEntity().getContent().close();
-							} catch (IllegalStateException e) {
-								e.printStackTrace();
-                                return false;
-							} catch (IOException e) {
-								e.printStackTrace();
-                                return false;
-							}
-			    	        try {
-								throw new IOException(statusLine.getReasonPhrase());
-							} catch (IOException e) {
-								e.printStackTrace();
-                                return false;
-							}
-			    	    }*/
                         String i1 = topoos.Images.Operations.GetImageURIThumb(TopoosInterface.extract(element[0], 2),topoos.Images.Operations.SIZE_SMALL);
                         Bitmap bmp1 = TopoosInterface.LoadImageFromWebOperations(i1);
                         Bitmap croppedBmp;
@@ -404,6 +363,7 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 	public void onNdefPushComplete(NfcEvent event) {
 		// RELOAD INFO CARD
 		final String friendfield = prefs.getString("friends", "");
+        final Context ctxx = (Context) this;
 		AsyncTask<Void, Void, Void> b = new AsyncTask<Void, Void, Void>(){
 
 			@Override 
@@ -414,27 +374,41 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
 			
 			@Override
 			protected Void doInBackground(Void... arg0) {
+                SharedPreferences pr = PreferenceManager.getDefaultSharedPreferences(ctxx);
 				long milis = System.currentTimeMillis();
 				timeout = false;
+                String fri = "";
 				do{
 				CustomBackup c = new CustomBackup();
-				c.requestrestore(getApplicationContext());
+				c.requestrestore(ctxx);
 				TopoosInterface.setProfilePicture(getApplicationContext());
 				timeout = System.currentTimeMillis()-milis>10000;
-				} while(friendfield.compareTo(prefs.getString("friends", "")) == 0 && !timeout);
+                fri = pr.getString("friends", "");
+				} while(friendfield.compareTo(fri) == 0 && !timeout);
 				return null;
 			}
 			
 			@Override
 			protected void onPostExecute(Void a){
 				if(!timeout){
-					String[] name = TopoosInterface.itemize(prefs.getString("friends", "")).get(0).split(";");
-					showFriend(name[1]);
-				}
-				else{
-					mHandler.removeCallbacks(mHide);
-					mHandler.postDelayed(mHide, 0);
-				}
+                    SharedPreferences pr = PreferenceManager.getDefaultSharedPreferences(ctxx);
+                    String flist = pr.getString("friends", "");
+					List<String> flista = TopoosInterface.itemize(flist);
+                    List<String> g = TopoosInterface.itemize(friendfield);
+                    boolean dup = true;
+                    for(String el:flista){
+                        if(!g.contains(el)){
+                            showFriend(el.split(";")[1]);
+                            dup = false;
+                            break;
+                        }
+                    }
+                    if(dup) {
+                        Toast.makeText(ctxx, getString(R.string.add_already), Toast.LENGTH_LONG).show();
+                    }
+                }
+				mHandler.removeCallbacks(mHide);
+				mHandler.postDelayed(mHide, 0);
 			}
 		};
 		b.execute();
@@ -443,14 +417,23 @@ public class UserCard extends Activity implements CreateNdefMessageCallback, OnN
     //MOVE TO TOPOOS INTERFACE
 	public boolean addFriend(String friend_data){
         String[] data = friend_data.split(";");
-        String friend = data[1];
+        String friend = data[0];
         boolean duplicated = TopoosInterface.isFriendDuplicated(friend, this);
 		if(!duplicated){
             TopoosInterface.saveFriend(friend_data, this);
 		}
         else {
             Toast.makeText(this, getString(R.string.add_already), Toast.LENGTH_LONG).show();
-            showFriend(friend);
+            String friends = prefs.getString("friends", "");
+            List<String> flist = TopoosInterface.itemize(friends);
+            String[] params;
+            for(String element:flist){
+                params = element.split(";");
+                if(params[0].compareTo(friend)==0) {
+                    showFriend(params[1]);
+                    break;
+                }
+            }
         }
 		return !duplicated;
 	}
